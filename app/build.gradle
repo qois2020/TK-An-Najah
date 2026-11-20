@@ -10,8 +10,8 @@ android {
         applicationId "id.annajah.guru"
         minSdk 24
         targetSdk 34
-        versionCode 3
-        versionName "2.0"
+        versionCode ((System.getenv("GITHUB_RUN_NUMBER") ?: "0").toInteger() + 100)
+        versionName "2.0." + (System.getenv("GITHUB_RUN_NUMBER") ?: "0")
     }
 
     signingConfigs {

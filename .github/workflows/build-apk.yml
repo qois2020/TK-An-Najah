@@ -20,6 +20,11 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
+      - name: Tandai nomor versi
+        run: |
+          BUILD=$((GITHUB_RUN_NUMBER+100))
+          echo "BUILD=$BUILD" >> $GITHUB_ENV
+          sed -i "s/__BUILD__/$BUILD/g" app/src/main/assets/index.html web/index.html
       - name: Build APK
         run: |
           set -o pipefail
@@ -55,6 +60,9 @@ jobs:
       - name: Terbitkan versi web (GitHub Pages, untuk iPhone & browser)
         run: |
           mkdir -p site && cp -r web/. site/ && touch site/.nojekyll
+          MSG=$(git log -1 --pretty=%s | head -c 120 | sed 's/"/\\"/g')
+          echo "{\"build\": $BUILD, \"name\": \"2.0.$GITHUB_RUN_NUMBER\", \"note\": \"$MSG\"}" > site/version.json
+          cat site/version.json
           cd site
           git init -q -b gh-pages
           git config user.name "github-actions"
