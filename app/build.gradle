@@ -1,0 +1,38 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'id.annajah.guru'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "id.annajah.guru"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+
+    signingConfigs {
+        release {
+            // Kunci tetap: semua versi bertanda tangan sama, jadi update bisa langsung ditimpa.
+            storeFile file('annajah.jks')
+            storePassword 'annajah2026'
+            keyAlias 'annajah'
+            keyPassword 'annajah2026'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
