@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function schoolDoc() { return get(/databases/$(database)/documents/school/main); }
+    function isAdmin() {
+      return signedIn() && exists(/databases/$(database)/documents/school/main)
+        && request.auth.uid in schoolDoc().data.admins;
+    }
+    function profile() { return get(/databases/$(database)/documents/users/$(request.auth.uid)); }
+    function isApproved() {
+      return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && profile().data.approved == true;
+    }
+    function inClass(c) { return isAdmin() || (isApproved() && profile().data.classId == c); }
+
+    match /school/main {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.admins == [request.auth.uid];
+      allow update: if isAdmin();
+    }
+    match /school/agenda {
+      allow read, write: if isAdmin() || isApproved();
+    }
+    match /users/{uid} {
+      allow get: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow list: if isAdmin();
+      allow create: if signedIn() && request.auth.uid == uid
+        && ((request.resource.data.approved == false && request.resource.data.classId == '') || isAdmin());
+      allow update: if isAdmin() || (signedIn() && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name']));
+      allow delete: if isAdmin();
+    }
+    match /users/{uid}/priv/{doc} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
+    match /classes/{c} {
+      allow get: if inClass(c);
+      allow list: if isAdmin();
+      allow create, delete: if isAdmin();
+      allow update: if inClass(c);
+    }
+    match /classes/{c}/{rest=**} {
+      allow read, write: if inClass(c);
+    }
+  }
+}

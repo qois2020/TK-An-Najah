@@ -42,3 +42,12 @@ Berjalan offline di HP. Raport & laporan bisa dicetak atau disimpan sebagai PDF 
   lalu **Pulihkan dari cadangan** di versi lainnya.
 - Update APK berikutnya bisa langsung dipasang menimpa versi lama (kunci tanda tangan sama),
   data tidak hilang.
+
+## Multi-guru (Firebase)
+
+- Semua guru & kepala sekolah memakai data yang sama lewat Firebase (proyek `tk-an-najah`).
+- **Android:** pasang APK. **iPhone / laptop:** buka https://qois2020.github.io/TK-An-Najah/
+  (di Safari: Bagikan → Tambahkan ke Layar Utama).
+- Pendaftar pertama yang mencentang "Saya kepala sekolah" menjadi **Admin**.
+  Guru lain mendaftar, lalu disetujui & dipilihkan kelas oleh Admin lewat tombol 🏫.
+- Aturan keamanan Firestore ada di file `firestore.rules` (salin ke Firestore → Rules → Publish).

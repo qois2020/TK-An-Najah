@@ -17,6 +17,9 @@ import android.print.PrintManager;
 import android.speech.tts.TextToSpeech;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
+
+import androidx.webkit.WebViewAssetLoader;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -35,6 +38,9 @@ public class MainActivity extends Activity {
     private TextToSpeech tts;
     private boolean ttsReady = false;
     private WebView printView;
+    private static final String HOST = "appassets.androidplatform.net";
+    private static final String START = "https://" + HOST + "/assets/index.html";
+    private WebViewAssetLoader assetLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,14 +54,23 @@ public class MainActivity extends Activity {
         s.setDomStorageEnabled(true);
         s.setDatabaseEnabled(true);
         s.setMediaPlaybackRequiresUserGesture(false);
-        s.setAllowFileAccess(true);
+        s.setAllowFileAccess(false);
         s.setTextZoom(100);
+
+        assetLoader = new WebViewAssetLoader.Builder()
+                .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this))
+                .build();
 
         web.setWebViewClient(new WebViewClient() {
             @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                return assetLoader.shouldInterceptRequest(request.getUrl());
+            }
+
+            @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
-                if ("file".equals(uri.getScheme())) return false;
+                if (HOST.equals(uri.getHost())) return false;
                 try { startActivity(new Intent(Intent.ACTION_VIEW, uri)); } catch (Exception ignored) { }
                 return true;
             }
@@ -64,7 +79,7 @@ public class MainActivity extends Activity {
         web.addJavascriptInterface(new NotifyBridge(), "AndroidNotify");
         web.addJavascriptInterface(new PrintBridge(), "AndroidPrint");
         if (savedInstanceState != null) web.restoreState(savedInstanceState);
-        else web.loadUrl("file:///android_asset/index.html");
+        else web.loadUrl(START);
 
         tts = new TextToSpeech(this, status -> {
             if (status == TextToSpeech.SUCCESS) {
@@ -165,7 +180,7 @@ public class MainActivity extends Activity {
                                 .setMediaSize(PrintAttributes.MediaSize.ISO_A4).build());
                     }
                 });
-                pw.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "UTF-8", null);
+                pw.loadDataWithBaseURL("https://" + HOST + "/assets/", html, "text/html", "UTF-8", null);
                 printView = pw;
             });
         }
