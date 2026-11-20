@@ -7,7 +7,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintManager;
 import android.speech.tts.TextToSpeech;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
@@ -28,6 +34,7 @@ public class MainActivity extends Activity {
     private WebView web;
     private TextToSpeech tts;
     private boolean ttsReady = false;
+    private WebView printView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +61,8 @@ public class MainActivity extends Activity {
             }
         });
         web.addJavascriptInterface(new VoiceBridge(), "AndroidVoice");
+        web.addJavascriptInterface(new NotifyBridge(), "AndroidNotify");
+        web.addJavascriptInterface(new PrintBridge(), "AndroidPrint");
         if (savedInstanceState != null) web.restoreState(savedInstanceState);
         else web.loadUrl("file:///android_asset/index.html");
 
@@ -65,6 +74,12 @@ public class MainActivity extends Activity {
                 ttsReady = true;
             }
         });
+
+        if (Build.VERSION.SDK_INT >= 33
+                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 9);
+        }
+        Reminders.scheduleAll(this);
     }
 
     @Override
@@ -120,6 +135,38 @@ public class MainActivity extends Activity {
             runOnUiThread(() -> {
                 ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 if (cm != null) cm.setPrimaryClip(ClipData.newPlainText("TK An Najah", text));
+            });
+        }
+    }
+
+    class NotifyBridge {
+        @JavascriptInterface
+        public void sync(String json) {
+            Reminders.sync(getApplicationContext(), json);
+        }
+    }
+
+    class PrintBridge {
+        @JavascriptInterface
+        public void print(String html, String title) {
+            runOnUiThread(() -> {
+                final String job = (title == null || title.isEmpty()) ? "TK An Najah" : title;
+                WebView pw = new WebView(MainActivity.this);
+                pw.setWebViewClient(new WebViewClient() {
+                    private boolean done = false;
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        if (done) return;
+                        done = true;
+                        PrintManager pm = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+                        if (pm == null) return;
+                        PrintDocumentAdapter ad = view.createPrintDocumentAdapter(job);
+                        pm.print(job, ad, new PrintAttributes.Builder()
+                                .setMediaSize(PrintAttributes.MediaSize.ISO_A4).build());
+                    }
+                });
+                pw.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "UTF-8", null);
+                printView = pw;
             });
         }
     }

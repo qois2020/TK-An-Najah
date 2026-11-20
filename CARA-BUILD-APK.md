@@ -1,7 +1,9 @@
 # TK An Najah – proyek Android
 
 Aplikasi guru TK: absensi, kalender & agenda, to-do list guru, jadwal kegiatan,
-doa harian (Al-Qur'an & hadits shahih), dan cerita Islami. Berjalan offline di HP.
+hafalan & perkembangan murid, raport, laporan absensi siap cetak, kabar ke orang tua
+lewat WhatsApp, kuis kelas, doa harian (Al-Qur'an & hadits shahih), dan cerita Islami.
+Berjalan offline di HP. Raport & laporan bisa dicetak atau disimpan sebagai PDF langsung dari HP.
 
 ## Cara 1 – Lewat GitHub (tanpa install apa pun, ±5 menit)
 
@@ -27,7 +29,9 @@ doa harian (Al-Qur'an & hadits shahih), dan cerita Islami. Berjalan offline di H
 
 1. Buka file `.apk` di HP. Jika muncul peringatan, izinkan **Instal aplikasi tidak dikenal**
    untuk aplikasi pembuka file (Files/Chrome/WhatsApp).
-2. Fitur **Bacakan** memakai mesin suara HP. Jika tidak bersuara, pasang/aktifkan
+2. Saat pertama dibuka, izinkan **Notifikasi** agar pengingat agenda & tugas muncul
+   (H-1 malam, pagi hari-H, dan 30 menit sebelum agenda yang ada jamnya).
+3. Fitur **Bacakan** memakai mesin suara HP. Jika tidak bersuara, pasang/aktifkan
    "Layanan Ucapan Google" dengan bahasa Indonesia.
 
 ## Catatan

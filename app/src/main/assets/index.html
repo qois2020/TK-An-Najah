@@ -357,6 +357,7 @@ textarea.inp{width:100%;min-height:90px;resize:vertical}
       </div>
     </div>
 
+    <div class="card" id="homeRemind" style="margin-bottom:14px;display:none;background:linear-gradient(135deg,#fff7ed,#fff)"></div>
     <div class="card" style="margin-bottom:14px">
       <h3><span class="t">📋 Absensi Hari Ini</span><button class="btn sm" data-act="go" data-v="absen">Absen sekarang →</button></h3>
       <div class="stats" id="homeStats"></div>
@@ -383,6 +384,7 @@ textarea.inp{width:100%;min-height:90px;resize:vertical}
         <h3><span class="t">🎈 Alat Kelas</span></h3>
         <div class="row">
           <button class="btn yellow" data-act="randomPick">🎲 Pilih Murid Acak</button>
+          <button class="btn" style="background:#8b5cf6;box-shadow:0 4px 0 #6d28d9" data-act="quiz">🎯 Kuis Kelas</button>
           <button class="btn pink" data-act="timer">⏰ Timer Kegiatan</button>
           <button class="btn" data-act="go" data-v="cerita">📖 Cerita Islami</button>
         </div>
@@ -414,6 +416,7 @@ textarea.inp{width:100%;min-height:90px;resize:vertical}
         <input type="month" id="rekapMonth" class="inp">
         <span class="spacer"></span>
         <button class="btn sm sec" data-act="copyRekap">📋 Salin untuk Excel</button>
+        <button class="btn sm" data-act="absReport">📄 Laporan cetak</button>
       </div>
       <div class="card"><div class="tbl-wrap" id="rekapTable"></div></div>
     </div>
@@ -476,13 +479,18 @@ textarea.inp{width:100%;min-height:90px;resize:vertical}
 
   <!-- ===== MURID ===== -->
   <section class="view" id="v-murid">
-    <h2 class="section-title">🎒 Data Murid</h2>
-    <div class="row" style="margin-bottom:12px">
-      <button class="btn" data-act="addStudent">+ Tambah Murid</button>
-      <span class="spacer"></span>
-      <button class="btn sm sec" data-act="resetStars">↺ Nol-kan bintang</button>
+    <h2 class="section-title">🎒 Murid</h2>
+    <div class="toolbar"><div class="seg" id="muridSeg"><button class="on" data-act="muridTab" data-t="data">Data</button><button data-act="muridTab" data-t="hafalan">Hafalan</button><button data-act="muridTab" data-t="kembang">Perkembangan</button></div></div>
+    <div id="mt-data">
+      <div class="row" style="margin-bottom:12px">
+        <button class="btn" data-act="addStudent">+ Tambah Murid</button>
+        <span class="spacer"></span>
+        <button class="btn sm sec" data-act="resetStars">↺ Nol-kan bintang</button>
+      </div>
+      <div class="students" id="muridList"></div>
     </div>
-    <div class="students" id="muridList"></div>
+    <div id="mt-hafalan" style="display:none"></div>
+    <div id="mt-kembang" style="display:none"></div>
   </section>
 </div>
 
@@ -742,12 +750,12 @@ function hijri(d){try{return new Intl.DateTimeFormat('id-ID-u-ca-islamic-umalqur
 let S=null; const ATT={}; const remoteLoaded={};
 let AG={events:[],notes:{}};
 function normAg(o){o=o||{};return {events:Array.isArray(o.events)?o.events:[],notes:(o.notes&&typeof o.notes==='object'&&!Array.isArray(o.notes))?o.notes:{}}}
-function saveAg(){Store.save('agenda',AG)}
+function saveAg(){Store.save('agenda',AG);syncReminders()}
 const EV_CAT={kegiatan:['🎨','Kegiatan Kelas','#14b8a6'],islam:['🕌','Hari Islam / Ibadah','#22c55e'],ortu:['🤝','Orang Tua / Rapat','#8b5cf6'],libur:['🏖️','Libur','#f97316'],acara:['🎉','Acara Sekolah','#ec4899'],lain:['📝','Lainnya','#64748b']};
 const HOLI={'1-1':'Tahun Baru Hijriah','1-10':'Hari Asyura (puasa 10 Muharram)','9-1':'Awal Ramadhan','10-1':'Idul Fitri','12-9':'Hari Arafah','12-10':'Idul Adha'};
 let HF=null;try{HF=new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{day:'numeric',month:'numeric',year:'numeric'})}catch(e){}
 function hparts(d){if(!HF)return null;try{const p=HF.formatToParts(d);const g=t=>parseInt((p.find(x=>x.type===t)||{}).value);const r={d:g('day'),m:g('month'),y:g('year')};return isNaN(r.d)?null:r}catch(e){return null}}
-function blank(){return {students:[],todos:[],schedule:DEFAULT_SCHED.map(([time,text])=>({id:uid(),time,text})),settings:{teacher:'Bu Guru',className:'TK A',sound:true}}}
+function blank(){return {students:[],todos:[],schedule:DEFAULT_SCHED.map(([time,text])=>({id:uid(),time,text})),settings:{teacher:'Bu Guru',className:'TK A',sound:true,school:'TK An Najah',head:'',remind:true,remindEve:'19:00',remindMorning:'06:30'}}}
 function normalize(o){const b=blank();o=o||{};return {students:Array.isArray(o.students)?o.students:[],todos:Array.isArray(o.todos)?o.todos:[],schedule:Array.isArray(o.schedule)?o.schedule:b.schedule,settings:Object.assign(b.settings,o.settings||{})}}
 
 const Store={db:null,uid:null,timers:{},writing:{},pending:{},
@@ -767,7 +775,7 @@ function setSync(st,e){const el=$('#sync');el.className='sync';
   else if(st==='slow'){el.textContent='⏳ Menghubungkan…'}
   else if(st==='err'){el.classList.add('err');el.textContent=(e&&e.code==='quota_exceeded')?'⚠️ Penyimpanan penuh':'⚠️ Gagal sinkron'}
   else {el.classList.add('local');el.textContent='💾 Lokal'}}
-function saveMain(){Store.save('kelas',S)}
+function saveMain(){Store.save('kelas',S);syncReminders()}
 function monthKey(dateStr){return dateStr.slice(0,7)}
 function getMonth(m){
   if(!ATT[m]){const l=Store.lsGet('absen-'+m);ATT[m]=(l&&l.days)?l:{days:{}}}
@@ -797,6 +805,8 @@ async function initCloud(){
     else if(S.students.length||S.todos.length){saveMain()}
     const ra=await Store.remoteGet('agenda');
     if(ra){AG=normAg(ra);Store.lsSet('agenda',AG)}else if(ra===null&&(AG.events.length||Object.keys(AG.notes).length)){saveAg()}
+    const rp=await Store.remoteGet('progres');
+    if(rp){PR=normPr(rp);Store.lsSet('progres',PR)}else if(rp===null&&(PR.notes.length||Object.keys(PR.hafalan).length||PR.custom.length)){savePr()}
     setSync('ok');
     for(const m of Object.keys(ATT)){remoteLoaded[m]=false}
     renderAll();
@@ -858,7 +868,7 @@ function renderHome(){
   const idx=Math.floor(parseD(t).getTime()/864e5)%DOA.length;const d=DOA[(idx+DOA.length)%DOA.length];
   $('#homeDoa').innerHTML=`<div style="font-weight:800;font-size:17px">${d.ic} ${esc(d.t)}</div><div class="arab" style="font-size:26px;text-align:center;margin:6px 0">${d.ar}</div><div class="doa-latin" style="font-size:15px">${esc(d.lt)}</div><div style="text-align:center;margin-top:4px">“${esc(d.id_)}”</div><div class="row" style="justify-content:space-between;margin-top:8px"><span class="src">📌 ${esc(d.src)}</span><button class="btn sm sec" data-act="openDoa" data-id="${d.id}">Buka</button></div>`;
   const top=[...S.students].sort((a,b)=>(b.stars||0)-(a.stars||0))[0];
-  renderHomeAgenda();
+  renderHomeAgenda();renderReminders();
   $('#topStar').textContent=top&&top.stars?`${top.av} ${top.name} (${top.stars}⭐)`:'—';
 }
 
@@ -870,8 +880,8 @@ function renderAbsen(){
     const d=getDay(absDate);
     if(!S.students.length){$('#absList').innerHTML=emptyStudents();return}
     $('#absList').innerHTML=S.students.map(s=>{const st=d[s.id]||'';return `<div class="stu ${st}">
-      <div class="stu-top"><div class="ava ${s.g}">${esc(s.av)}</div><div><div class="nm">${esc(s.name)}</div><div class="sub">${st?ST[st]:'Belum diabsen'}</div></div>
-      <button class="starbtn" data-act="star" data-id="${s.id}" title="Beri bintang">⭐ ${s.stars||0}</button></div>
+      <div class="stu-top"><div class="ava ${s.g}">${esc(s.av)}</div><div><div class="nm">${esc(s.name)}</div><div class="sub">${st?ST[st]:'Belum diabsen'}${s.note?' · ⚠️ '+esc(s.note):''}</div></div>
+      <button class="starbtn" data-act="star" data-id="${s.id}" title="Beri bintang">⭐ ${s.stars||0}</button>${st&&st!=='H'?`<button class="starbtn" style="margin-left:4px;background:#dcfce7;color:#166534" data-act="waStudent" data-id="${s.id}" data-tpl="absen" title="Kabari orang tua">💬</button>`:''}</div>
       <div class="status-btns">${['H','I','S','A'].map(k=>`<button class="${k} ${st===k?'on':''}" data-act="mark" data-id="${s.id}" data-st="${k}" title="${ST[k]}">${k==='H'?'✔ H':k}</button>`).join('')}</div></div>`}).join('');
   } else renderRekap();
 }
@@ -924,10 +934,10 @@ function openStory(id){const s=STORIES.find(x=>x.id===id);if(!s)return;SFX.ding(
   <div class="moral">🌟 Pesan untuk anak: ${esc(s.m)}</div><p class="src" style="font-size:14px">📌 Rujukan: <b>${esc(s.s)}</b></p>`)}
 
 function renderMurid(){
-  if(!S.students.length){$('#muridList').innerHTML=emptyStudents();return}
-  $('#muridList').innerHTML=S.students.map(s=>`<div class="stu"><div class="stu-top"><div class="ava ${s.g}">${esc(s.av)}</div><div><div class="nm">${esc(s.name)}</div><div class="sub">${s.g==='P'?'Perempuan':'Laki-laki'}</div></div>
+  if(!S.students.length){$('#muridList').innerHTML=emptyStudents();renderMuridTabs();return}
+  $('#muridList').innerHTML=S.students.map(s=>`<div class="stu"><div class="stu-top"><div class="ava ${s.g}">${esc(s.av)}</div><div><div class="nm">${esc(s.name)}</div><div class="sub">${s.full?esc(s.full)+' · ':''}${s.g==='P'?'Perempuan':'Laki-laki'}</div>${s.parent||s.wa?`<div class="sub">🏠 ${esc(s.parent||'')}${s.wa?' · 📱 '+esc(s.wa):''}</div>`:''}</div>
    <button class="starbtn" data-act="star" data-id="${s.id}">⭐ ${s.stars||0}</button></div>
-   <div class="row"><button class="btn sm sec" data-act="editStudent" data-id="${s.id}">✏️ Ubah</button><button class="btn sm sec" data-act="delStudent" data-id="${s.id}">🗑️ Hapus</button></div></div>`).join('')}
+   <div class="row"><button class="btn sm sec" data-act="editStudent" data-id="${s.id}">✏️ Ubah</button><button class="btn sm sec" data-act="waStudent" data-id="${s.id}">💬 WA</button><button class="btn sm sec" data-act="raport" data-id="${s.id}">📄 Raport</button><button class="btn sm sec" data-act="delStudent" data-id="${s.id}" aria-label="Hapus">🗑️</button></div></div>`).join('');renderMuridTabs()}
 
 let calMonth=todayStr().slice(0,7),calSel=todayStr();
 function evsOn(ds){return AG.events.filter(e=>e.date===ds).sort((a,b)=>(a.time||'99').localeCompare(b.time||'99'))}
@@ -957,7 +967,7 @@ function renderCalDay(){const ds=calSel,d=parseD(ds),t=todayStr();const h=hparts
   ${future?'':`<div class="daysec"><h4><span>📋 Absensi</span>${S.students.length?`<button class="btn sm sec" data-act="openAbsenDate" data-d="${ds}">${rec?'Lihat / ubah':'Isi absensi'}</button>`:''}</h4>
     ${!S.students.length?'<p class="muted" style="margin:0">Belum ada data murid.</p>':rec?`<div class="mini-stats"><span style="background:#16a34a">Hadir ${c.H}</span><span style="background:#0284c7">Izin ${c.I}</span><span style="background:#ea580c">Sakit ${c.S}</span><span style="background:#dc2626">Alpa ${c.A}</span>${c.B?`<span style="background:#94a3b8">Belum ${c.B}</span>`:''}</div>${(c.I+c.S+c.A)?`<p style="margin:8px 0 0;font-size:14px">${S.students.filter(s=>att[s.id]&&att[s.id]!=='H').map(s=>`${esc(s.av)} ${esc(s.name)} <b>(${ST[att[s.id]]})</b>`).join(' · ')}</p>`:''}`:'<p class="muted" style="margin:0">Belum ada absensi di tanggal ini.</p>'}</div>`}
   <div class="daysec"><h4><span>🗓️ ${future?'Rencana Agenda':'Agenda / Kegiatan'}</span><button class="btn sm" data-act="addEvent" data-d="${ds}">+ Tambah</button></h4>
-    ${evs.length?evs.map(e=>{const k=EV_CAT[e.cat]||EV_CAT.lain;return `<div class="ev" style="border-left-color:${k[2]}"><div style="font-size:22px">${k[0]}</div><div style="min-width:0"><div class="et">${esc(e.title)}</div><div class="em">${e.time?'⏰ '+esc(e.time)+' · ':''}${k[1]}</div>${e.note?`<div style="font-size:14px;margin-top:2px">${esc(e.note)}</div>`:''}</div><div class="eb"><button data-act="editEvent" data-id="${e.id}" aria-label="Ubah">✏️</button><button data-act="delEvent" data-id="${e.id}" aria-label="Hapus">🗑️</button></div></div>`}).join(''):`<p class="muted" style="margin:0">${future?'Belum ada rencana. Tekan + Tambah untuk merencanakan.':'Tidak ada agenda tercatat.'}</p>`}</div>
+    ${evs.length?evs.map(e=>{const k=EV_CAT[e.cat]||EV_CAT.lain;return `<div class="ev" style="border-left-color:${k[2]}"><div style="font-size:22px">${k[0]}</div><div style="min-width:0"><div class="et">${esc(e.title)}</div><div class="em">${e.time?'⏰ '+esc(e.time)+' · ':''}${k[1]}</div>${e.note?`<div style="font-size:14px;margin-top:2px">${esc(e.note)}</div>`:''}</div><div class="eb"><button data-act="shareEvent" data-id="${e.id}" aria-label="Bagikan ke WhatsApp">📢</button><button data-act="editEvent" data-id="${e.id}" aria-label="Ubah">✏️</button><button data-act="delEvent" data-id="${e.id}" aria-label="Hapus">🗑️</button></div></div>`}).join(''):`<p class="muted" style="margin:0">${future?'Belum ada rencana. Tekan + Tambah untuk merencanakan.':'Tidak ada agenda tercatat.'}</p>`}</div>
   ${due.length?`<div class="daysec"><h4><span>✅ Tugas dengan tenggat hari ini</span></h4>${due.map(todoHTML).join('')}</div>`:''}
   <div class="daysec"><h4><span>📝 ${future?'Catatan persiapan':'Catatan aktivitas'}</span></h4>
     <textarea class="inp" id="dayNote" maxlength="2000" placeholder="${future?'Contoh: siapkan kertas lipat, minta orang tua membawa bekal buah…':'Contoh: hafalan An-Nas lancar, Umar sudah berani maju bercerita, kegiatan mewarnai kaligrafi…'}">${esc(note)}</textarea>
@@ -969,7 +979,7 @@ function eventForm(e,dateStr){openModal(`<h2>${e?'Ubah':'Tambah'} Agenda</h2>
   <div class="field"><label>Jenis</label><select id="eC">${Object.entries(EV_CAT).map(([k,v])=>`<option value="${k}" ${e&&e.cat===k?'selected':''}>${v[0]} ${v[1]}</option>`).join('')}</select></div>
   <div class="field"><label>Keterangan (opsional)</label><input id="eN" maxlength="200" value="${e?esc(e.note||''):''}" placeholder="misal: murid memakai baju putih"></div>
   <div class="row"><button class="btn" id="eSave">💾 Simpan</button></div>`);
-  setTimeout(()=>$('#eT').focus(),50);
+  setTimeout(()=>{if(document.activeElement.tagName!=='INPUT')$('#eT').focus()},50);
   $('#eSave').onclick=()=>{const title=$('#eT').value.trim(),date=$('#eD').value;if(!title||!date){toast('Judul dan tanggal wajib diisi');return}
     const v={title,date,time:$('#eH').value||'',cat:$('#eC').value,note:$('#eN').value.trim()};
     if(e)Object.assign(e,v);else AG.events.push(Object.assign({id:uid()},v));
@@ -980,6 +990,181 @@ function renderHomeAgenda(){const t=todayStr();const up=AG.events.filter(e=>e.da
    +(yn?`<div class="note" style="margin:10px 0 0">📝 <b>Catatan kemarin:</b> ${esc(yn.length>140?yn.slice(0,140)+'…':yn)}</div>`:'')}
 function renderAll(){renderHeader();renderHome();renderAbsen();renderKalender();renderTodo();renderDoa();renderCerita();renderMurid()}
 
+/* ================= FITUR LANJUTAN ================= */
+const SURAT=[['fatihah','Al-Fātiḥah'],['nas','An-Nās'],['falaq','Al-Falaq'],['ikhlas','Al-Ikhlāṣ'],['lahab','Al-Lahab'],['nasr','An-Naṣr'],['kafirun','Al-Kāfirūn'],['kautsar','Al-Kauṡar'],['maun','Al-Mā‘ūn'],['quraisy','Quraisy'],['fil','Al-Fīl'],['humazah','Al-Humazah'],['ashr','Al-‘Aṣr'],['takatsur','At-Takāṡur'],['qariah','Al-Qāri‘ah'],['adiyat','Al-‘Ādiyāt'],['zalzalah','Az-Zalzalah']];
+const ASPEK=[['nam','Nilai Agama & Moral','#16a34a','🕌'],['fm','Fisik Motorik','#ea580c','⚽'],['kog','Kognitif','#0284c7','🧩'],['bhs','Bahasa','#9333ea','💬'],['sos','Sosial Emosional','#db2777','🤝'],['seni','Seni','#ca8a04','🎨']];
+const LEVEL={BB:['Belum Berkembang','#ef4444'],MB:['Mulai Berkembang','#f59e0b'],BSH:['Berkembang Sesuai Harapan','#22c55e'],BSB:['Berkembang Sangat Baik','#0ea5e9']};
+const HSTAT=[['Belum','#e2e8f0','#475569'],['Sedang','#fef3c7','#92400e'],['Hafal','#22c55e','#ffffff']];
+let PR={hafalan:{},notes:[],custom:[]};
+function normPr(o){o=o||{};return {hafalan:(o.hafalan&&typeof o.hafalan==='object'&&!Array.isArray(o.hafalan))?o.hafalan:{},notes:Array.isArray(o.notes)?o.notes:[],custom:Array.isArray(o.custom)?o.custom:[]}}
+function savePr(){Store.save('progres',PR)}
+function stuById(id){return S.students.find(s=>s.id===id)}
+function hafItems(){return [...SURAT.map(([id,t])=>({id:'s-'+id,t:'QS. '+t,g:'Surat Pendek'})),...DOA.map(d=>({id:'d-'+d.id,t:d.t,g:'Doa Harian'})),...PR.custom.map(c=>({id:'c-'+c.id,t:c.t,g:'Materi Tambahan'}))]}
+function getH(sid,iid){const r=PR.hafalan[sid]&&PR.hafalan[sid][iid];return r?r.s:0}
+function setH(sid,iid,st,btn){PR.hafalan[sid]=PR.hafalan[sid]||{};const prev=getH(sid,iid);
+  if(st===0)delete PR.hafalan[sid][iid];else PR.hafalan[sid][iid]={s:st,d:todayStr()};savePr();
+  if(st===2&&prev!==2){const s=stuById(sid);if(s){s.stars=(s.stars||0)+1;saveMain()}SFX.yay();if(btn)floatPlus(btn,'⭐');toast(`MasyaAllah, ${s?s.name:''} hafal! +1 bintang ⭐`)}else SFX.pop()}
+function waNum(n){let d=String(n||'').replace(/\D/g,'');if(d.startsWith('0'))d='62'+d.slice(1);else if(d.startsWith('8'))d='62'+d;return d}
+function waHref(num,text){const n=waNum(num);return `https://wa.me/${n}?text=${encodeURIComponent(text)}`}
+function school(){return S.settings.school||'TK An Najah'}
+function sapaOrtu(s){return `Assalamu'alaikum warahmatullahi wabarakatuh, ${s&&s.parent?'Ayah/Bunda '+s.parent:'Ayah/Bunda'+(s?' dari ananda '+s.name:'')}.`}
+function tutup(){return `Jazakumullahu khairan.\n— ${S.settings.teacher||'Guru'}, ${school()}`}
+function semesterRange(){const d=new Date(),y=d.getFullYear();return d.getMonth()>=6?[`${y}-07-01`,`${y}-12-31`]:[`${y}-01-01`,`${y}-06-30`]}
+function monthsBetween(a,b){const out=[];let [y,m]=a.slice(0,7).split('-').map(Number);const [y2,m2]=b.slice(0,7).split('-').map(Number);while(y<y2||(y===y2&&m<=m2)){out.push(`${y}-${pad(m)}`);m++;if(m>12){m=1;y++}}return out}
+function attRange(sid,a,b){const c={H:0,I:0,S:0,A:0};monthsBetween(a,b).forEach(m=>{const M=getMonth(m);Object.keys(M.days).forEach(ds=>{if(ds>=a&&ds<=b){const st=M.days[ds][sid];if(c[st]!==undefined)c[st]++}})});return c}
+function fmtLong(ds){return fmtDate(parseD(ds),{day:'numeric',month:'long',year:'numeric'})}
+
+/* ---- tab Murid ---- */
+let muridTab='data',hafMode='materi',hafSel='s-fatihah',hafStu='',kSel='';
+function renderMuridTabs(){document.querySelectorAll('#muridSeg button').forEach(b=>b.classList.toggle('on',b.dataset.t===muridTab));
+  ['data','hafalan','kembang'].forEach(t=>$('#mt-'+t).style.display=muridTab===t?'':'none');
+  if(muridTab==='hafalan')renderHafalan();if(muridTab==='kembang')renderKembang()}
+function stuOptions(sel,withAll){return (withAll?`<option value="">— Pilih murid —</option>`:'')+S.students.map(s=>`<option value="${s.id}" ${s.id===sel?'selected':''}>${esc(s.av)} ${esc(s.name)}</option>`).join('')}
+function renderHafalan(){const el=$('#mt-hafalan');if(!S.students.length){el.innerHTML=`<div class="students">${emptyStudents()}</div>`;return}
+  const items=hafItems();if(!items.find(i=>i.id===hafSel))hafSel=items[0].id;if(!hafStu||!stuById(hafStu))hafStu=S.students[0].id;
+  const groups=[...new Set(items.map(i=>i.g))];
+  let html=`<div class="toolbar"><div class="seg"><button class="${hafMode==='materi'?'on':''}" data-act="hafMode" data-m="materi">Per Materi</button><button class="${hafMode==='murid'?'on':''}" data-act="hafMode" data-m="murid">Per Murid</button></div><span class="spacer"></span><button class="btn sm sec" data-act="addCustomHaf">+ Materi lain</button></div>`;
+  if(hafMode==='materi'){const it=items.find(i=>i.id===hafSel);const cnt=[0,0,0];S.students.forEach(s=>cnt[getH(s.id,hafSel)]++);const pct=Math.round(cnt[2]/S.students.length*100);
+    html+=`<div class="card" style="margin-bottom:12px"><div class="field" style="margin:0"><label>Pilih surat / doa</label><select data-chg="hafSel" class="inp">${groups.map(g=>`<optgroup label="${esc(g)}">${items.filter(i=>i.g===g).map(i=>`<option value="${i.id}" ${i.id===hafSel?'selected':''}>${esc(i.t)}</option>`).join('')}</optgroup>`).join('')}</select></div>
+      <div class="row" style="margin-top:10px;flex-wrap:nowrap"><div class="bar" style="flex:1;height:14px"><i style="width:${pct}%"></i></div><b>${pct}%</b></div>
+      <div class="mini-stats" style="margin-top:8px"><span style="background:#16a34a">Hafal ${cnt[2]}</span><span style="background:#d97706">Sedang ${cnt[1]}</span><span style="background:#94a3b8">Belum ${cnt[0]}</span></div></div>
+      <div class="students">${S.students.map(s=>{const st=getH(s.id,hafSel);return `<div class="stu" style="${st===2?'border-color:#86efac':''}"><div class="stu-top"><div class="ava ${s.g}">${esc(s.av)}</div><div><div class="nm">${esc(s.name)}</div><div class="sub">${esc(it.t)}</div></div></div>
+        <div class="status-btns" style="grid-template-columns:repeat(3,1fr)">${HSTAT.map((h,k)=>`<button style="${st===k?`background:${h[1]};color:${h[2]}`:''}" data-act="setHaf" data-s="${s.id}" data-i="${hafSel}" data-v="${k}">${k===2?'✔ ':''}${h[0]}</button>`).join('')}</div></div>`}).join('')}</div>`;
+  }else{const s=stuById(hafStu);const done=items.filter(i=>getH(s.id,i.id)===2).length;
+    html+=`<div class="card" style="margin-bottom:12px"><div class="field" style="margin:0"><label>Pilih murid</label><select data-chg="hafStu" class="inp">${stuOptions(hafStu)}</select></div>
+      <p style="margin:10px 0 4px"><b>${done}</b> dari ${items.length} materi sudah hafal</p><div class="bar" style="height:14px"><i style="width:${Math.round(done/items.length*100)}%"></i></div>
+      <p class="muted" style="font-size:13px;margin:8px 0 0">Ketuk materi untuk mengubah status: Belum → Sedang → Hafal.</p></div>`;
+    groups.forEach(g=>{html+=`<div class="card" style="margin-bottom:12px"><h3><span class="t">${g==='Surat Pendek'?'📖':g==='Doa Harian'?'🤲':'⭐'} ${esc(g)}</span></h3><div class="chips">${items.filter(i=>i.g===g).map(i=>{const st=getH(s.id,i.id),h=HSTAT[st];return `<button class="chip" style="background:${h[1]};color:${h[2]};border-style:solid;border-color:${st?h[1]:'#cbd5e1'};font-size:14px;padding:5px 12px" data-act="cycleHaf" data-s="${s.id}" data-i="${i.id}">${st===2?'✔ ':st===1?'⏳ ':''}${esc(i.t)}</button>`}).join('')}</div></div>`})}
+  el.innerHTML=html}
+
+function renderKembang(){const el=$('#mt-kembang');if(!S.students.length){el.innerHTML=`<div class="students">${emptyStudents()}</div>`;return}
+  if(kSel&&!stuById(kSel))kSel='';
+  const s=kSel?stuById(kSel):null;const notes=PR.notes.filter(n=>!kSel||n.sid===kSel).sort((a,b)=>b.date.localeCompare(a.date));
+  let html=`<div class="card" style="margin-bottom:12px"><div class="row" style="align-items:flex-end"><div class="field" style="margin:0;flex:1;min-width:180px"><label>Murid</label><select class="inp" data-chg="kSel"><option value="">Semua murid</option>${stuOptions(kSel)}</select></div>
+    <button class="btn" data-act="addNote">+ Catatan</button>${s?`<button class="btn yellow" data-act="raport" data-id="${s.id}">📄 Raport</button><button class="btn sec" data-act="waStudent" data-id="${s.id}" data-tpl="kembang">💬 Kabari ortu</button>`:''}</div>
+    <p class="muted" style="font-size:13px;margin:8px 0 0">Capaian: <b>BB</b> Belum Berkembang · <b>MB</b> Mulai Berkembang · <b>BSH</b> Berkembang Sesuai Harapan · <b>BSB</b> Berkembang Sangat Baik</p></div>`;
+  if(s){html+=`<div class="card" style="margin-bottom:12px"><h3><span class="t">${esc(s.av)} Ringkasan ${esc(s.name)}</span></h3><div class="students" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))">${ASPEK.map(([k,n,c,ic])=>{const last=PR.notes.filter(x=>x.sid===s.id&&x.aspek===k).sort((a,b)=>b.date.localeCompare(a.date))[0];return `<div style="border-radius:16px;padding:10px;background:${c}14;border:2px solid ${c}33"><div style="font-weight:800;font-size:14px">${ic} ${n}</div><div style="margin-top:4px">${last&&last.level?`<span class="tag" style="background:${LEVEL[last.level][1]};color:#fff">${last.level}</span>`:'<span class="muted" style="font-size:13px">Belum ada catatan</span>'}</div></div>`}).join('')}</div></div>`}
+  html+=notes.length?notes.map(n=>{const st=stuById(n.sid);const a=ASPEK.find(x=>x[0]===n.aspek)||ASPEK[0];return `<div class="ev" style="border-left-color:${a[2]};background:#fff;box-shadow:var(--shadow)"><div style="font-size:22px">${a[3]}</div><div style="min-width:0"><div class="et">${st?esc(st.av)+' '+esc(st.name)+' · ':''}${a[1]} ${n.level?`<span class="tag" style="background:${LEVEL[n.level][1]};color:#fff">${n.level}</span>`:''}</div><div class="em">${esc(fmtLong(n.date))}</div><div style="font-size:15px;margin-top:3px">${esc(n.text)}</div></div><div class="eb"><button data-act="editNote" data-id="${n.id}" aria-label="Ubah">✏️</button><button data-act="delNote" data-id="${n.id}" aria-label="Hapus">🗑️</button></div></div>`}).join(''):`<div class="empty"><div class="big">🌱</div><p>Belum ada catatan perkembangan${s?' untuk '+esc(s.name):''}.<br>Catat hal kecil setiap hari, nanti otomatis masuk ke raport.</p></div>`;
+  el.innerHTML=html}
+function noteForm(n){const sid=n?n.sid:(kSel||'');openModal(`<h2>${n?'Ubah':'Tambah'} Catatan Perkembangan</h2>
+  <div class="field"><label>Murid</label><select id="nS">${stuOptions(sid,!sid)}</select></div>
+  <div class="row" style="flex-wrap:nowrap"><div class="field" style="flex:1"><label>Tanggal</label><input type="date" id="nD" value="${n?n.date:todayStr()}"></div>
+  <div class="field" style="flex:1"><label>Capaian</label><select id="nL"><option value="">(tanpa nilai)</option>${Object.entries(LEVEL).map(([k,v])=>`<option value="${k}" ${n&&n.level===k?'selected':''}>${k} – ${v[0]}</option>`).join('')}</select></div></div>
+  <div class="field"><label>Aspek</label><select id="nA">${ASPEK.map(a=>`<option value="${a[0]}" ${n&&n.aspek===a[0]?'selected':''}>${a[3]} ${a[1]}</option>`).join('')}</select></div>
+  <div class="field"><label>Catatan</label><textarea class="inp" id="nT" maxlength="500" placeholder="Contoh: Sudah mau berbagi mainan dengan teman tanpa diminta.">${n?esc(n.text):''}</textarea></div>
+  <div class="row"><button class="btn" id="nSave">💾 Simpan</button>${n?'':'<button class="btn sec" id="nMore">Simpan & tambah lagi</button>'}</div>`);
+  const go2=more=>{const v={sid:$('#nS').value,date:$('#nD').value||todayStr(),level:$('#nL').value,aspek:$('#nA').value,text:$('#nT').value.trim()};
+    if(!v.sid){toast('Pilih murid dulu');return}if(!v.text&&!v.level){toast('Isi catatan atau capaian');return}
+    if(n)Object.assign(n,v);else PR.notes.push(Object.assign({id:uid()},v));savePr();kSel=v.sid;renderKembang();SFX.ding();
+    if(more){noteForm();$('#nS').value=v.sid}else{closeModal();toast('Catatan disimpan 🌱')}};
+  $('#nSave').onclick=()=>go2(false);if(!n)$('#nMore').onclick=()=>go2(true)}
+
+/* ---- dokumen cetak ---- */
+const RPT_CSS=`.rp{font-family:Arial,Helvetica,sans-serif;color:#111;font-size:12.5px;line-height:1.45;max-width:780px;margin:0 auto;background:#fff}
+.rp .kop{display:flex;align-items:center;gap:14px;border-bottom:3px double #0f766e;padding-bottom:10px;margin-bottom:12px}
+.rp .lg{width:52px;height:52px;border-radius:14px;background:#14b8a6;color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.rp h1{margin:0;font-size:19px;color:#0f766e}.rp .kop p{margin:2px 0 0;color:#475569}
+.rp h2{font-size:14px;margin:14px 0 6px;color:#0f766e;border-left:4px solid #14b8a6;padding-left:8px}
+.rp table{width:100%;border-collapse:collapse;margin:4px 0}.rp th,.rp td{border:1px solid #cbd5e1;padding:4px 6px;text-align:left;vertical-align:top}.rp th{background:#f0fdfa}
+.rp .c{text-align:center}.rp .sm td,.rp .sm th{padding:2px 3px;font-size:10.5px;text-align:center}.rp .sm td:nth-child(2){text-align:left;white-space:nowrap}
+.rp .sign{display:flex;justify-content:space-between;margin-top:26px;text-align:center;gap:10px}.rp .sign div{flex:1}.rp .ln{margin-top:56px;border-top:1px solid #111;padding-top:3px;font-weight:bold}
+.rp .xH{background:#dcfce7}.rp .xI{background:#e0f2fe}.rp .xS{background:#ffedd5}.rp .xA{background:#fee2e2}
+.rp .lv{display:inline-block;padding:0 6px;border-radius:6px;color:#fff;font-weight:bold;font-size:11px}`;
+function kopHTML(title,sub){return `<div class="kop"><div class="lg">☪</div><div><h1>${esc(school())}</h1><p><b>${esc(title)}</b>${sub?' · '+esc(sub):''}</p></div></div>`}
+function signHTML(left){return `<div class="sign"><div>${left||'Orang Tua / Wali'}<div class="ln">&nbsp;</div></div><div>Kepala Sekolah<div class="ln">${esc(S.settings.head||'.....................')}</div></div><div>${esc(fmtLong(todayStr()))}<br>Wali Kelas<div class="ln" style="margin-top:38px">${esc(S.settings.teacher||'')}</div></div></div>`}
+function docWrap(title,body,landscape){return `<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><style>body{margin:0;padding:18px;background:#fff}${RPT_CSS}@page{size:A4${landscape?' landscape':''};margin:12mm}@media print{body{padding:0}}</style></head><body><div class="rp">${body}</div></body></html>`}
+let lastDoc=null;
+function previewDoc(title,filename,body,landscape){lastDoc={title,filename,html:docWrap(title,body,landscape)};
+  const isApk=!!window.AndroidPrint;
+  openModal(`<h2>${esc(title)}</h2><div class="row" style="margin:6px 0 12px"><button class="btn" data-act="docOut">${isApk?'🖨️ Cetak / Simpan PDF':'⬇️ Unduh untuk dicetak'}</button>${isApk?'':'<span class="muted" style="font-size:13px">Buka file hasil unduhan, lalu pilih Cetak → Simpan sebagai PDF.</span>'}</div>
+  <style>${RPT_CSS}</style><div style="border:2px solid #e2e8f0;border-radius:16px;padding:14px;overflow-x:auto;background:#fff"><div class="rp">${body}</div></div>`)}
+async function docOut(){if(!lastDoc)return;const {title,filename,html}=lastDoc;
+  if(window.AndroidPrint){try{AndroidPrint.print(html,title)}catch(e){toast('Gagal membuka menu cetak')}return}
+  try{if(window.claude&&typeof claude.use==='function'){const dl=await claude.use('downloads');if(dl){try{await dl.save({filename,data:html});toast('File tersimpan. Buka lalu Cetak → Simpan PDF')}catch(e){if(e&&e.code!=='declined')toast('File tidak bisa disimpan di sini')}return}}}catch(e){}
+  try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=filename;document.body.appendChild(a);a.click();a.remove()}catch(e){toast('Unduhan tidak didukung di sini')}}
+function raportForm(sid){const s=stuById(sid);if(!s)return;const [a,b]=semesterRange();
+  openModal(`<h2>📄 Raport ${esc(s.name)}</h2><p class="muted">Raport disusun otomatis dari absensi, hafalan, catatan perkembangan, dan bintang.</p>
+  <div class="row" style="flex-wrap:nowrap"><div class="field" style="flex:1"><label>Dari</label><input type="date" id="rA" value="${a}"></div><div class="field" style="flex:1"><label>Sampai</label><input type="date" id="rB" value="${b}"></div></div>
+  <div class="field"><label>Judul periode</label><input id="rP" value="${esc(S.settings.period||'Semester '+(new Date().getMonth()>=6?'1 (Ganjil)':'2 (Genap)')+' '+(new Date().getMonth()>=6?new Date().getFullYear()+'/'+(new Date().getFullYear()+1):(new Date().getFullYear()-1)+'/'+new Date().getFullYear()))}"></div>
+  <div class="field"><label>Catatan wali kelas</label><textarea class="inp" id="rN" maxlength="800" placeholder="Pesan dan harapan untuk ananda...">${esc((s.raportNote)||'')}</textarea></div>
+  <div class="row"><button class="btn" id="rGo">👀 Lihat raport</button></div>`);
+  $('#rGo').onclick=()=>{const A=$('#rA').value,B=$('#rB').value;if(!A||!B||A>B){toast('Periode tidak valid');return}s.raportNote=$('#rN').value.trim();S.settings.period=$('#rP').value.trim();saveMain();
+    const body=raportHTML(s,A,B,$('#rP').value.trim());previewDoc('Raport '+s.name,`Raport-${s.name.replace(/[^\w-]+/g,'_')}.html`,body)}}
+function raportHTML(s,A,B,period){const c=attRange(s.id,A,B);const items=hafItems();
+  const hafal=g=>items.filter(i=>i.g===g&&getH(s.id,i.id)===2).map(i=>i.t),sedang=g=>items.filter(i=>i.g===g&&getH(s.id,i.id)===1).map(i=>i.t);
+  const notes=PR.notes.filter(n=>n.sid===s.id&&n.date>=A&&n.date<=B).sort((x,y)=>x.date.localeCompare(y.date));
+  let h=kopHTML('Laporan Perkembangan Anak Didik',period);
+  h+=`<table><tr><th style="width:30%">Nama lengkap</th><td>${esc(s.full||s.name)}</td></tr><tr><th>Nama panggilan</th><td>${esc(s.name)}</td></tr><tr><th>Jenis kelamin</th><td>${s.g==='P'?'Perempuan':'Laki-laki'}</td></tr>${s.born?`<tr><th>Tanggal lahir</th><td>${esc(fmtLong(s.born))}</td></tr>`:''}<tr><th>Kelas</th><td>${esc(S.settings.className||'')}</td></tr>${s.parent?`<tr><th>Orang tua / wali</th><td>${esc(s.parent)}</td></tr>`:''}<tr><th>Periode</th><td>${esc(fmtLong(A))} – ${esc(fmtLong(B))}</td></tr></table>`;
+  h+=`<h2>A. Perkembangan Anak</h2><table><tr><th style="width:26%">Aspek</th><th style="width:16%" class="c">Capaian</th><th>Catatan guru</th></tr>${ASPEK.map(([k,n,col])=>{const ns=notes.filter(x=>x.aspek===k);const last=[...ns].reverse().find(x=>x.level);return `<tr><td><b>${n}</b></td><td class="c">${last?`<span class="lv" style="background:${LEVEL[last.level][1]}">${last.level}</span><br><small>${LEVEL[last.level][0]}</small>`:'-'}</td><td>${ns.filter(x=>x.text).map(x=>`• ${esc(x.text)}`).join('<br>')||'<span style="color:#94a3b8">—</span>'}</td></tr>`}).join('')}</table>
+  <p style="font-size:11px;color:#475569;margin:2px 0">BB: Belum Berkembang · MB: Mulai Berkembang · BSH: Berkembang Sesuai Harapan · BSB: Berkembang Sangat Baik</p>`;
+  h+=`<h2>B. Hafalan</h2><table><tr><th style="width:26%"></th><th>Sudah hafal</th><th>Sedang dihafal</th></tr>${['Surat Pendek','Doa Harian','Materi Tambahan'].filter(g=>items.some(i=>i.g===g)).map(g=>`<tr><td><b>${g}</b></td><td>${esc(hafal(g).join(', '))||'—'}</td><td>${esc(sedang(g).join(', '))||'—'}</td></tr>`).join('')}</table>`;
+  h+=`<h2>C. Kehadiran</h2><table><tr><th class="c">Hadir</th><th class="c">Izin</th><th class="c">Sakit</th><th class="c">Tanpa keterangan</th><th class="c">Bintang ⭐</th></tr><tr><td class="c">${c.H} hari</td><td class="c">${c.I} hari</td><td class="c">${c.S} hari</td><td class="c">${c.A} hari</td><td class="c">${s.stars||0}</td></tr></table>`;
+  h+=`<h2>D. Catatan Wali Kelas</h2><div style="border:1px solid #cbd5e1;border-radius:6px;padding:8px;min-height:50px">${esc(s.raportNote||'').replace(/\n/g,'<br>')||'&nbsp;'}</div>`;
+  return h+signHTML()}
+function absensiReport(month){const M=getMonth(month);const [y,m]=month.split('-').map(Number);const label=fmtDate(new Date(y,m-1,1),{month:'long',year:'numeric'});
+  const days=Object.keys(M.days).filter(k=>Object.keys(M.days[k]||{}).length).sort();
+  let h=kopHTML('Laporan Absensi Bulanan',`Kelas ${S.settings.className||''} · ${label}`);
+  if(!days.length)h+='<p>Belum ada data absensi pada bulan ini.</p>';
+  else{h+=`<table class="sm"><tr><th>No</th><th>Nama</th>${days.map(d=>`<th>${Number(d.slice(8))}</th>`).join('')}<th>H</th><th>I</th><th>S</th><th>A</th><th>%</th></tr>`;
+    S.students.forEach((s,i)=>{const c={H:0,I:0,S:0,A:0};const cells=days.map(d=>{const st=M.days[d][s.id];if(c[st]!==undefined)c[st]++;return `<td class="${st?'x'+st:''}">${st||''}</td>`}).join('');const tot=c.H+c.I+c.S+c.A;
+      h+=`<tr><td>${i+1}</td><td>${esc(s.full||s.name)}</td>${cells}<td><b>${c.H}</b></td><td>${c.I}</td><td>${c.S}</td><td>${c.A}</td><td>${tot?Math.round(c.H/tot*100):0}</td></tr>`});
+    h+=`</table><p style="font-size:11px;color:#475569">H: Hadir · I: Izin · S: Sakit · A: Tanpa keterangan · ${days.length} hari efektif tercatat</p>`}
+  return h+signHTML('Mengetahui')}
+
+/* ---- WhatsApp ---- */
+function waTemplate(s,tpl){const d=getDay(todayStr())[s.id];let mid='';
+  if(tpl==='absen'){mid={H:`Alhamdulillah, ananda ${s.name} hari ini hadir dan mengikuti kegiatan dengan baik.`,I:`Kami mencatat ananda ${s.name} hari ini izin. Semoga urusannya dimudahkan Allah.`,S:`Kami mendapat kabar ananda ${s.name} hari ini sakit. Semoga Allah segera memberi kesembuhan. Lā ba'sa ṭahūrun in syā' Allāh.`,A:`Ananda ${s.name} hari ini tidak hadir tanpa keterangan. Boleh kami tahu kabarnya? Semoga ananda dalam keadaan baik.`}[d]||`Kami ingin mengabarkan kegiatan ananda ${s.name} hari ini.`}
+  else if(tpl==='kembang'){const ns=PR.notes.filter(n=>n.sid===s.id).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,3);mid=ns.length?`Kami ingin berbagi kabar perkembangan ananda ${s.name}:\n${ns.map(n=>`• ${(ASPEK.find(a=>a[0]===n.aspek)||ASPEK[0])[1]}: ${n.text||LEVEL[n.level][0]}`).join('\n')}\nMohon dukungannya juga di rumah ya, Ayah/Bunda.`:`Kami ingin berbagi kabar perkembangan ananda ${s.name}.`}
+  else if(tpl==='hafalan'){const h=hafItems().filter(i=>getH(s.id,i.id)===2).map(i=>({t:i.t,d:PR.hafalan[s.id][i.id].d})).sort((a,b)=>b.d.localeCompare(a.d)).slice(0,5);mid=h.length?`Alhamdulillah, ananda ${s.name} sudah hafal: ${h.map(x=>x.t).join(', ')}. MasyaAllah! Mohon dibantu murojaah di rumah ya.`:`Ananda ${s.name} sedang semangat menghafal. Mohon dibantu murojaah di rumah ya.`}
+  else if(tpl==='agenda'){const t=todayStr();const e=AG.events.filter(x=>x.date>=t).sort((a,b)=>a.date.localeCompare(b.date))[0];mid=e?`Mengingatkan agenda: *${e.title}* pada ${fmtDate(parseD(e.date),{weekday:'long',day:'numeric',month:'long'})}${e.time?' pukul '+e.time:''}.${e.note?'\n'+e.note:''}`:'Belum ada agenda terdekat.'}
+  return `${sapaOrtu(s)}\n\n${mid}\n\n${tutup()}`}
+function waModal(sid,tpl){const s=stuById(sid);if(!s)return;tpl=tpl||'absen';
+  openModal(`<h2>💬 Kabari Orang Tua ${esc(s.name)}</h2>${s.wa?`<p class="muted" style="margin:0 0 8px">Ke: ${esc(s.parent||'Orang tua')} · +${esc(waNum(s.wa))}</p>`:`<div class="note">Nomor WhatsApp orang tua belum diisi. Pesan tetap bisa dikirim dengan memilih kontak di WhatsApp, atau isi nomornya lewat ✏️ Ubah data murid.</div>`}
+  <div class="filter-chips">${[['absen','📋 Absensi hari ini'],['kembang','🌱 Perkembangan'],['hafalan','📖 Hafalan'],['agenda','📅 Agenda'],['bebas','✍️ Bebas']].map(([k,l])=>`<button class="${k===tpl?'on':''}" data-act="waTpl" data-id="${s.id}" data-tpl="${k}">${l}</button>`).join('')}</div>
+  <textarea class="inp" id="waT" style="min-height:170px">${esc(tpl==='bebas'?`${sapaOrtu(s)}\n\n\n\n${tutup()}`:waTemplate(s,tpl))}</textarea>
+  <div class="row" style="margin-top:8px"><a class="btn" id="waGo" target="_blank" rel="noopener" style="text-decoration:none;background:#22c55e;box-shadow:0 4px 0 #15803d">📤 Kirim lewat WhatsApp</a></div>`);
+  const upd=()=>{$('#waGo').href=waHref(s.wa,$('#waT').value)};upd();$('#waT').addEventListener('input',upd)}
+function shareEvent(e){const k=EV_CAT[e.cat]||EV_CAT.lain;const txt=`Assalamu'alaikum warahmatullahi wabarakatuh, Ayah/Bunda ${S.settings.className||''} ${school()}.\n\nMengingatkan agenda:\n${k[0]} *${e.title}*\n📅 ${fmtDate(parseD(e.date),{weekday:'long',day:'numeric',month:'long',year:'numeric'})}${e.time?'\n⏰ Pukul '+e.time:''}${e.note?'\n📝 '+e.note:''}\n\n${tutup()}`;
+  openModal(`<h2>📢 Bagikan Agenda</h2><textarea class="inp" id="waT" style="min-height:170px">${esc(txt)}</textarea><div class="row" style="margin-top:8px"><a class="btn" id="waGo" target="_blank" rel="noopener" style="text-decoration:none;background:#22c55e;box-shadow:0 4px 0 #15803d">📤 Kirim ke grup WhatsApp</a></div><p class="muted" style="font-size:13px">WhatsApp akan terbuka, lalu pilih grup kelas.</p>`);
+  const upd=()=>{$('#waGo').href=waHref('',$('#waT').value)};upd();$('#waT').addEventListener('input',upd)}
+
+/* ---- Pengingat ---- */
+function reminderList(){const st=S.settings;if(st.remind===false)return [];const out=[],now=Date.now();
+  const at=(ds,hm)=>{const [h,m]=(hm||'06:30').split(':').map(Number);const d=parseD(ds);d.setHours(h||0,m||0,0,0);return d.getTime()};
+  AG.events.forEach(e=>{const k=EV_CAT[e.cat]||EV_CAT.lain;const info=`${k[1]}${e.time?' · pukul '+e.time:''}${e.note?' — '+e.note:''}`;const pv=parseD(e.date);pv.setDate(pv.getDate()-1);
+    out.push({t:at(ymd(pv),st.remindEve||'19:00'),title:`Besok: ${e.title}`,text:info});
+    out.push({t:at(e.date,st.remindMorning||'06:30'),title:`Hari ini: ${e.title}`,text:info});
+    if(e.time)out.push({t:at(e.date,e.time)-30*60000,title:`30 menit lagi: ${e.title}`,text:info})});
+  S.todos.filter(x=>!x.done&&x.date).forEach(x=>out.push({t:at(x.date,st.remindMorning||'06:30'),title:`Tugas hari ini: ${x.text}`,text:`${x.cat||''} · Semangat, ${st.teacher||'Bu Guru'}!`}));
+  return out.filter(o=>o.t>now).sort((a,b)=>a.t-b.t).slice(0,60)}
+let remT=null;function syncReminders(){clearTimeout(remT);remT=setTimeout(()=>{if(window.AndroidNotify){try{AndroidNotify.sync(JSON.stringify(reminderList()))}catch(e){}}},600)}
+function renderReminders(){const el=$('#homeRemind');if(!el)return;const t=todayStr();const tm=new Date();tm.setDate(tm.getDate()+1);const tms=ymd(tm);
+  const evT=evsOn(t),evB=evsOn(tms),due=S.todos.filter(x=>!x.done&&x.date&&x.date<=t);
+  const lines=[...evT.map(e=>`📅 <b>Hari ini</b>${e.time?' '+esc(e.time):''}: ${esc(e.title)}`),...evB.map(e=>`🔔 <b>Besok</b>${e.time?' '+esc(e.time):''}: ${esc(e.title)}`),...due.map(x=>`✅ <b>${x.date<t?'<span class="late">Terlewat</span>':'Tugas hari ini'}</b>: ${esc(x.text)}`)];
+  el.style.display=lines.length?'':'none';el.innerHTML=`<h3><span class="t">🔔 Pengingat</span>${window.AndroidNotify?'':'<span class="muted" style="font-size:12px;font-weight:600">Notifikasi HP aktif di versi APK</span>'}</h3>${lines.map(l=>`<div style="padding:4px 0;font-size:15px">${l}</div>`).join('')}`}
+
+/* ---- Kuis ---- */
+const QUIZ_NABI=[['Nabi yang membuat kapal besar atas perintah Allah?','Nabi Nuh',['Nabi Ibrahim','Nabi Musa']],['Siapa nabi yang ditelan ikan besar?','Nabi Yunus',['Nabi Yusuf','Nabi Nuh']],['Api menjadi dingin dan tidak membakar nabi…','Nabi Ibrahim',['Nabi Ayyub','Nabi Daud']],['Laut terbelah ketika dipukul tongkat oleh…','Nabi Musa',['Nabi Isa','Nabi Shalih']],['Nabi yang mendengar semut berbicara?','Nabi Sulaiman',['Nabi Zakaria','Nabi Yunus']],['Burung yang tidak hadir saat diperiksa Nabi Sulaiman?','Burung Hud-hud',['Burung Gagak','Burung Merpati']],['Air yang memancar di dekat bayi Ismail bernama…','Air Zamzam',['Air Hujan','Air Laut']],['Siapa manusia pertama yang diciptakan Allah?','Nabi Adam',['Nabi Nuh','Nabi Idris']],['Nabi yang dimasukkan saudara-saudaranya ke dalam sumur?','Nabi Yusuf',['Nabi Yunus','Nabi Musa']],['Siapa yang menemani Rasulullah ﷺ di Gua Tsur?','Abu Bakar',['Umar bin Khattab','Anas bin Malik']],['Berapa lama pemuda Ashabul Kahfi tertidur di gua?','309 tahun',['3 hari','100 tahun']],['Siapa yang menasihati anaknya agar tidak sombong?','Luqman',['Firaun','Dzulqarnain']],['Unta betina adalah mukjizat untuk kaum…','Nabi Shalih',['Nabi Nuh','Nabi Musa']],['Siapa yang mengalahkan Jalut?','Daud',['Thalut','Sulaiman']],['Bayi yang berbicara membela ibunya, Maryam?','Nabi Isa',['Nabi Yahya','Nabi Ismail']],['Nabi yang berdoa saat sudah tua, lalu dikaruniai Yahya?','Nabi Zakaria',['Nabi Ibrahim','Nabi Ayyub']],['Nabi yang sangat sabar ketika sakit lama?','Nabi Ayyub',['Nabi Yunus','Nabi Daud']],['Pasukan yang ingin menghancurkan Ka‘bah dihancurkan oleh…','Burung-burung yang berbondong-bondong',['Banjir besar','Angin topan']],['Siapa yang membangun Ka‘bah bersama Nabi Ibrahim?','Nabi Ismail',['Nabi Ishaq','Nabi Ya‘qub']],['Raja saleh yang membangun tembok besi?','Dzulqarnain',['Firaun','Thalut']]];
+let QZ=null;
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+function quizStart(type){let qs;
+  if(type==='nabi')qs=shuffle(QUIZ_NABI).slice(0,10).map(([q,a,w])=>({q,a,opts:shuffle([a,...w])}));
+  else{const pool=DOA.filter(d=>d.lt.length<70);qs=shuffle(pool).slice(0,10).map(d=>{const others=shuffle(pool.filter(x=>x.t!==d.t&&x.cat!==d.cat)).slice(0,2).map(x=>x.t);return {q:`“${d.lt}”<br><span style="font-size:16px">Ini doa apa?</span>`,a:d.t,opts:shuffle([d.t,...others])}})}
+  QZ={type,qs,i:0,score:0,lock:false};quizRender()}
+function quizMenu(){openModal(`<h2 style="text-align:center">🎯 Kuis Kelas</h2><div style="transform:scale(.9)">${$('.kids').outerHTML.replace('class="kids"','class="kids" style="position:static"')}</div><p class="muted" style="text-align:center">Tampilkan di depan kelas. Guru membacakan soal, murid menjawab bersama!</p>
+  <div class="row" style="justify-content:center"><button class="btn yellow" data-act="quizGo" data-t="doa">🤲 Tebak Doa</button><button class="btn pink" data-act="quizGo" data-t="nabi">📖 Kisah Nabi</button></div>`)}
+function quizRender(){const q=QZ.qs[QZ.i];
+  openModal(`<div class="row" style="justify-content:space-between"><span class="pill" style="background:#ccfbf1;color:#115e59">Soal ${QZ.i+1}/${QZ.qs.length}</span><span class="pill" style="background:#fef9c3;color:#a16207">⭐ ${QZ.score}</span></div>
+  <div id="qzKids" style="transform:scale(.85);margin:-6px 0">${$('.kids').outerHTML.replace('class="kids"','class="kids" style="position:static"')}</div>
+  <div style="font-size:24px;font-weight:800;text-align:center;line-height:1.3;margin:4px 0 14px;color:var(--teal-d)">${q.ic?q.ic+' ':''}${q.q}</div>
+  <div style="display:grid;gap:10px">${q.opts.map((o,k)=>`<button class="btn sec" style="font-size:20px;padding:14px;text-align:left" data-act="quizAns" data-k="${k}">${['🅰️','🅱️','🅲'][k]||''} ${esc(o)}</button>`).join('')}</div>`)}
+function quizAns(b){if(QZ.lock)return;QZ.lock=true;const q=QZ.qs[QZ.i];const pick=q.opts[Number(b.dataset.k)];const ok=pick===q.a;
+  document.querySelectorAll('[data-act="quizAns"]').forEach(x=>{const v=q.opts[Number(x.dataset.k)];if(v===q.a){x.style.background='#22c55e';x.style.color='#fff'}else if(x===b){x.style.background='#f87171';x.style.color='#fff'}});
+  if(ok){QZ.score++;SFX.yay();document.querySelectorAll('#qzKids .kid').forEach(k=>k.classList.add('jump'));floatPlus(b,'⭐')}else SFX.soft();
+  setTimeout(()=>{QZ.lock=false;if(!$('#modalBg').classList.contains('show'))return;QZ.i++;if(QZ.i<QZ.qs.length)quizRender();else{const n=QZ.qs.length;if(QZ.score>=n*.7)confetti();
+    openModal(`<div style="text-align:center"><div style="font-size:70px">${QZ.score>=n*.7?'🏆':'🌟'}</div><h2>${QZ.score>=n*.7?'MasyaAllah, hebat!':'Alhamdulillah, terus semangat!'}</h2><p style="font-size:22px;font-weight:800">${QZ.score} dari ${n} benar</p>
+    <div class="row" style="justify-content:center"><button class="btn yellow" data-act="quizGo" data-t="${QZ.type}">🔁 Main lagi</button><button class="btn sec" data-act="quiz">Ganti kuis</button></div></div>`)}},ok?1300:1900)}
+
 /* ================= ACTIONS ================= */
 function go(v){view=v;if(v==='kalender')renderKalender();if(v==='home')renderHome();document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id==='v-'+v));
   document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));window.scrollTo({top:0,behavior:'smooth'});SFX.pop()}
@@ -988,11 +1173,17 @@ function studentForm(s){selAva=s?s.av:AVATARS[Math.random()*AVATARS.length|0];
   openModal(`<h2>${s?'Ubah':'Tambah'} Murid</h2>
   <div class="field"><label>Nama panggilan</label><input id="fName" maxlength="40" value="${s?esc(s.name):''}" placeholder="misal: Aisyah"></div>
   <div class="field"><label>Jenis kelamin</label><select id="fG"><option value="L" ${s&&s.g==='L'?'selected':''}>Laki-laki</option><option value="P" ${s&&s.g==='P'?'selected':''}>Perempuan</option></select></div>
+  <div class="field"><label>Nama lengkap (untuk raport)</label><input id="fFull" maxlength="80" value="${s?esc(s.full||''):''}" placeholder="misal: Aisyah Humaira"></div>
+  <div class="row" style="flex-wrap:nowrap"><div class="field" style="flex:1"><label>Tanggal lahir</label><input type="date" id="fBorn" value="${s?esc(s.born||''):''}"></div></div>
+  <div class="field"><label>Nama orang tua / wali</label><input id="fPar" maxlength="60" value="${s?esc(s.parent||''):''}" placeholder="misal: Bapak Ahmad / Ibu Fatimah"></div>
+  <div class="field"><label>No. WhatsApp orang tua</label><input id="fWa" inputmode="tel" maxlength="20" value="${s?esc(s.wa||''):''}" placeholder="0812xxxxxxx"></div>
+  <div class="field"><label>Catatan khusus (alergi, dijemput siapa, dll.)</label><input id="fNote" maxlength="150" value="${s?esc(s.note||''):''}"></div>
   <div class="field"><label>Pilih karakter</label><div class="ava-pick" id="avaPick">${AVATARS.map(a=>`<button type="button" class="${a===selAva?'on':''}" data-act="pickAva" data-a="${a}">${a}</button>`).join('')}</div></div>
   <div class="row"><button class="btn" id="fSave">💾 Simpan</button>${s?'':'<button class="btn sec" id="fSaveMore">Simpan & tambah lagi</button>'}</div>`);
-  setTimeout(()=>$('#fName').focus(),50);
+  setTimeout(()=>{if(document.activeElement.tagName!=='INPUT')$('#fName').focus()},50);
   const doSave=(more)=>{const name=$('#fName').value.trim();if(!name){toast('Nama belum diisi');return}
-    if(s){Object.assign(s,{name,g:$('#fG').value,av:selAva})}else S.students.push({id:uid(),name,g:$('#fG').value,av:selAva,stars:0});
+    const ex={full:$('#fFull').value.trim(),born:$('#fBorn').value,parent:$('#fPar').value.trim(),wa:$('#fWa').value.trim(),note:$('#fNote').value.trim()};
+    if(s){Object.assign(s,{name,g:$('#fG').value,av:selAva},ex)}else S.students.push(Object.assign({id:uid(),name,g:$('#fG').value,av:selAva,stars:0},ex));
     saveMain();renderAll();SFX.ding();if(more){studentForm()}else{closeModal();toast(s?'Data murid diperbarui':'Murid ditambahkan 🎉')}};
   $('#fSave').onclick=()=>doSave(false);if(!s)$('#fSaveMore').onclick=()=>doSave(true);
   $('#fName').onkeydown=e=>{if(e.key==='Enter')doSave(false)}}
@@ -1007,12 +1198,16 @@ function editSchedule(){const rows=[...S.schedule].sort((a,b)=>a.time.localeComp
 function settings(){openModal(`<h2>⚙️ Pengaturan</h2>
   <div class="field"><label>Sapaan guru</label><input id="sT" maxlength="30" value="${esc(S.settings.teacher)}" placeholder="Bu Aminah"></div>
   <div class="field"><label>Nama kelas</label><input id="sC" maxlength="30" value="${esc(S.settings.className)}" placeholder="TK A - Kelas Mawar"></div>
+  <div class="field"><label>Nama sekolah (untuk raport & pesan)</label><input id="sSch" maxlength="60" value="${esc(S.settings.school||'TK An Najah')}"></div>
+  <div class="field"><label>Nama kepala sekolah</label><input id="sHead" maxlength="60" value="${esc(S.settings.head||'')}" placeholder="untuk tanda tangan raport"></div>
+  <div class="field"><label>🔔 Pengingat di HP (versi APK)</label><select id="sRem"><option value="1" ${S.settings.remind!==false?'selected':''}>Nyala</option><option value="0" ${S.settings.remind===false?'selected':''}>Mati</option></select></div>
+  <div class="row" style="flex-wrap:nowrap"><div class="field" style="flex:1"><label>Ingatkan H-1 jam</label><input type="time" id="sEve" value="${esc(S.settings.remindEve||'19:00')}"></div><div class="field" style="flex:1"><label>Ingatkan hari-H jam</label><input type="time" id="sMor" value="${esc(S.settings.remindMorning||'06:30')}"></div></div>
   <div class="field"><label>Suara efek</label><select id="sS"><option value="1" ${S.settings.sound?'selected':''}>Nyala 🔔</option><option value="0" ${!S.settings.sound?'selected':''}>Mati 🔕</option></select></div>
   <p class="muted" style="font-size:14px">${Store.db?'☁️ Data tersimpan di akun Claude Anda, jadi bisa dibuka dari HP atau laptop lain dengan akun yang sama. Data ini hanya bisa dilihat oleh Anda.':'💾 Saat ini data hanya tersimpan di browser ini.'}</p>
   <div class="row"><button class="btn" id="sSave">💾 Simpan</button></div>
   <div class="daysec"><h4><span>🗄️ Cadangan Data</span></h4><p class="muted" style="font-size:14px;margin:0 0 8px">Untuk memindahkan data antara versi web dan aplikasi HP, atau menyimpan cadangan.</p>
   <div class="row"><button class="btn sm sec" data-act="backupCopy">📋 Salin cadangan</button><button class="btn sm sec" data-act="backupRestore">📥 Pulihkan dari cadangan</button></div></div>`);
-  $('#sSave').onclick=()=>{S.settings.teacher=$('#sT').value.trim()||'Bu Guru';S.settings.className=$('#sC').value.trim()||'TK';S.settings.sound=$('#sS').value==='1';saveMain();renderAll();closeModal();toast('Pengaturan disimpan')}}
+  $('#sSave').onclick=()=>{S.settings.teacher=$('#sT').value.trim()||'Bu Guru';S.settings.className=$('#sC').value.trim()||'TK';S.settings.sound=$('#sS').value==='1';S.settings.school=$('#sSch').value.trim()||'TK An Najah';S.settings.head=$('#sHead').value.trim();S.settings.remind=$('#sRem').value==='1';S.settings.remindEve=$('#sEve').value||'19:00';S.settings.remindMorning=$('#sMor').value||'06:30';saveMain();renderAll();closeModal();toast('Pengaturan disimpan')}}
 
 let pickInt=null;
 function randomPick(){const d=getDay(todayStr());let pool=S.students.filter(s=>d[s.id]==='H');let note='dari murid yang hadir hari ini';
@@ -1039,13 +1234,32 @@ function kidTalk(which){const el=document.querySelector('.kid.'+which);el.classL
 
 function allMonthsKeys(){const ks=new Set(Object.keys(ATT));try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('kelasceria_absen-'))ks.add(k.slice(17))}}catch(e){}return [...ks]}
 const ACT={
-  backupCopy:()=>{const absen={};allMonthsKeys().forEach(m=>{absen[m]=getMonth(m)});const txt=JSON.stringify({app:'tk-an-najah',v:1,kelas:S,agenda:AG,absen});
+  muridTab:b=>{muridTab=b.dataset.t;renderMuridTabs();SFX.pop()},
+  hafMode:b=>{hafMode=b.dataset.m;renderHafalan()},
+  setHaf:b=>{setH(b.dataset.s,b.dataset.i,Number(b.dataset.v),b);renderHafalan()},
+  cycleHaf:b=>{setH(b.dataset.s,b.dataset.i,(getH(b.dataset.s,b.dataset.i)+1)%3,b);renderHafalan()},
+  addCustomHaf:()=>{openModal(`<h2>+ Materi Hafalan Lain</h2><p class="muted">Misal: hadits pendek, asmaul husna, nama-nama nabi, atau surat lain.</p><div class="field"><label>Nama materi</label><input id="chT" maxlength="60" placeholder="misal: QS. Al-Bayyinah"></div>${PR.custom.length?`<div class="chips" style="margin-bottom:10px">${PR.custom.map(c=>`<span class="chip">${esc(c.t)} <button style="background:none" data-act="delCustomHaf" data-id="${c.id}">✕</button></span>`).join('')}</div>`:''}<button class="btn" id="chGo">Tambah</button>`);
+    $('#chGo').onclick=()=>{const t=$('#chT').value.trim();if(!t)return;const id=uid();PR.custom.push({id,t});savePr();hafSel='c-'+id;closeModal();renderHafalan();toast('Materi ditambahkan')}},
+  delCustomHaf:b=>{PR.custom=PR.custom.filter(c=>c.id!==b.dataset.id);savePr();closeModal();renderHafalan()},
+  addNote:()=>noteForm(),
+  editNote:b=>noteForm(PR.notes.find(n=>n.id===b.dataset.id)),
+  delNote:b=>askConfirm('Hapus catatan perkembangan ini?',()=>{PR.notes=PR.notes.filter(n=>n.id!==b.dataset.id);savePr();renderKembang();toast('Catatan dihapus')}),
+  raport:b=>raportForm(b.dataset.id),
+  docOut:()=>docOut(),
+  absReport:()=>{const [y,m]=rekapMonth.split('-').map(Number);previewDoc('Laporan Absensi '+fmtDate(new Date(y,m-1,1),{month:'long',year:'numeric'}),`Absensi-${rekapMonth}.html`,absensiReport(rekapMonth),true)},
+  waStudent:b=>waModal(b.dataset.id,b.dataset.tpl),
+  waTpl:b=>waModal(b.dataset.id,b.dataset.tpl),
+  shareEvent:b=>{const e=AG.events.find(x=>x.id===b.dataset.id);if(e)shareEvent(e)},
+  quiz:()=>quizMenu(),
+  quizGo:b=>quizStart(b.dataset.t),
+  quizAns:b=>quizAns(b),
+  backupCopy:()=>{const absen={};allMonthsKeys().forEach(m=>{absen[m]=getMonth(m)});const txt=JSON.stringify({app:'tk-an-najah',v:2,kelas:S,agenda:AG,progres:PR,absen});
     const show=()=>openModal(`<h2>Cadangan Data</h2><p class="muted">Salin semua teks ini dan simpan (misal kirim ke WhatsApp sendiri).</p><textarea class="inp" style="width:100%;height:220px" readonly>${esc(txt)}</textarea>`);
     try{if(window.AndroidVoice&&AndroidVoice.copy){AndroidVoice.copy(txt);toast('Cadangan disalin 📋');return}navigator.clipboard.writeText(txt).then(()=>toast('Cadangan disalin 📋'),show)}catch(e){show()}},
   backupRestore:()=>{openModal(`<h2>Pulihkan Data</h2><p class="muted">Tempel teks cadangan di bawah. Data yang ada sekarang akan diganti.</p><textarea class="inp" id="rsTxt" style="width:100%;height:180px"></textarea><div class="row" style="margin-top:8px"><button class="btn danger" id="rsGo">📥 Pulihkan</button></div>`);
     $('#rsGo').onclick=()=>{let o;try{o=JSON.parse($('#rsTxt').value)}catch(e){toast('Teks cadangan tidak valid');return}
       if(!o||o.app!=='tk-an-najah'){toast('Ini bukan cadangan TK An Najah');return}
-      S=normalize(o.kelas);AG=normAg(o.agenda);saveMain();saveAg();
+      S=normalize(o.kelas);AG=normAg(o.agenda);PR=normPr(o.progres);saveMain();saveAg();savePr();
       Object.entries(o.absen||{}).forEach(([m,v])=>{if(/^\d{4}-\d{2}$/.test(m)&&v&&v.days){ATT[m]={days:v.days};Store.save('absen-'+m,ATT[m])}});
       closeModal();renderAll();confetti();toast('Data berhasil dipulihkan ✅')}},
   calShift:b=>{const [y,m]=calMonth.split('-').map(Number);const d=new Date(y,m-1+Number(b.dataset.d),1);calMonth=ymd(d).slice(0,7);renderKalender();SFX.pop()},
@@ -1103,6 +1317,8 @@ const ACT={
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const f=ACT[b.dataset.act];if(f){e.preventDefault();f(b,e)}});
 $('#modalBg').addEventListener('click',e=>{if(e.target.id==='modalBg')closeModal()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+const CHG={hafSel:el=>{hafSel=el.value;renderHafalan()},hafStu:el=>{hafStu=el.value;renderHafalan()},kSel:el=>{kSel=el.value;renderKembang()}};
+document.addEventListener('change',e=>{const el=e.target.closest('[data-chg]');if(el&&CHG[el.dataset.chg])CHG[el.dataset.chg](el)});
 $('#absDate').addEventListener('change',e=>{if(e.target.value){absDate=e.target.value;renderAbsen()}});
 $('#rekapMonth').addEventListener('change',e=>{if(e.target.value){rekapMonth=e.target.value;renderRekap()}});
 $('#todoForm').addEventListener('submit',e=>{e.preventDefault();const text=$('#todoText').value.trim();if(!text){toast('Tulis tugasnya dulu ya');return}
@@ -1118,7 +1334,9 @@ if(canSpeak()){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=(
 /* boot */
 S=normalize(Store.lsGet('kelas'));
 AG=normAg(Store.lsGet('agenda'));
+PR=normPr(Store.lsGet('progres'));
 renderAll();
+syncReminders();
 initCloud();
 </script>
 </body>
