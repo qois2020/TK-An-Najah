@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TK An Najah — Aplikasi Guru</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal:#14b8a6; --teal-d:#0f766e; --green:#22c55e; --yellow:#facc15; --orange:#fb923c;
+  --pink:#f472b6; --sky:#38bdf8; --purple:#a78bfa; --red:#f87171;
+  --ink:#1e293b; --muted:#64748b; --card:#ffffff; --bg:#fff9ef;
+  --r:22px; --shadow:0 6px 0 rgba(15,118,110,.12), 0 10px 24px rgba(15,23,42,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'Baloo 2',system-ui,sans-serif;color:var(--ink);background:var(--bg);
+  background-image:radial-gradient(circle at 10% 20%,#fde68a33 0 60px,transparent 61px),radial-gradient(circle at 90% 60%,#a7f3d033 0 80px,transparent 81px);
+  padding-bottom:96px;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;cursor:pointer;border:none}
+input,select,textarea{font-family:inherit;font-size:16px}
+.wrap{max-width:980px;margin:0 auto;padding:0 14px}
+.arab{font-family:'Amiri',serif;direction:rtl;line-height:2}
+
+/* ===== Header ===== */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0 6px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--teal),var(--green));display:grid;place-items:center;box-shadow:var(--shadow);animation:wiggle 4s ease-in-out infinite}
+.brand h1{font-size:22px;margin:0;line-height:1;color:var(--teal-d)}
+.brand small{color:var(--muted);font-size:13px}
+.top-actions{display:flex;gap:8px;align-items:center}
+.sync{font-size:12px;padding:4px 10px;border-radius:99px;background:#ecfeff;color:var(--teal-d);font-weight:700;white-space:nowrap}
+.sync.err{background:#fef2f2;color:#b91c1c}.sync.local{background:#fef9c3;color:#854d0e}
+.iconbtn{width:42px;height:42px;border-radius:14px;background:#fff;box-shadow:var(--shadow);font-size:20px;display:grid;place-items:center}
+.iconbtn:active{transform:translateY(3px);box-shadow:none}
+
+/* ===== Hero scene ===== */
+.hero{position:relative;border-radius:28px;overflow:hidden;min-height:290px;margin:8px 0 16px;
+  background:linear-gradient(180deg,#7dd3fc 0%,#bae6fd 55%,#d9f99d 55.1%,#bef264 100%);box-shadow:var(--shadow)}
+.sun{position:absolute;right:26px;top:20px;width:64px;height:64px;border-radius:50%;background:radial-gradient(circle,#fde047,#facc15);box-shadow:0 0 0 10px #fde04755,0 0 0 22px #fde04722;animation:pulse 3s ease-in-out infinite}
+.cloud{position:absolute;background:#fff;border-radius:99px;opacity:.95}
+.cloud::before,.cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.cloud::before{width:55%;height:160%;left:15%;top:-70%}
+.cloud::after{width:40%;height:130%;right:12%;top:-45%}
+.c1{width:110px;height:30px;top:40px;left:-120px;animation:drift 38s linear infinite}
+.c2{width:80px;height:22px;top:86px;left:-120px;animation:drift 52s linear infinite;animation-delay:-20s}
+.c3{width:130px;height:34px;top:18px;left:-140px;animation:drift 64s linear infinite;animation-delay:-40s}
+.mosque{position:absolute;right:8%;bottom:44%;width:170px;opacity:.9}
+.hero-text{position:absolute;left:18px;top:16px;z-index:3;max-width:58%}
+.hero-text .salam{font-size:15px;font-weight:700;color:#0c4a6e;background:#ffffffcc;padding:2px 12px;border-radius:99px;display:inline-block}
+.hero-text h2{margin:6px 0 2px;font-size:26px;line-height:1.1;color:#0c4a6e;text-shadow:0 2px 0 #fff}
+.hero-text .date{font-size:14px;color:#075985;font-weight:600;background:#ffffffaa;border-radius:12px;padding:2px 10px;display:inline-block}
+.kids{position:absolute;left:0;right:0;bottom:6px;display:flex;justify-content:center;gap:4px;z-index:2}
+.kid{width:118px;height:150px;cursor:pointer;filter:drop-shadow(0 6px 4px rgba(0,0,0,.12))}
+.kid .bob{animation:bob 1.8s ease-in-out infinite;transform-box:fill-box;transform-origin:bottom center}
+.kid.girl .bob{animation-delay:-.9s}
+.kid .wave{animation:wave 1.2s ease-in-out infinite;transform-box:view-box}
+.kid .blink{animation:blink 4s infinite;transform-box:fill-box;transform-origin:center}
+.kid.jump{animation:jump .7s ease}
+.bubble{position:absolute;z-index:4;left:50%;bottom:158px;transform:translateX(-50%);background:#fff;padding:8px 14px;border-radius:18px;font-weight:700;font-size:15px;color:var(--teal-d);box-shadow:0 4px 0 #0f766e22;white-space:nowrap;animation:pop .4s ease}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-9px;border:10px solid transparent;border-top-color:#fff;border-bottom:0;transform:translateX(-50%)}
+.star-float{position:absolute;font-size:18px;animation:twinkle 2.5s ease-in-out infinite}
+
+/* ===== Cards ===== */
+.grid{display:grid;gap:14px}
+@media(min-width:760px){.grid.two{grid-template-columns:1fr 1fr}}
+.card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);position:relative}
+.card h3{margin:0 0 10px;font-size:19px;display:flex;align-items:center;gap:8px;justify-content:space-between}
+.card h3 .t{display:flex;align-items:center;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:13px;font-weight:700}
+.section-title{font-size:24px;margin:6px 0 12px;color:var(--teal-d);display:flex;align-items:center;gap:10px}
+.muted{color:var(--muted)}
+.btn{padding:10px 16px;border-radius:16px;font-weight:700;font-size:15px;background:var(--teal);color:#fff;box-shadow:0 4px 0 var(--teal-d);transition:transform .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--teal-d)}
+.btn.sec{background:#fff;color:var(--teal-d);box-shadow:0 4px 0 #cbd5e1;border:2px solid #e2e8f0}
+.btn.yellow{background:var(--yellow);color:#713f12;box-shadow:0 4px 0 #ca8a04}
+.btn.pink{background:var(--pink);box-shadow:0 4px 0 #db2777}
+.btn.danger{background:var(--red);box-shadow:0 4px 0 #dc2626}
+.btn.sm{padding:6px 12px;font-size:14px;border-radius:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stat{border-radius:18px;padding:10px 6px;text-align:center;color:#fff;font-weight:800}
+.stat b{display:block;font-size:28px;line-height:1}
+.stat span{font-size:12px;opacity:.95}
+.s-h{background:linear-gradient(135deg,#22c55e,#16a34a)}.s-i{background:linear-gradient(135deg,#38bdf8,#0284c7)}
+.s-s{background:linear-gradient(135deg,#fb923c,#ea580c)}.s-a{background:linear-gradient(135deg,#f87171,#dc2626)}
+.s-b{background:linear-gradient(135deg,#cbd5e1,#94a3b8)}
+@media(max-width:480px){.stat b{font-size:22px}.stat span{font-size:11px}}
+
+/* schedule */
+.sched{list-style:none;margin:0;padding:0}
+.sched li{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:14px;margin-bottom:4px}
+.sched li .tm{font-weight:800;color:var(--teal-d);min-width:52px}
+.sched li.now{background:linear-gradient(90deg,#fef9c3,#fff);box-shadow:inset 4px 0 0 var(--yellow)}
+.sched li.now::after{content:"Sekarang";margin-left:auto;font-size:11px;background:var(--yellow);color:#713f12;padding:2px 8px;border-radius:99px;font-weight:800}
+.sched li.past{opacity:.5}
+
+/* ===== Attendance ===== */
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.toolbar input[type=date],.toolbar select,.inp{padding:9px 12px;border-radius:14px;border:2px solid #e2e8f0;background:#fff;color:var(--ink)}
+.seg{display:inline-flex;background:#fff;border-radius:16px;padding:4px;box-shadow:var(--shadow)}
+.seg button{padding:8px 14px;border-radius:12px;background:transparent;font-weight:700;color:var(--muted);font-size:15px}
+.seg button.on{background:var(--teal);color:#fff}
+.students{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+.stu{background:#fff;border-radius:20px;padding:12px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;border:3px solid transparent;transition:border-color .2s,transform .15s}
+.stu.H{border-color:#86efac}.stu.I{border-color:#7dd3fc}.stu.S{border-color:#fdba74}.stu.A{border-color:#fca5a5}
+.stu-top{display:flex;align-items:center;gap:10px}
+.ava{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;font-size:30px;flex-shrink:0}
+.ava.L{background:#e0f2fe}.ava.P{background:#fce7f3}
+.stu .nm{font-weight:800;font-size:17px;line-height:1.1}
+.stu .sub{font-size:12px;color:var(--muted)}
+.status-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.status-btns button{padding:7px 0;border-radius:12px;font-weight:800;font-size:14px;background:#f1f5f9;color:#475569}
+.status-btns button.on.H{background:var(--green);color:#fff}
+.status-btns button.on.I{background:var(--sky);color:#fff}
+.status-btns button.on.S{background:var(--orange);color:#fff}
+.status-btns button.on.A{background:var(--red);color:#fff}
+.starbtn{margin-left:auto;background:#fef9c3;border-radius:12px;padding:4px 8px;font-weight:800;color:#a16207;font-size:14px}
+.starbtn:active{transform:scale(.9)}
+.empty{text-align:center;padding:30px 14px;color:var(--muted)}
+.empty .big{font-size:60px;animation:bob 2s ease-in-out infinite;display:inline-block}
+
+table.rekap{width:100%;border-collapse:separate;border-spacing:0 6px;font-size:15px}
+table.rekap th{font-size:13px;color:var(--muted);text-align:center;padding:4px}
+table.rekap th:first-child{text-align:left}
+table.rekap td{background:#fff;padding:8px;text-align:center;font-weight:700}
+table.rekap td:first-child{text-align:left;border-radius:14px 0 0 14px}
+table.rekap td:last-child{border-radius:0 14px 14px 0}
+.bar{height:8px;background:#e2e8f0;border-radius:99px;overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--teal));border-radius:99px}
+.tbl-wrap{overflow-x:auto}
+
+/* ===== Todo ===== */
+.todo-add{display:flex;gap:8px;flex-wrap:wrap}
+.todo-add input[type=text]{flex:1 1 220px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chip{background:#f0fdfa;color:var(--teal-d);border:2px dashed #99f6e4;border-radius:99px;padding:3px 12px;font-weight:700;font-size:13px}
+.todo{display:flex;align-items:center;gap:12px;background:#fff;border-radius:18px;padding:12px;box-shadow:var(--shadow);margin-bottom:10px;transition:opacity .3s,transform .3s}
+.todo.done{opacity:.55}
+.todo.done .tx{text-decoration:line-through}
+.check{width:34px;height:34px;border-radius:12px;border:3px solid #99f6e4;background:#fff;display:grid;place-items:center;font-size:18px;flex-shrink:0;color:#fff}
+.todo.done .check{background:var(--green);border-color:var(--green);animation:pop .35s}
+.todo .tx{font-weight:700;font-size:16px}
+.todo .meta{font-size:12px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.tag{padding:1px 8px;border-radius:99px;font-weight:700;font-size:12px}
+.pri-3{background:#fee2e2;color:#b91c1c}.pri-2{background:#fef3c7;color:#92400e}.pri-1{background:#e0f2fe;color:#075985}
+.late{color:#dc2626;font-weight:800}
+.del{margin-left:auto;background:transparent;font-size:18px;opacity:.5}
+.del:hover{opacity:1}
+.progress-ring{display:flex;align-items:center;gap:12px}
+
+/* ===== Doa & Cerita ===== */
+.doa-grid,.story-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.doa-card,.story-card{background:#fff;border-radius:20px;padding:14px;box-shadow:var(--shadow);text-align:left;transition:transform .15s;display:flex;flex-direction:column;gap:6px}
+.doa-card:hover,.story-card:hover{transform:translateY(-3px) rotate(-.5deg)}
+.doa-card .ic,.story-card .ic{font-size:34px;width:58px;height:58px;border-radius:18px;display:grid;place-items:center}
+.doa-card .tt,.story-card .tt{font-weight:800;font-size:17px;line-height:1.15}
+.doa-card .arab{font-size:20px;color:var(--teal-d);line-height:1.6;text-align:right}
+.src{font-size:12px;color:var(--muted)}
+.grade{font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px;align-self:flex-start}
+.g-q{background:#dcfce7;color:#166534}.g-s{background:#ccfbf1;color:#115e59}
+.filter-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.filter-chips button{padding:6px 14px;border-radius:99px;background:#fff;font-weight:700;color:var(--muted);box-shadow:0 3px 0 #e2e8f0}
+.filter-chips button.on{background:var(--teal);color:#fff;box-shadow:0 3px 0 var(--teal-d)}
+.note{background:#f0fdfa;border:2px dashed #5eead4;border-radius:16px;padding:10px 14px;font-size:14px;color:#115e59;margin-bottom:12px}
+
+/* ===== Modal ===== */
+.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:flex-end;justify-content:center;z-index:50;padding:0}
+.modal-bg.show{display:flex;animation:fade .2s}
+.modal{background:#fff;width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:28px 28px 0 0;padding:20px;animation:up .3s ease}
+@media(min-width:700px){.modal-bg{align-items:center}.modal{border-radius:28px}}
+.modal h2{margin:0 0 6px;font-size:24px;color:var(--teal-d)}
+.modal .x{position:sticky;z-index:5;top:0;float:right;width:40px;height:40px;border-radius:14px;background:#f1f5f9;font-size:18px}
+.doa-arab{font-size:32px;text-align:center;color:#0f172a;background:linear-gradient(135deg,#f0fdfa,#fefce8);border-radius:20px;padding:16px;margin:12px 0;line-height:2}
+.doa-latin{font-style:italic;font-weight:600;color:var(--teal-d);font-size:17px;text-align:center}
+.doa-arti{font-size:17px;text-align:center;margin:10px 0}
+.story-body p{font-size:18px;line-height:1.6;margin:0 0 12px}
+.story-hero{font-size:80px;text-align:center;animation:bob 2s ease-in-out infinite}
+.moral{background:#fef9c3;border-radius:18px;padding:12px 14px;font-weight:700;color:#713f12;margin:10px 0}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.field label{font-weight:700;font-size:14px;color:var(--muted)}
+.field input,.field select{padding:10px 12px;border-radius:14px;border:2px solid #e2e8f0}
+.ava-pick{display:flex;flex-wrap:wrap;gap:6px}
+.ava-pick button{font-size:26px;width:46px;height:46px;border-radius:14px;background:#f1f5f9}
+.ava-pick button.on{background:#ccfbf1;outline:3px solid var(--teal)}
+
+/* random picker & timer */
+.picker{font-size:42px;font-weight:800;text-align:center;padding:24px 10px;color:var(--teal-d);min-height:130px}
+.picker .em{font-size:70px;display:block}
+.timer-big{font-size:72px;font-weight:800;text-align:center;color:var(--teal-d);font-variant-numeric:tabular-nums}
+
+/* ===== Kalender ===== */
+.cal-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.cal-title{flex:1;text-align:center;font-weight:800;font-size:20px;color:var(--teal-d);line-height:1.1}
+.cal-title small{display:block;font-size:13px;color:var(--muted);font-weight:600}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-dow{text-align:center;font-size:12px;font-weight:800;color:var(--muted);padding:2px 0}
+.cal-dow.ahad{color:#dc2626}
+.cal-cell{background:#f8fafc;border-radius:14px;min-height:64px;padding:5px 4px;display:flex;flex-direction:column;align-items:stretch;text-align:left;position:relative;border:2px solid transparent;overflow:hidden}
+.cal-cell .dn{font-weight:800;font-size:16px;line-height:1}
+.cal-cell .hd{position:absolute;right:5px;bottom:4px;font-size:10px;color:#94a3b8;font-weight:700}
+.cal-cell.ahad .dn{color:#dc2626}
+.cal-cell.past{background:#f1f5f9}.cal-cell.past .dn{opacity:.7}
+.cal-cell.today{background:#fef9c3;border-color:var(--yellow)}
+.cal-cell.sel{border-color:var(--teal);box-shadow:0 3px 0 var(--teal-d)}
+.cal-cell.holi{background:#dcfce7}
+.cal-cell .dots{display:flex;gap:3px;flex-wrap:wrap;margin-top:auto}
+.cal-cell .dots i{width:7px;height:7px;border-radius:50%;display:block}
+.cal-cell .evs{display:none;flex-direction:column;gap:2px;margin-top:3px}
+.cal-cell .evs span{font-size:10.5px;color:#fff;border-radius:6px;padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
+@media(min-width:700px){.cal-cell{min-height:92px}.cal-cell .evs{display:flex}}
+.cal-cell.empty-cell{background:transparent}
+.cal-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:12px;color:var(--muted)}
+.cal-legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}
+.day-head{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.day-num{width:62px;height:62px;border-radius:18px;background:linear-gradient(135deg,var(--teal),var(--green));color:#fff;display:grid;place-items:center;font-weight:800;font-size:28px;flex-shrink:0;line-height:1}
+.day-num small{font-size:11px;display:block;font-weight:700}
+.daysec{border-top:2px dashed #e2e8f0;padding-top:10px;margin-top:10px}
+.daysec h4{margin:0 0 8px;font-size:16px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.ev{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:14px;background:#f8fafc;margin-bottom:6px;border-left:5px solid var(--teal)}
+.ev .et{font-weight:800}.ev .em{font-size:12px;color:var(--muted)}
+.ev .eb{margin-left:auto;display:flex;gap:4px}
+.ev .eb button{background:transparent;font-size:16px;opacity:.6}
+textarea.inp{width:100%;min-height:90px;resize:vertical}
+.mini-stats{display:flex;gap:6px;flex-wrap:wrap}
+.mini-stats span{padding:3px 10px;border-radius:99px;font-weight:800;font-size:13px;color:#fff}
+.up-ev{display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px dashed #e2e8f0}
+.up-ev:last-child{border:none}
+.up-date{min-width:46px;text-align:center;border-radius:12px;background:#f0fdfa;color:var(--teal-d);font-weight:800;line-height:1.05;padding:4px 2px;font-size:18px}
+.up-date small{display:block;font-size:10px}
+
+/* ===== Update bar ===== */
+#updBar{position:fixed;left:10px;right:10px;top:10px;z-index:48;background:#0f766e;color:#fff;border-radius:18px;padding:10px 12px;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:640px;margin:0 auto;font-size:15px}
+#updBar .btn.sec{background:#ffffff22;color:#fff;border-color:#ffffff55;box-shadow:none}
+/* ===== Gate (login) ===== */
+#gate{position:fixed;inset:0;z-index:45;background:linear-gradient(180deg,#7dd3fc,#bae6fd 45%,#d9f99d);align-items:center;justify-content:center;padding:16px;overflow:auto}
+.gate-card{background:#fff;border-radius:28px;padding:20px;width:100%;max-width:420px;box-shadow:var(--shadow);max-height:96vh;overflow:auto}
+#gate .logo{display:grid;place-items:center;color:#fff;font-size:30px;border-radius:18px;background:linear-gradient(135deg,var(--teal),var(--green))}
+@media(max-width:480px){.top-actions .sync{display:none}.brand h1{font-size:18px}.brand .logo{width:40px;height:40px}.brand small{font-size:12px}}
+
+/* ===== Bottom nav ===== */
+.nav{position:fixed;left:0;right:0;bottom:0;background:#fff;box-shadow:0 -6px 24px rgba(15,23,42,.08);z-index:40;padding:6px 6px calc(6px + env(safe-area-inset-bottom));border-radius:22px 22px 0 0}
+.nav .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.nav button{background:transparent;padding:6px 0;border-radius:14px;display:flex;flex-direction:column;align-items:center;font-size:11px;font-weight:700;color:var(--muted)}
+.nav button .e{font-size:24px;transition:transform .2s}
+.nav button.on{background:#f0fdfa;color:var(--teal-d)}
+.nav button.on .e{transform:translateY(-3px) scale(1.15);animation:wiggle .6s}
+
+.toast{--tx:-50%;position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:16px;font-weight:700;z-index:60;animation:pop .3s;max-width:90vw;text-align:center}
+.plus{position:fixed;font-size:26px;pointer-events:none;z-index:70;animation:floatup 1s ease forwards}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:80}
+.view{display:none;animation:fade .3s}.view.on{display:block}
+
+@media(max-width:600px){.hero{min-height:350px}.hero-text{max-width:92%}.hero-text h2{font-size:23px}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes wave{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-28deg)}}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(1300px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+@keyframes jump{0%,100%{transform:translateY(0)}40%{transform:translateY(-30px) rotate(-4deg)}70%{transform:translateY(0) scale(1.05,.95)}}
+@keyframes pop{0%{transform:translateX(var(--tx,0)) scale(.6);opacity:0}100%{transform:translateX(var(--tx,0)) scale(1);opacity:1}}
+.bubble{--tx:-50%}
+@keyframes twinkle{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes floatup{from{transform:translateY(0) scale(1);opacity:1}to{transform:translateY(-70px) scale(1.4);opacity:0}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<div id="gate" style="display:none"></div>
+<div id="updBar" style="display:none"></div>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo"><svg width="30" height="30" viewBox="0 0 30 30"><path d="M19 4a11 11 0 1 0 7 19A9 9 0 1 1 19 4z" fill="#fff"/><path d="M22 9l1.2 2.6 2.8.3-2.1 1.9.6 2.8-2.5-1.4-2.5 1.4.6-2.8-2.1-1.9 2.8-.3z" fill="#fde047"/></svg></div>
+      <div><h1>TK An Najah</h1><small id="classLabel">Asisten Guru TK</small></div>
+    </div>
+    <div class="top-actions">
+      <select class="inp" id="clsSwitch" style="display:none;padding:6px 8px;max-width:130px" aria-label="Pilih kelas"></select>
+      <span class="sync local" id="sync">💾 Lokal</span>
+      <button class="iconbtn" id="adminBtn" data-act="adminPanel" aria-label="Panel kepala sekolah" style="display:none">🏫</button>
+      <button class="iconbtn" data-act="settings" aria-label="Pengaturan">⚙️</button>
+    </div>
+  </div>
+
+  <!-- ===== BERANDA ===== -->
+  <section class="view on" id="v-home">
+    <div class="hero" id="hero">
+      <div class="sun"></div>
+      <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+      <span class="star-float" style="left:62%;top:14px">⭐</span>
+      <span class="star-float" style="left:52%;top:60px;animation-delay:-1s">✨</span>
+      <svg class="mosque" viewBox="0 0 200 110">
+        <g fill="#ffffff" opacity=".9">
+          <rect x="10" y="30" width="12" height="80" rx="3"/><path d="M8 32 L16 8 L24 32 Z"/><circle cx="16" cy="6" r="3" fill="#facc15"/>
+          <rect x="178" y="30" width="12" height="80" rx="3"/><path d="M176 32 L184 8 L192 32 Z"/><circle cx="184" cy="6" r="3" fill="#facc15"/>
+          <rect x="40" y="62" width="120" height="48" rx="4"/>
+          <path d="M60 64 Q60 18 100 14 Q140 18 140 64 Z"/>
+          <rect x="98" y="2" width="4" height="14"/>
+        </g>
+        <path d="M104 4 a5 5 0 1 0 0 8 a4 4 0 1 1 0-8z" fill="#facc15"/>
+        <g fill="#7dd3fc"><path d="M90 110 v-22 q10-12 20 0 v22z"/><path d="M55 96 v-12 q6-8 12 0 v12z"/><path d="M133 96 v-12 q6-8 12 0 v12z"/></g>
+      </svg>
+      <div class="hero-text">
+        <span class="salam">السَّلَامُ عَلَيْكُمْ</span>
+        <h2 id="greet">Assalamu'alaikum, Bu Guru!</h2>
+        <span class="date" id="dateLabel"></span>
+      </div>
+      <div class="bubble" id="bubble">Ayo semangat belajar! 🌟</div>
+      <div class="kids">
+        <svg class="kid boy" data-act="kid" data-kid="boy" viewBox="0 0 120 160" aria-label="Ahmad">
+          <g class="bob">
+            <rect x="46" y="118" width="12" height="30" rx="6" fill="#334155"/>
+            <rect x="62" y="118" width="12" height="30" rx="6" fill="#334155"/>
+            <ellipse cx="51" cy="150" rx="10" ry="5" fill="#78350f"/><ellipse cx="69" cy="150" rx="10" ry="5" fill="#78350f"/>
+            <path d="M34 84 Q60 72 86 84 L90 126 Q60 132 30 126 Z" fill="#ffffff" stroke="#bae6fd" stroke-width="2"/>
+            <path d="M60 80 V124" stroke="#bae6fd" stroke-width="2"/>
+            <circle cx="60" cy="92" r="2" fill="#14b8a6"/><circle cx="60" cy="102" r="2" fill="#14b8a6"/><circle cx="60" cy="112" r="2" fill="#14b8a6"/>
+            <rect x="26" y="86" width="11" height="32" rx="5.5" fill="#ffffff" stroke="#bae6fd" stroke-width="2" transform="rotate(10 31 88)"/>
+            <circle cx="27" cy="119" r="6" fill="#f5c9a0"/>
+            <g class="wave" style="transform-origin:86px 88px">
+              <g transform="rotate(-150 86 88)">
+                <rect x="81" y="86" width="11" height="32" rx="5.5" fill="#ffffff" stroke="#bae6fd" stroke-width="2"/>
+                <circle cx="86.5" cy="120" r="6" fill="#f5c9a0"/>
+              </g>
+            </g>
+            <circle cx="60" cy="54" r="27" fill="#f5c9a0"/>
+            <path d="M33 44 Q33 20 60 20 Q87 20 87 44 Z" fill="#1e293b"/>
+            <rect x="32" y="40" width="56" height="7" rx="3" fill="#0f172a"/>
+            <path d="M42 33 h36" stroke="#facc15" stroke-width="2" stroke-dasharray="3 3"/>
+            <path d="M45 27 h30" stroke="#14b8a6" stroke-width="2" stroke-dasharray="2 4"/>
+          </g>
+        </svg>
+        <svg class="kid girl" data-act="kid" data-kid="girl" viewBox="0 0 120 160" aria-label="Aisyah">
+          <g class="bob">
+            <ellipse cx="50" cy="151" rx="10" ry="5" fill="#be185d"/><ellipse cx="70" cy="151" rx="10" ry="5" fill="#be185d"/>
+            <path d="M36 88 Q60 78 84 88 L96 148 Q60 154 24 148 Z" fill="#f9a8d4"/>
+            <path d="M30 128 Q60 134 90 128" stroke="#fbcfe8" stroke-width="4" fill="none"/>
+            <circle cx="40" cy="138" r="2.5" fill="#fff"/><circle cx="60" cy="140" r="2.5" fill="#fff"/><circle cx="80" cy="138" r="2.5" fill="#fff"/>
+            <g class="wave" style="transform-origin:34px 92px">
+              <g transform="rotate(150 34 92)">
+                <rect x="28.5" y="90" width="11" height="30" rx="5.5" fill="#f9a8d4"/>
+                <circle cx="34" cy="122" r="6" fill="#f5c9a0"/>
+              </g>
+            </g>
+            <rect x="83" y="90" width="11" height="30" rx="5.5" fill="#f9a8d4" transform="rotate(-10 88 92)"/>
+            <circle cx="92" cy="121" r="6" fill="#f5c9a0"/>
+            <path d="M26 58 Q26 18 60 18 Q94 18 94 58 Q94 96 60 98 Q26 96 26 58Z" fill="#a78bfa"/>
+            <path d="M30 80 Q60 110 90 80 L92 98 Q60 112 28 98Z" fill="#8b5cf6"/>
+            <ellipse cx="60" cy="58" rx="21" ry="24" fill="#f5c9a0"/>
+            <path d="M39 44 Q60 30 81 44" stroke="#c4b5fd" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <circle cx="84" cy="40" r="5" fill="#fde047"/><circle cx="84" cy="40" r="2" fill="#f472b6"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="card" id="homeRemind" style="margin-bottom:14px;display:none;background:linear-gradient(135deg,#fff7ed,#fff)"></div>
+    <div class="card" style="margin-bottom:14px">
+      <h3><span class="t">📋 Absensi Hari Ini</span><button class="btn sm" data-act="go" data-v="absen">Absen sekarang →</button></h3>
+      <div class="stats" id="homeStats"></div>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <h3><span class="t">🕌 Kegiatan Hari Ini</span><button class="btn sm sec" data-act="editSched">✏️ Ubah</button></h3>
+        <ul class="sched" id="homeSched"></ul>
+      </div>
+      <div class="card">
+        <h3><span class="t">✅ Tugas Guru</span><button class="btn sm sec" data-act="go" data-v="tugas">Lihat semua</button></h3>
+        <div id="homeTodo"></div>
+      </div>
+      <div class="card" style="background:linear-gradient(135deg,#f0fdfa,#fefce8)">
+        <h3><span class="t">🤲 Doa Hari Ini</span><button class="btn sm sec" data-act="go" data-v="doa">Semua doa</button></h3>
+        <div id="homeDoa"></div>
+      </div>
+      <div class="card">
+        <h3><span class="t">📅 Agenda Mendatang</span><button class="btn sm sec" data-act="go" data-v="kalender">Kalender</button></h3>
+        <div id="homeAgenda"></div>
+      </div>
+      <div class="card">
+        <h3><span class="t">🎈 Alat Kelas</span></h3>
+        <div class="row">
+          <button class="btn yellow" data-act="randomPick">🎲 Pilih Murid Acak</button>
+          <button class="btn" style="background:#8b5cf6;box-shadow:0 4px 0 #6d28d9" data-act="quiz">🎯 Kuis Kelas</button>
+          <button class="btn pink" data-act="timer">⏰ Timer Kegiatan</button>
+          <button class="btn" data-act="go" data-v="cerita">📖 Cerita Islami</button>
+        </div>
+        <p class="muted" style="margin:10px 0 0;font-size:14px">⭐ Bintang terbanyak: <b id="topStar">—</b></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ABSENSI ===== -->
+  <section class="view" id="v-absen">
+    <h2 class="section-title">📋 Absensi Murid</h2>
+    <div class="toolbar">
+      <div class="seg"><button class="on" data-act="absMode" data-m="harian">Harian</button><button data-act="absMode" data-m="rekap">Rekap Bulanan</button></div>
+    </div>
+    <div id="absHarian">
+      <div class="toolbar">
+        <button class="btn sm sec" data-act="dayShift" data-d="-1">◀</button>
+        <input type="date" id="absDate">
+        <button class="btn sm sec" data-act="dayShift" data-d="1">▶</button>
+        <button class="btn sm sec" data-act="today">Hari ini</button>
+        <span class="spacer"></span>
+        <button class="btn sm" data-act="allHadir">🌟 Semua Hadir</button>
+      </div>
+      <div class="stats" id="absStats" style="margin-bottom:12px"></div>
+      <div class="students" id="absList"></div>
+    </div>
+    <div id="absRekap" style="display:none">
+      <div class="toolbar">
+        <input type="month" id="rekapMonth" class="inp">
+        <span class="spacer"></span>
+        <button class="btn sm sec" data-act="copyRekap">📋 Salin untuk Excel</button>
+        <button class="btn sm" data-act="absReport">📄 Laporan cetak</button>
+      </div>
+      <div class="card"><div class="tbl-wrap" id="rekapTable"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== KALENDER ===== -->
+  <section class="view" id="v-kalender">
+    <h2 class="section-title">📅 Kalender Kelas</h2>
+    <div class="card" style="margin-bottom:14px">
+      <div class="cal-head">
+        <button class="btn sm sec" data-act="calShift" data-d="-1" aria-label="Bulan sebelumnya">◀</button>
+        <div class="cal-title" id="calTitle"></div>
+        <button class="btn sm sec" data-act="calShift" data-d="1" aria-label="Bulan berikutnya">▶</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-legend"><span><i style="background:#22c55e"></i>Ada absensi</span><span><i style="background:#14b8a6"></i>Agenda</span><span><i style="background:#facc15"></i>Catatan aktivitas</span><span><i style="background:#ef4444"></i>Tugas jatuh tempo</span><span>Angka kecil = tanggal Hijriah</span></div>
+      <div class="row" style="margin-top:10px"><button class="btn sm sec" data-act="calToday">📍 Ke hari ini</button><span class="spacer"></span><button class="btn sm" data-act="addEvent">+ Rencanakan agenda</button></div>
+    </div>
+    <div class="card" id="calDay"></div>
+  </section>
+
+  <!-- ===== TUGAS ===== -->
+  <section class="view" id="v-tugas">
+    <h2 class="section-title">✅ To-Do List Guru</h2>
+    <div class="card" style="margin-bottom:14px">
+      <form class="todo-add" id="todoForm">
+        <input type="text" id="todoText" class="inp" placeholder="Tulis tugas, misal: Siapkan lembar mewarnai" maxlength="140">
+        <select id="todoCat" class="inp">
+          <option>📚 Persiapan</option><option>🗂️ Administrasi</option><option>🤝 Orang Tua</option><option>🎨 Kegiatan</option><option>🕌 Ibadah</option><option>📝 Lainnya</option>
+        </select>
+        <select id="todoPri" class="inp"><option value="2">Sedang</option><option value="3">Penting</option><option value="1">Santai</option></select>
+        <input type="date" id="todoDate" class="inp">
+        <button class="btn" type="submit">+ Tambah</button>
+      </form>
+      <div class="chips" id="todoChips"></div>
+    </div>
+    <div class="row" style="margin-bottom:12px">
+      <div class="seg" id="todoFilter"><button class="on" data-act="todoFilter" data-f="open">Belum</button><button data-act="todoFilter" data-f="done">Selesai</button><button data-act="todoFilter" data-f="all">Semua</button></div>
+      <span class="spacer"></span>
+      <span class="pill" style="background:#ccfbf1;color:#115e59" id="todoCount"></span>
+    </div>
+    <div id="todoList"></div>
+  </section>
+
+  <!-- ===== DOA ===== -->
+  <section class="view" id="v-doa">
+    <h2 class="section-title">🤲 Doa Harian Anak</h2>
+    <div class="note">Semua doa di sini diambil dari <b>Al-Qur'an</b> atau <b>hadits shahih</b>, dan rujukannya dicantumkan di setiap doa. Nomor hadits mengikuti penomoran yang umum dipakai (Bukhari: Fathul Bari, Muslim: Fu'ad Abdul Baqi).</div>
+    <div class="filter-chips" id="doaFilter"></div>
+    <div class="doa-grid" id="doaGrid"></div>
+  </section>
+
+  <!-- ===== CERITA ===== -->
+  <section class="view" id="v-cerita">
+    <h2 class="section-title">📖 Cerita Islami</h2>
+    <div class="note">Kisah para nabi dan kisah dari Al-Qur'an & hadits shahih, ditulis ulang dengan bahasa anak. Rujukan ayat atau hadits ada di akhir setiap cerita. Tekan <b>🔊 Bacakan</b> agar cerita dibacakan.</div>
+    <div class="filter-chips" id="storyFilter"></div>
+    <div class="story-grid" id="storyGrid"></div>
+  </section>
+
+  <!-- ===== MURID ===== -->
+  <section class="view" id="v-murid">
+    <h2 class="section-title">🎒 Murid</h2>
+    <div class="toolbar"><div class="seg" id="muridSeg"><button class="on" data-act="muridTab" data-t="data">Data</button><button data-act="muridTab" data-t="hafalan">Hafalan</button><button data-act="muridTab" data-t="kembang">Perkembangan</button></div></div>
+    <div id="mt-data">
+      <div class="row" style="margin-bottom:12px">
+        <button class="btn" data-act="addStudent">+ Tambah Murid</button>
+        <span class="spacer"></span>
+        <button class="btn sm sec" data-act="resetStars">↺ Nol-kan bintang</button>
+      </div>
+      <div class="students" id="muridList"></div>
+    </div>
+    <div id="mt-hafalan" style="display:none"></div>
+    <div id="mt-kembang" style="display:none"></div>
+  </section>
+</div>
+
+<nav class="nav"><div class="in">
+  <button class="on" data-act="go" data-v="home"><span class="e">🏠</span>Beranda</button>
+  <button data-act="go" data-v="absen"><span class="e">📋</span>Absen</button>
+  <button data-act="go" data-v="kalender"><span class="e">📅</span>Kalender</button>
+  <button data-act="go" data-v="tugas"><span class="e">✅</span>Tugas</button>
+  <button data-act="go" data-v="doa"><span class="e">🤲</span>Doa</button>
+  <button data-act="go" data-v="cerita"><span class="e">📖</span>Cerita</button>
+  <button data-act="go" data-v="murid"><span class="e">🎒</span>Murid</button>
+</div></nav>
+
+<div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div>
+
+<script>
+/* ================= DATA: DOA (Al-Qur'an & hadits shahih) ================= */
+const DOA = [
+ {id:'makan',cat:'Makan',ic:'🍚',bg:'#fef3c7',t:'Doa Sebelum Makan',ar:'بِسْمِ اللَّهِ',lt:'Bismillāh',id_:'Dengan nama Allah.',src:'HR. Bukhari no. 5376 & Muslim no. 2022',g:'s',ket:'Rasulullah ﷺ bersabda kepada Umar bin Abi Salamah: “Wahai anak, sebutlah nama Allah, makanlah dengan tangan kananmu, dan makanlah yang dekat denganmu.”'},
+ {id:'lupa',cat:'Makan',ic:'❗',bg:'#fef3c7',t:'Jika Lupa Baca Doa Makan',ar:'بِسْمِ اللَّهِ أَوَّلَهُ وَآخِرَهُ',lt:'Bismillāhi awwalahū wa ākhirahū',id_:'Dengan nama Allah, di awal dan di akhirnya.',src:'HR. Abu Dawud no. 3767 & Tirmidzi no. 1858; dishahihkan Al-Albani',g:'s'},
+ {id:'sesudah',cat:'Makan',ic:'🍽️',bg:'#fef3c7',t:'Doa Sesudah Makan',ar:'الْحَمْدُ لِلَّهِ كَثِيرًا طَيِّبًا مُبَارَكًا فِيهِ، غَيْرَ مَكْفِيٍّ وَلَا مُوَدَّعٍ وَلَا مُسْتَغْنًى عَنْهُ رَبَّنَا',lt:'Al-ḥamdu lillāhi kaṡīran ṭayyiban mubārakan fīh, gaira makfiyyin wa lā muwadda‘in wa lā mustagnan ‘anhu rabbanā',id_:'Segala puji bagi Allah dengan pujian yang banyak, baik, dan penuh berkah, pujian yang tidak pernah cukup, tidak ditinggalkan, dan selalu dibutuhkan, wahai Tuhan kami.',src:'HR. Bukhari no. 5458',g:'s',ket:'Untuk anak TK, cukup juga dibiasakan mengucap “Alhamdulillah” setelah makan.'},
+ {id:'tidur',cat:'Tidur',ic:'🛏️',bg:'#e0e7ff',t:'Doa Sebelum Tidur',ar:'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا',lt:'Bismika Allāhumma amūtu wa aḥyā',id_:'Dengan nama-Mu ya Allah, aku mati (tidur) dan aku hidup (bangun).',src:'HR. Bukhari no. 6312',g:'s'},
+ {id:'bangun',cat:'Tidur',ic:'🌅',bg:'#e0e7ff',t:'Doa Bangun Tidur',ar:'الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ',lt:'Al-ḥamdu lillāhil-lażī aḥyānā ba‘da mā amātanā wa ilaihin-nusyūr',id_:'Segala puji bagi Allah yang telah menghidupkan kami setelah mematikan kami (menidurkan kami), dan kepada-Nya kami kembali.',src:'HR. Bukhari no. 6312',g:'s'},
+ {id:'wcmasuk',cat:'Kamar Mandi',ic:'🚽',bg:'#dbeafe',t:'Doa Masuk Kamar Mandi',ar:'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ',lt:'Allāhumma innī a‘ūżu bika minal-khubuṡi wal-khabā\'iṡ',id_:'Ya Allah, aku berlindung kepada-Mu dari setan laki-laki dan setan perempuan.',src:'HR. Bukhari no. 142 & Muslim no. 375',g:'s',ket:'Masuk dengan kaki kiri, dan doa dibaca sebelum masuk.'},
+ {id:'wckeluar',cat:'Kamar Mandi',ic:'🧼',bg:'#dbeafe',t:'Doa Keluar Kamar Mandi',ar:'غُفْرَانَكَ',lt:'Gufrānaka',id_:'Aku memohon ampunan-Mu (ya Allah).',src:'HR. Abu Dawud no. 30, Tirmidzi no. 7 & Ibnu Majah no. 300; dishahihkan Al-Albani',g:'s'},
+ {id:'wudhu',cat:'Ibadah',ic:'💧',bg:'#cffafe',t:'Doa Setelah Wudhu',ar:'أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ',lt:'Asyhadu an lā ilāha illallāhu waḥdahū lā syarīka lah, wa asyhadu anna Muḥammadan ‘abduhū wa rasūluh',id_:'Aku bersaksi tidak ada tuhan yang berhak disembah selain Allah semata, tidak ada sekutu bagi-Nya, dan aku bersaksi bahwa Muhammad adalah hamba dan utusan-Nya.',src:'HR. Muslim no. 234',g:'s',ket:'Sebelum wudhu, membaca “Bismillah”.'},
+ {id:'masjidmasuk',cat:'Ibadah',ic:'🕌',bg:'#cffafe',t:'Doa Masuk Masjid',ar:'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ',lt:'Allāhummaftaḥ lī abwāba raḥmatik',id_:'Ya Allah, bukakanlah untukku pintu-pintu rahmat-Mu.',src:'HR. Muslim no. 713',g:'s',ket:'Masuk masjid dengan kaki kanan.'},
+ {id:'masjidkeluar',cat:'Ibadah',ic:'👣',bg:'#cffafe',t:'Doa Keluar Masjid',ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ',lt:'Allāhumma innī as\'aluka min faḍlik',id_:'Ya Allah, sesungguhnya aku memohon karunia-Mu.',src:'HR. Muslim no. 713',g:'s'},
+ {id:'keluarrumah',cat:'Rumah & Perjalanan',ic:'🏡',bg:'#dcfce7',t:'Doa Keluar Rumah',ar:'بِسْمِ اللَّهِ، تَوَكَّلْتُ عَلَى اللَّهِ، لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',lt:'Bismillāh, tawakkaltu ‘alallāh, lā ḥaula wa lā quwwata illā billāh',id_:'Dengan nama Allah, aku bertawakal kepada Allah, tiada daya dan kekuatan kecuali dengan pertolongan Allah.',src:'HR. Abu Dawud no. 5095 & Tirmidzi no. 3426; dishahihkan Al-Albani',g:'s'},
+ {id:'masukrumah',cat:'Rumah & Perjalanan',ic:'🚪',bg:'#dcfce7',t:'Masuk Rumah',ar:'بِسْمِ اللَّهِ',lt:'Bismillāh — lalu mengucap salam',id_:'Dengan nama Allah.',src:'HR. Muslim no. 2018',g:'s',ket:'Rasulullah ﷺ mengabarkan: jika seseorang menyebut nama Allah ketika masuk rumah dan ketika makan, setan berkata, “Tidak ada tempat bermalam dan makan malam bagi kalian.”'},
+ {id:'kendaraan',cat:'Rumah & Perjalanan',ic:'🚗',bg:'#dcfce7',t:'Doa Naik Kendaraan',ar:'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ',lt:'Subḥānal-lażī sakhkhara lanā hāżā wa mā kunnā lahū muqrinīn, wa innā ilā rabbinā lamunqalibūn',id_:'Mahasuci Allah yang telah menundukkan kendaraan ini untuk kami, padahal sebelumnya kami tidak mampu menguasainya, dan sesungguhnya kami akan kembali kepada Tuhan kami.',src:'QS. Az-Zukhruf: 13–14; HR. Muslim no. 1342',g:'q'},
+ {id:'ilmu',cat:'Belajar',ic:'📚',bg:'#fae8ff',t:'Doa Mohon Tambah Ilmu',ar:'رَبِّ زِدْنِي عِلْمًا',lt:'Rabbi zidnī ‘ilmā',id_:'Ya Tuhanku, tambahkanlah kepadaku ilmu.',src:'QS. Thaha: 114',g:'q',ket:'Cocok dibaca bersama sebelum mulai belajar.'},
+ {id:'ortu1',cat:'Keluarga',ic:'💐',bg:'#ffe4e6',t:'Doa untuk Ayah & Ibu',ar:'رَبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا',lt:'Rabbirḥamhumā kamā rabbayānī ṣagīrā',id_:'Ya Tuhanku, sayangilah keduanya sebagaimana mereka berdua telah mendidikku (menyayangiku) di waktu kecil.',src:'QS. Al-Isra: 24',g:'q'},
+ {id:'ortu2',cat:'Keluarga',ic:'💞',bg:'#ffe4e6',t:'Mohon Ampun untuk Diri & Orang Tua',ar:'رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ',lt:'Rabbigfir lī wa liwālidayya',id_:'Ya Tuhanku, ampunilah aku dan kedua orang tuaku.',src:'QS. Nuh: 28',g:'q'},
+ {id:'sapujagat',cat:'Doa Pilihan',ic:'🌍',bg:'#ccfbf1',t:'Doa Kebaikan Dunia & Akhirat',ar:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',lt:'Rabbanā ātinā fid-dunyā ḥasanah, wa fil-ākhirati ḥasanah, wa qinā ‘ażāban-nār',id_:'Ya Tuhan kami, berikanlah kami kebaikan di dunia dan kebaikan di akhirat, dan lindungilah kami dari azab neraka.',src:'QS. Al-Baqarah: 201; HR. Bukhari no. 6389 (doa yang paling sering dibaca Nabi ﷺ)',g:'q'},
+ {id:'bersin',cat:'Akhlak',ic:'💨',bg:'#fef9c3',t:'Ketika Bersin',ar:'الْحَمْدُ لِلَّهِ ・ يَرْحَمُكَ اللَّهُ ・ يَهْدِيكُمُ اللَّهُ وَيُصْلِحُ بَالَكُمْ',lt:'Yang bersin: “Al-ḥamdulillāh”. Yang mendengar: “Yarḥamukallāh”. Dijawab: “Yahdīkumullāhu wa yuṣliḥu bālakum”',id_:'“Segala puji bagi Allah” — “Semoga Allah merahmatimu” — “Semoga Allah memberimu petunjuk dan memperbaiki keadaanmu.”',src:'HR. Bukhari no. 6224',g:'s'},
+ {id:'marah',cat:'Akhlak',ic:'🛡️',bg:'#fef9c3',t:'Ketika Marah',ar:'أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ',lt:'A‘ūżu billāhi minasy-syaiṭānir-rajīm',id_:'Aku berlindung kepada Allah dari setan yang terkutuk.',src:'HR. Bukhari no. 3282 & Muslim no. 2610',g:'s',ket:'Nabi ﷺ melihat dua orang saling marah, lalu bersabda bahwa jika ia mengucapkan kalimat ini, hilanglah marahnya.'},
+ {id:'hujan',cat:'Alam',ic:'🌧️',bg:'#e0f2fe',t:'Ketika Turun Hujan',ar:'اللَّهُمَّ صَيِّبًا نَافِعًا',lt:'Allāhumma ṣayyiban nāfi‘ā',id_:'Ya Allah, jadikanlah hujan ini hujan yang bermanfaat.',src:'HR. Bukhari no. 1032',g:'s'},
+ {id:'sakit',cat:'Akhlak',ic:'🩹',bg:'#fef9c3',t:'Menjenguk Teman yang Sakit',ar:'لَا بَأْسَ طَهُورٌ إِنْ شَاءَ اللَّهُ',lt:'Lā ba\'sa ṭahūrun in syā\' Allāh',id_:'Tidak mengapa, semoga (sakit ini) menjadi pembersih (dari dosa), insya Allah.',src:'HR. Bukhari no. 3616',g:'s'},
+ {id:'salam',cat:'Akhlak',ic:'👋',bg:'#fef9c3',t:'Mengucapkan Salam',ar:'السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ',lt:'As-salāmu ‘alaikum wa raḥmatullāhi wa barakātuh',id_:'Semoga keselamatan, rahmat Allah, dan keberkahan-Nya tercurah kepada kalian.',src:'HR. Abu Dawud no. 5195 & Tirmidzi no. 2689; dishahihkan Al-Albani',g:'s',ket:'Salam lengkap ini bernilai tiga puluh kebaikan. Dijawab: “Wa ‘alaikumus-salām wa raḥmatullāhi wa barakātuh.”'},
+ {id:'jazakallah',cat:'Akhlak',ic:'🎁',bg:'#fef9c3',t:'Ketika Dibantu / Diberi Hadiah',ar:'جَزَاكَ اللَّهُ خَيْرًا',lt:'Jazākallāhu khairā',id_:'Semoga Allah membalasmu dengan kebaikan.',src:'HR. Tirmidzi no. 2035; dishahihkan Al-Albani',g:'s',ket:'Rasulullah ﷺ bersabda, siapa yang diberi kebaikan lalu mengucapkan ini kepada pelakunya, sungguh ia telah sangat baik dalam memuji.'},
+ {id:'beri-makan',cat:'Makan',ic:'🥛',bg:'#fef3c7',t:'Doa untuk yang Memberi Makan & Minum',ar:'اللَّهُمَّ أَطْعِمْ مَنْ أَطْعَمَنِي، وَاسْقِ مَنْ سَقَانِي',lt:'Allāhumma aṭ‘im man aṭ‘amanī, wasqi man saqānī',id_:'Ya Allah, berilah makan orang yang memberiku makan, dan berilah minum orang yang memberiku minum.',src:'HR. Muslim no. 2055',g:'s'},
+ {id:'adzan',cat:'Ibadah',ic:'📢',bg:'#cffafe',t:'Doa Setelah Adzan',ar:'اللَّهُمَّ رَبَّ هَذِهِ الدَّعْوَةِ التَّامَّةِ، وَالصَّلَاةِ الْقَائِمَةِ، آتِ مُحَمَّدًا الْوَسِيلَةَ وَالْفَضِيلَةَ، وَابْعَثْهُ مَقَامًا مَحْمُودًا الَّذِي وَعَدْتَهُ',lt:'Allāhumma rabba hāżihid-da‘watit-tāmmah, waṣ-ṣalātil-qā\'imah, āti Muḥammadanil-wasīlata wal-faḍīlah, wab‘aṡhu maqāman maḥmūdanil-lażī wa‘adtah',id_:'Ya Allah, Tuhan pemilik seruan yang sempurna ini dan shalat yang akan didirikan, berikanlah kepada Muhammad al-wasilah dan keutamaan, dan bangkitkanlah beliau di tempat terpuji yang telah Engkau janjikan.',src:'HR. Bukhari no. 614',g:'s',ket:'Saat adzan berkumandang, anak diajak menirukan lafaz adzan, lalu membaca doa ini setelahnya.'},
+ {id:'istighfar',cat:'Ibadah',ic:'📿',bg:'#cffafe',t:'Setelah Salam dari Shalat',ar:'أَسْتَغْفِرُ اللَّهَ (٣×) ・ اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ',lt:'Astagfirullāh (3×). Allāhumma antas-salām wa minkas-salām, tabārakta yā żal-jalāli wal-ikrām',id_:'Aku memohon ampun kepada Allah (3×). Ya Allah, Engkaulah As-Salam, dan dari-Mu keselamatan. Mahaberkah Engkau, wahai Pemilik keagungan dan kemuliaan.',src:'HR. Muslim no. 591',g:'s'},
+ {id:'pagi',cat:'Doa Pilihan',ic:'🌤️',bg:'#ccfbf1',t:'Perlindungan Pagi & Petang',ar:'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ',lt:'Bismillāhil-lażī lā yaḍurru ma‘asmihī syai\'un fil-arḍi wa lā fis-samā\', wa huwas-samī‘ul-‘alīm',id_:'Dengan nama Allah, yang bersama nama-Nya tidak ada sesuatu pun di bumi dan di langit yang dapat membahayakan. Dia Maha Mendengar lagi Maha Mengetahui.',src:'HR. Abu Dawud no. 5088 & Tirmidzi no. 3388; dishahihkan Al-Albani',g:'s',ket:'Dibaca tiga kali di pagi hari dan tiga kali di petang hari.'},
+ {id:'lapang',cat:'Belajar',ic:'🗣️',bg:'#fae8ff',t:'Doa Dilapangkan Dada & Dimudahkan',ar:'رَبِّ اشْرَحْ لِي صَدْرِي، وَيَسِّرْ لِي أَمْرِي، وَاحْلُلْ عُقْدَةً مِنْ لِسَانِي، يَفْقَهُوا قَوْلِي',lt:'Rabbisyraḥ lī ṣadrī, wa yassir lī amrī, waḥlul ‘uqdatan min lisānī, yafqahū qaulī',id_:'Ya Tuhanku, lapangkanlah dadaku, mudahkanlah urusanku, dan lepaskanlah kekakuan dari lidahku, agar mereka mengerti perkataanku.',src:'QS. Thaha: 25–28 (doa Nabi Musa)',g:'q',ket:'Cocok dibaca sebelum maju bercerita, menghafal, atau tampil di depan kelas.'},
+ {id:'malas',cat:'Belajar',ic:'💪',bg:'#fae8ff',t:'Doa Dijauhkan dari Malas',ar:'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَالْجُبْنِ وَالْهَرَمِ، وَأَعُوذُ بِكَ مِنْ فِتْنَةِ الْمَحْيَا وَالْمَمَاتِ، وَأَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ',lt:'Allāhumma innī a‘ūżu bika minal-‘ajzi wal-kasal, wal-jubni wal-haram, wa a‘ūżu bika min fitnatil-maḥyā wal-mamāt, wa a‘ūżu bika min ‘ażābil-qabr',id_:'Ya Allah, aku berlindung kepada-Mu dari lemah dan malas, dari sifat penakut dan pikun, dan aku berlindung kepada-Mu dari fitnah kehidupan dan kematian, serta dari azab kubur.',src:'HR. Bukhari no. 6367 & Muslim no. 2706',g:'s'},
+ {id:'tsabbit',cat:'Doa Pilihan',ic:'💚',bg:'#ccfbf1',t:'Doa Keteguhan Hati',ar:'يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ',lt:'Yā muqallibal-qulūb, ṡabbit qalbī ‘alā dīnik',id_:'Wahai Dzat yang membolak-balikkan hati, teguhkanlah hatiku di atas agama-Mu.',src:'HR. Tirmidzi no. 2140; dishahihkan Al-Albani',g:'s',ket:'Doa yang paling sering dibaca Rasulullah ﷺ, menurut Ummu Salamah.'},
+ {id:'musibah',cat:'Akhlak',ic:'🫶',bg:'#fef9c3',t:'Ketika Kehilangan / Tertimpa Musibah',ar:'إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ',lt:'Innā lillāhi wa innā ilaihi rāji‘ūn',id_:'Sesungguhnya kami milik Allah dan kepada-Nya kami kembali.',src:'QS. Al-Baqarah: 156',g:'q'},
+ {id:'masyaallah',cat:'Akhlak',ic:'✨',bg:'#fef9c3',t:'Ketika Kagum pada Sesuatu',ar:'مَا شَاءَ اللَّهُ لَا قُوَّةَ إِلَّا بِاللَّهِ',lt:'Mā syā\'allāh, lā quwwata illā billāh',id_:'Inilah yang dikehendaki Allah, tidak ada kekuatan kecuali dengan pertolongan Allah.',src:'QS. Al-Kahfi: 39',g:'q'},
+ {id:'tangga',cat:'Rumah & Perjalanan',ic:'🪜',bg:'#dcfce7',t:'Naik & Turun Tangga',ar:'اللَّهُ أَكْبَرُ ・ سُبْحَانَ اللَّهِ',lt:'Naik: “Allāhu akbar” · Turun: “Subḥānallāh”',id_:'Allah Mahabesar · Mahasuci Allah.',src:'HR. Bukhari no. 2993',g:'s',ket:'Jabir berkata: “Kami apabila naik mengucapkan takbir, dan apabila turun mengucapkan tasbih.”'},
+ {id:'setelahhujan',cat:'Alam',ic:'🌈',bg:'#e0f2fe',t:'Setelah Hujan Turun',ar:'مُطِرْنَا بِفَضْلِ اللَّهِ وَرَحْمَتِهِ',lt:'Muṭirnā bifaḍlillāhi wa raḥmatih',id_:'Kami diberi hujan karena karunia Allah dan rahmat-Nya.',src:'HR. Bukhari no. 846 & Muslim no. 71',g:'s'},
+ {id:'angin',cat:'Alam',ic:'🌬️',bg:'#e0f2fe',t:'Ketika Angin Kencang',ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَهَا، وَخَيْرَ مَا فِيهَا، وَخَيْرَ مَا أُرْسِلَتْ بِهِ، وَأَعُوذُ بِكَ مِنْ شَرِّهَا، وَشَرِّ مَا فِيهَا، وَشَرِّ مَا أُرْسِلَتْ بِهِ',lt:'Allāhumma innī as\'aluka khairahā, wa khaira mā fīhā, wa khaira mā ursilat bih, wa a‘ūżu bika min syarrihā, wa syarri mā fīhā, wa syarri mā ursilat bih',id_:'Ya Allah, aku memohon kebaikan angin ini, kebaikan yang ada padanya, dan kebaikan yang dibawanya. Aku berlindung kepada-Mu dari keburukannya, keburukan yang ada padanya, dan keburukan yang dibawanya.',src:'HR. Muslim no. 899',g:'s'}
+];
+
+/* ================= DATA: CERITA ================= */
+const STORIES = [
+ {id:'adam',cat:'Kisah Nabi',ic:'🌱',bg:'#dcfce7',t:'Nabi Adam, Manusia Pertama',p:[
+  'Dahulu kala, Allah memberi tahu para malaikat bahwa Dia akan menjadikan seorang khalifah di bumi. Allah lalu menciptakan Nabi Adam ‘alaihissalam dari tanah.',
+  'Allah mengajarkan kepada Nabi Adam nama-nama segala sesuatu. Ketika ditanya, para malaikat tidak tahu, tetapi Nabi Adam bisa menyebutkannya. MasyaAllah!',
+  'Allah memerintahkan para malaikat untuk sujud (memberi hormat) kepada Nabi Adam. Semua malaikat taat, kecuali Iblis. Iblis sombong dan berkata, “Aku lebih baik darinya.”',
+  'Nabi Adam dan istrinya tinggal di surga. Mereka boleh makan apa saja, kecuali dari satu pohon. Tetapi setan terus membisiki mereka, sampai mereka memakan buah dari pohon itu.',
+  'Nabi Adam dan istrinya sangat menyesal. Mereka berdoa, “Rabbanā ẓalamnā anfusanā…” — Ya Tuhan kami, kami telah menzalimi diri kami sendiri. Allah Maha Penerima Taubat, maka Allah mengampuni mereka.'],
+  m:'Kalau berbuat salah, segera minta maaf kepada Allah dan kepada teman. Jangan sombong seperti Iblis.',s:'QS. Al-Baqarah: 30–37; QS. Al-A‘raf: 11–23'},
+ {id:'nuh',cat:'Kisah Nabi',ic:'🚢',bg:'#e0f2fe',t:'Nabi Nuh dan Kapal Besar',p:[
+  'Nabi Nuh ‘alaihissalam mengajak kaumnya menyembah Allah saja. Beliau berdakwah siang dan malam dengan sabar, selama sangat lama — 950 tahun!',
+  'Tetapi kebanyakan kaumnya tidak mau mendengar. Mereka malah menutup telinga dan mengejek Nabi Nuh.',
+  'Allah memerintahkan Nabi Nuh membuat kapal yang besar. Setiap kali orang-orang lewat, mereka menertawakannya. Nabi Nuh tetap sabar bekerja.',
+  'Lalu datanglah banjir yang sangat besar. Nabi Nuh membawa orang-orang beriman dan hewan-hewan yang berpasang-pasangan naik ke kapal sambil berkata, “Bismillāhi majrēhā wa mursāhā” — dengan nama Allah kapal ini berlayar dan berlabuh.',
+  'Atas perintah Allah, banjir pun surut, dan kapal berlabuh dengan selamat di atas Bukit Judi. Alhamdulillah!'],
+  m:'Tetap sabar dan taat kepada Allah, walaupun ada yang mengejek.',s:'QS. Hud: 25–48; QS. Al-‘Ankabut: 14'},
+ {id:'ibrahim',cat:'Kisah Nabi',ic:'🔥',bg:'#ffedd5',t:'Nabi Ibrahim dan Api yang Dingin',p:[
+  'Nabi Ibrahim ‘alaihissalam hidup di tengah kaum yang menyembah patung-patung buatan mereka sendiri.',
+  'Nabi Ibrahim bertanya, “Patung apa ini yang kalian sembah?” Mereka menjawab, “Kami hanya mengikuti nenek moyang kami.”',
+  'Suatu hari, ketika kaumnya pergi, Nabi Ibrahim menghancurkan patung-patung itu kecuali yang paling besar. Saat ditanya, beliau berkata, “Tanyakan saja kepada patung yang besar itu, kalau ia bisa bicara!” Mereka pun sadar: patung tidak bisa bicara, apalagi menolong.',
+  'Kaumnya marah, lalu melemparkan Nabi Ibrahim ke dalam api yang sangat besar.',
+  'Allah berfirman, “Wahai api, jadilah dingin dan keselamatan bagi Ibrahim!” Api itu pun tidak membakar Nabi Ibrahim. Allahu Akbar!'],
+  m:'Hanya Allah yang kita sembah, dan Allah selalu menolong hamba-Nya yang beriman.',s:'QS. Al-Anbiya: 51–70'},
+ {id:'zamzam',cat:'Kisah Nabi',ic:'💧',bg:'#cffafe',t:'Siti Hajar, Ismail, dan Air Zamzam',p:[
+  'Nabi Ibrahim membawa istrinya, Hajar, dan bayi mereka, Ismail, ke sebuah lembah yang sepi di Makkah. Di sana belum ada air dan belum ada orang.',
+  'Hajar bertanya, “Apakah Allah yang memerintahkanmu melakukan ini?” Nabi Ibrahim menjawab, “Ya.” Hajar pun berkata, “Kalau begitu, Allah tidak akan menyia-nyiakan kami.”',
+  'Ketika bekal air habis, bayi Ismail menangis kehausan. Hajar berlari naik ke Bukit Shafa, lalu ke Bukit Marwah, mencari air atau orang yang lewat. Bolak-balik sampai tujuh kali!',
+  'Lalu datanglah malaikat, dan memancarlah air dari tanah di dekat Ismail. Itulah air Zamzam, yang sampai sekarang masih mengalir.',
+  'Berjalan antara Shafa dan Marwah sekarang menjadi bagian dari ibadah haji dan umrah, yang disebut sa‘i.'],
+  m:'Berusahalah sekuat tenaga dan bertawakal kepada Allah. Allah tidak menyia-nyiakan hamba-Nya.',s:'HR. Bukhari no. 3364; QS. Ibrahim: 37'},
+ {id:'yusuf',cat:'Kisah Nabi',ic:'⭐',bg:'#ede9fe',t:'Nabi Yusuf yang Pemaaf',p:[
+  'Waktu kecil, Nabi Yusuf ‘alaihissalam bermimpi melihat sebelas bintang, matahari, dan bulan bersujud kepadanya. Ayahnya, Nabi Ya‘qub, memintanya merahasiakan mimpi itu dari saudara-saudaranya.',
+  'Saudara-saudara Yusuf iri karena ayah sangat menyayangi Yusuf. Mereka memasukkan Yusuf ke dalam sumur, lalu berkata kepada ayah bahwa Yusuf dimakan serigala.',
+  'Yusuf ditemukan rombongan musafir dan dibawa ke Mesir. Di sana beliau mengalami banyak ujian, tetapi Yusuf tetap jujur, sabar, dan taat kepada Allah.',
+  'Allah memberi Yusuf kemampuan menafsirkan mimpi. Beliau menjelaskan mimpi raja tentang tujuh tahun subur dan tujuh tahun paceklik, lalu dipercaya mengurus persediaan makanan negeri Mesir.',
+  'Bertahun-tahun kemudian, saudara-saudaranya datang meminta bahan makanan. Yusuf tidak membalas dendam. Beliau berkata, “Pada hari ini tidak ada cercaan atas kalian. Semoga Allah mengampuni kalian.” Keluarga mereka pun berkumpul kembali.'],
+  m:'Jadilah pemaaf, jujur, dan sabar seperti Nabi Yusuf.',s:'QS. Yusuf: 4–21, 43–56, 92–100'},
+ {id:'musa',cat:'Kisah Nabi',ic:'🌊',bg:'#dbeafe',t:'Nabi Musa dan Laut yang Terbelah',p:[
+  'Firaun adalah raja yang sangat sombong dan zalim. Ia bahkan mengaku sebagai tuhan.',
+  'Allah memerintahkan Nabi Musa ‘alaihissalam membawa Bani Israil pergi pada malam hari. Firaun dan tentaranya mengejar mereka.',
+  'Di depan ada laut, di belakang ada tentara Firaun. Para pengikut berkata, “Kita pasti tersusul!” Nabi Musa menjawab dengan yakin, “Sekali-kali tidak! Sesungguhnya Tuhanku bersamaku, Dia akan memberi petunjuk kepadaku.”',
+  'Allah memerintahkan, “Pukullah laut itu dengan tongkatmu!” Laut pun terbelah. Setiap belahan seperti gunung yang besar, dan terbukalah jalan di tengahnya.',
+  'Nabi Musa dan pengikutnya selamat menyeberang. Ketika Firaun dan tentaranya ikut masuk, air kembali menutup dan mereka tenggelam.'],
+  m:'Yakinlah bahwa Allah selalu bersama orang yang beriman dan sabar.',s:'QS. Asy-Syu‘ara: 52–66'},
+ {id:'semut',cat:'Kisah Nabi',ic:'🌿',bg:'#fef3c7',t:'Nabi Sulaiman dan Semut Kecil',p:[
+  'Nabi Sulaiman ‘alaihissalam adalah seorang nabi sekaligus raja. Allah mengajarinya bahasa burung, dan beliau memiliki pasukan dari manusia, jin, dan burung.',
+  'Suatu hari, pasukan Nabi Sulaiman berjalan dan sampai di sebuah lembah semut.',
+  'Seekor semut berkata, “Wahai para semut, masuklah ke sarang kalian, agar kalian tidak terinjak oleh Sulaiman dan tentaranya, sedangkan mereka tidak menyadarinya.”',
+  'Nabi Sulaiman mendengarnya lalu tersenyum. Beliau tidak marah, malah bersyukur dan berdoa, “Ya Tuhanku, jadikanlah aku tetap mensyukuri nikmat-Mu yang telah Engkau berikan kepadaku dan kepada kedua orang tuaku.”'],
+  m:'Sayangi hewan sekecil apa pun, dan selalu bersyukur kepada Allah.',s:'QS. An-Naml: 16–19'},
+ {id:'hudhud',cat:'Kisah dalam Al-Qur\'an',ic:'📜',bg:'#ccfbf1',t:'Burung Hud-hud yang Tidak Hadir',p:[
+  'Suatu hari Nabi Sulaiman memeriksa pasukan burungnya. “Mengapa aku tidak melihat Hud-hud? Apakah ia tidak hadir?” Ternyata burung Hud-hud memang tidak ada!',
+  'Tak lama kemudian Hud-hud datang dan menjelaskan alasannya, “Aku membawa berita penting dari negeri Saba. Di sana ada seorang ratu, dan rakyatnya menyembah matahari, bukan Allah.”',
+  'Nabi Sulaiman berkata, “Akan kami lihat, apakah engkau benar atau termasuk yang berdusta.” Lalu beliau menitipkan surat kepada Hud-hud untuk sang ratu. Surat itu diawali dengan “Bismillāhir-raḥmānir-raḥīm.”',
+  'Akhirnya Ratu Saba datang menemui Nabi Sulaiman. Ia melihat tanda-tanda kekuasaan Allah, lalu berserah diri kepada Allah, Tuhan semesta alam.'],
+  m:'Kalau tidak bisa hadir, sampaikan alasannya dengan jujur, seperti Hud-hud. Hud-hud juga mengajak orang kepada kebaikan.',s:'QS. An-Naml: 20–44'},
+ {id:'yunus',cat:'Kisah Nabi',ic:'🏝️',bg:'#e0f2fe',t:'Nabi Yunus di Dalam Perut Ikan',p:[
+  'Nabi Yunus ‘alaihissalam mengajak kaumnya beriman, tetapi mereka tidak mau. Nabi Yunus pun pergi meninggalkan mereka dalam keadaan marah.',
+  'Beliau naik sebuah kapal yang penuh muatan. Lalu diadakan undian, dan Nabi Yunus yang terpilih, sehingga beliau masuk ke laut.',
+  'Seekor ikan besar menelan Nabi Yunus. Dalam gelap, beliau berdoa, “Lā ilāha illā anta, subḥānaka innī kuntu minaẓ-ẓālimīn” — tidak ada tuhan selain Engkau, Mahasuci Engkau, sungguh aku termasuk orang yang zalim.',
+  'Allah mendengar doa Nabi Yunus. Ikan itu mengeluarkan beliau ke daratan, dan Allah menumbuhkan pohon sejenis labu untuk menaunginya.',
+  'Nabi Yunus kembali kepada kaumnya, yang jumlahnya lebih dari seratus ribu orang, dan mereka pun beriman. Alhamdulillah!'],
+  m:'Jangan putus asa. Kalau sedang susah, berdoalah kepada Allah.',s:'QS. Al-Anbiya: 87–88; QS. Ash-Shaffat: 139–148'},
+ {id:'kahfi',cat:'Kisah dalam Al-Qur\'an',ic:'⛰️',bg:'#f5f5f4',t:'Pemuda Penghuni Gua (Ashabul Kahfi)',p:[
+  'Dahulu ada beberapa pemuda yang beriman kepada Allah, padahal orang-orang di negeri mereka tidak beriman.',
+  'Agar tetap bisa menyembah Allah, mereka berlindung di dalam sebuah gua. Mereka berdoa, “Ya Tuhan kami, berikanlah rahmat kepada kami dan sempurnakanlah petunjuk yang lurus bagi kami.”',
+  'Allah menidurkan mereka di dalam gua. Anjing mereka berbaring menjulurkan kedua kakinya di depan pintu gua.',
+  'Mereka tertidur sangat lama: tiga ratus tahun ditambah sembilan tahun! Ketika bangun, mereka mengira hanya tidur sehari atau setengah hari.',
+  'Salah seorang dari mereka pergi ke kota membawa uang perak untuk membeli makanan yang baik. Ternyata zaman sudah berganti. Inilah salah satu tanda kekuasaan Allah.'],
+  m:'Tetap teguh beriman kepada Allah, walaupun berbeda dengan orang lain.',s:'QS. Al-Kahfi: 9–22, 25'},
+ {id:'luqman',cat:'Kisah dalam Al-Qur\'an',ic:'💬',bg:'#fae8ff',t:'Nasihat Luqman untuk Anaknya',p:[
+  'Luqman adalah orang yang diberi hikmah (kebijaksanaan) oleh Allah. Suatu hari ia menasihati anaknya dengan penuh sayang.',
+  '“Wahai anakku, janganlah engkau menyekutukan Allah.” Allah juga memerintahkan kita berbakti kepada ayah dan ibu, terutama ibu yang mengandung dengan susah payah.',
+  '“Wahai anakku, walaupun ada perbuatan seberat biji sawi, tersembunyi di dalam batu, di langit, atau di bumi, Allah pasti mengetahuinya.”',
+  '“Dirikanlah shalat, ajaklah berbuat baik, cegahlah yang buruk, dan bersabarlah.”',
+  '“Janganlah memalingkan wajah karena sombong, dan jangan berjalan dengan angkuh. Berjalanlah dengan sederhana, dan lunakkanlah suaramu.”'],
+  m:'Sayangi ayah dan ibu, rajin shalat, tidak sombong, dan berbicara dengan lembut.',s:'QS. Luqman: 12–19'},
+ {id:'gajah',cat:'Kisah dalam Al-Qur\'an',ic:'🪨',bg:'#e7e5e4',t:'Pasukan Bergajah',p:[
+  'Dahulu ada seorang penguasa (dalam kitab sejarah disebut Abrahah) yang ingin menghancurkan Ka‘bah di Makkah.',
+  'Ia datang bersama pasukan besar yang membawa gajah. Penduduk Makkah tidak mampu melawan mereka.',
+  'Tetapi Allah menjaga Ka‘bah. Allah mengirimkan burung-burung yang datang berbondong-bondong (ṭairan abābīl).',
+  'Burung-burung itu melempari pasukan bergajah dengan batu dari tanah yang terbakar, sehingga mereka hancur seperti daun-daun yang dimakan ulat.',
+  'Menurut para ahli sejarah, peristiwa ini terjadi pada tahun kelahiran Nabi Muhammad ﷺ, sehingga disebut Tahun Gajah.'],
+  m:'Allah Maha Kuat dan menjaga rumah-Nya. Jangan sombong dengan kekuatan.',s:'QS. Al-Fil: 1–5'},
+ {id:'hijrah',cat:'Kisah Nabi',ic:'🕸️',bg:'#fef9c3',t:'Nabi Muhammad ﷺ di Gua Tsur',p:[
+  'Nabi Muhammad ﷺ dan sahabatnya, Abu Bakar, berhijrah dari Makkah ke Madinah. Orang-orang kafir Quraisy mengejar mereka.',
+  'Mereka bersembunyi di sebuah gua di Gunung Tsur.',
+  'Para pengejar sampai di dekat gua. Abu Bakar khawatir, “Wahai Rasulullah, seandainya salah seorang dari mereka melihat ke bawah kakinya, pasti mereka melihat kita.”',
+  'Rasulullah ﷺ menjawab dengan tenang, “Apa pendapatmu tentang dua orang, sedangkan Allah yang ketiganya?” Allah mengabadikannya dalam Al-Qur\'an: “Janganlah engkau bersedih, sesungguhnya Allah bersama kita.”',
+  'Allah melindungi mereka, dan mereka sampai di Madinah dengan selamat. Penduduk Madinah menyambut mereka dengan gembira.'],
+  m:'Kalau takut atau sedih, ingatlah: Allah selalu bersama kita.',s:'QS. At-Taubah: 40; HR. Bukhari no. 3653 & Muslim no. 2381'},
+ {id:'anjing',cat:'Kisah dari Hadits',ic:'👢',bg:'#ffedd5',t:'Laki-laki yang Memberi Minum Anjing',p:[
+  'Rasulullah ﷺ pernah bercerita tentang seorang laki-laki yang sedang berjalan dan merasa sangat haus.',
+  'Ia menemukan sebuah sumur, lalu turun dan minum. Ketika keluar, ia melihat seekor anjing menjulurkan lidah dan menjilat tanah basah karena kehausan.',
+  'Laki-laki itu berkata, “Anjing ini kehausan seperti aku tadi.” Ia turun lagi ke sumur, mengisi sepatunya dengan air, menggigit sepatu itu dengan mulutnya, lalu naik dan memberi minum anjing itu.',
+  'Allah membalas kebaikannya dan mengampuni dosanya. Para sahabat bertanya, “Apakah kita mendapat pahala karena berbuat baik kepada hewan?” Rasulullah ﷺ menjawab, “Pada setiap makhluk yang bernyawa ada pahala.”'],
+  m:'Sayangi hewan dan semua makhluk Allah. Kebaikan kecil bisa berpahala besar.',s:'HR. Bukhari no. 2363 & Muslim no. 2244'},
+ {id:'bintang',cat:'Kisah Nabi',ic:'✨',bg:'#e0e7ff',t:'Nabi Ibrahim Mencari Tuhan',p:[
+  'Nabi Ibrahim ‘alaihissalam melihat kaumnya menyembah patung dan benda-benda langit. Beliau ingin mengajak mereka berpikir.',
+  'Ketika malam tiba, beliau melihat sebuah bintang. “Inikah Tuhanku?” Tetapi ketika bintang itu terbenam, beliau berkata, “Aku tidak suka kepada yang terbenam.”',
+  'Lalu terbitlah bulan yang terang. “Inikah Tuhanku?” Tetapi bulan pun terbenam.',
+  'Pagi harinya terbit matahari yang besar dan bersinar. “Inikah Tuhanku? Ini yang lebih besar.” Namun matahari pun terbenam di sore hari.',
+  'Nabi Ibrahim berkata, “Wahai kaumku, aku berlepas diri dari apa yang kalian sekutukan. Aku menghadapkan wajahku kepada Allah yang menciptakan langit dan bumi.”'],
+  m:'Bintang, bulan, dan matahari adalah ciptaan Allah. Hanya Allah yang menciptakan semuanya, dan hanya Allah yang kita sembah.',s:'QS. Al-An‘am: 74–79'},
+ {id:'kabah',cat:'Kisah Nabi',ic:'🕋',bg:'#f5f5f4',t:'Nabi Ibrahim & Ismail Membangun Ka‘bah',p:[
+  'Ketika Nabi Ismail sudah besar, Nabi Ibrahim datang kembali ke Makkah.',
+  'Allah memerintahkan mereka berdua membangun Ka‘bah, rumah pertama yang dibangun untuk beribadah kepada Allah.',
+  'Nabi Ismail mengangkat batu-batu, dan Nabi Ibrahim menyusunnya. Ketika bangunan sudah tinggi, Nabi Ibrahim berdiri di atas sebuah batu agar bisa terus menyusun.',
+  'Sambil bekerja, mereka berdoa, “Rabbanā taqabbal minnā, innaka antas-samī‘ul-‘alīm” — Ya Tuhan kami, terimalah dari kami. Sungguh Engkau Maha Mendengar, Maha Mengetahui.',
+  'Sampai sekarang, umat Islam di seluruh dunia shalat menghadap Ka‘bah.'],
+  m:'Bekerja sama dalam kebaikan, dan selalu berdoa agar amal kita diterima Allah.',s:'QS. Al-Baqarah: 127–128; QS. Ali ‘Imran: 96; HR. Bukhari no. 3364'},
+ {id:'ayyub',cat:'Kisah Nabi',ic:'🌧️',bg:'#e0f2fe',t:'Nabi Ayyub yang Sabar',p:[
+  'Nabi Ayyub ‘alaihissalam adalah hamba Allah yang taat. Allah mengujinya dengan sakit yang lama.',
+  'Walaupun sakit, Nabi Ayyub tetap sabar. Beliau tidak mengeluh kepada manusia, tetapi mengadu hanya kepada Allah.',
+  'Beliau berdoa, “Annī massaniyaḍ-ḍurru wa anta arḥamur-rāḥimīn” — Sungguh aku ditimpa kesusahan, dan Engkau Yang Maha Penyayang di antara semua penyayang.',
+  'Allah berfirman, “Hentakkanlah kakimu!” Lalu memancarlah air yang sejuk untuk mandi dan minum. Allah menyembuhkan Nabi Ayyub dan mengembalikan keluarganya.',
+  'Allah memuji beliau: “Sungguh, Kami dapati dia seorang yang sabar. Dialah sebaik-baik hamba.”'],
+  m:'Kalau sakit atau sedih, bersabarlah dan berdoa kepada Allah.',s:'QS. Al-Anbiya: 83–84; QS. Shad: 41–44'},
+ {id:'shalih',cat:'Kisah Nabi',ic:'🏜️',bg:'#ffedd5',t:'Nabi Shalih dan Unta Betina',p:[
+  'Nabi Shalih ‘alaihissalam diutus kepada kaum Tsamud. Mereka pandai memahat rumah di gunung-gunung batu.',
+  'Nabi Shalih mengajak mereka menyembah Allah saja. Mereka meminta bukti, maka Allah mendatangkan seekor unta betina sebagai tanda kekuasaan-Nya.',
+  'Nabi Shalih berpesan, “Biarkan unta ini makan di bumi Allah, dan jangan kalian sakiti. Unta ini punya giliran minum, dan kalian juga punya giliran minum pada hari yang ditentukan.”',
+  'Tetapi orang-orang yang jahat tidak taat. Mereka menyembelih unta itu.',
+  'Allah pun menurunkan azab kepada kaum yang durhaka itu, sedangkan Nabi Shalih dan orang-orang beriman diselamatkan.'],
+  m:'Taati nasihat yang baik, jangan menyakiti hewan, dan biasakan bergiliran dengan tertib.',s:'QS. Hud: 61–68; QS. Asy-Syu‘ara: 141–158; QS. Asy-Syams: 11–15'},
+ {id:'daud',cat:'Kisah Nabi',ic:'🛡️',bg:'#dbeafe',t:'Daud Mengalahkan Jalut',p:[
+  'Dahulu ada pasukan orang beriman yang dipimpin oleh Thalut. Mereka akan menghadapi pasukan Jalut yang besar dan kuat.',
+  'Sebagian orang takut dan berkata, “Kita tidak sanggup melawan Jalut dan tentaranya.” Tetapi orang-orang yang yakin kepada Allah berkata, “Betapa banyak golongan kecil dapat mengalahkan golongan besar dengan izin Allah!”',
+  'Mereka berdoa, “Ya Tuhan kami, limpahkanlah kesabaran kepada kami, kokohkanlah langkah kami, dan tolonglah kami.”',
+  'Dengan izin Allah, mereka menang. Daud, salah seorang dari pasukan itu, berhasil mengalahkan Jalut.',
+  'Kelak Allah memberi Daud kerajaan dan hikmah, dan mengajarkan kepadanya apa yang Allah kehendaki.'],
+  m:'Jangan takut walaupun kecil. Kalau yakin kepada Allah dan bersabar, Allah menolong.',s:'QS. Al-Baqarah: 249–251'},
+ {id:'zakaria',cat:'Kisah Nabi',ic:'🤲',bg:'#fae8ff',t:'Doa Nabi Zakaria',p:[
+  'Nabi Zakaria ‘alaihissalam sudah sangat tua, rambutnya sudah memutih, dan istrinya tidak bisa memiliki anak.',
+  'Suatu hari, beliau berdoa kepada Allah dengan suara yang lembut, memohon diberi anak yang saleh.',
+  'Allah mengabulkan doanya: “Wahai Zakaria, Kami memberi kabar gembira kepadamu dengan seorang anak bernama Yahya.” Nama itu belum pernah dipakai oleh siapa pun sebelumnya.',
+  'Sebagai tanda, Allah membuat Nabi Zakaria tidak dapat berbicara kepada manusia selama tiga malam, padahal beliau sehat. Beliau pun banyak bertasbih kepada Allah.',
+  'Lahirlah Yahya, anak yang berbakti kepada kedua orang tuanya dan tidak sombong. Kelak ia menjadi nabi.'],
+  m:'Jangan pernah berhenti berdoa. Tidak ada yang sulit bagi Allah.',s:'QS. Maryam: 2–15'},
+ {id:'isa',cat:'Kisah Nabi',ic:'🌴',bg:'#dcfce7',t:'Maryam dan Nabi Isa',p:[
+  'Maryam adalah perempuan salehah yang rajin beribadah.',
+  'Malaikat Jibril datang mengabarkan bahwa Allah akan memberinya seorang anak laki-laki, walaupun ia belum menikah. Bagi Allah, hal itu mudah.',
+  'Ketika akan melahirkan, Maryam bersandar di pangkal pohon kurma. Allah memerintahkannya menggoyang pohon itu, maka berjatuhanlah kurma yang segar, dan mengalirlah air di dekatnya.',
+  'Ketika Maryam membawa bayinya kepada kaumnya, mereka heran. Maryam hanya menunjuk kepada bayinya.',
+  'Dengan izin Allah, bayi Isa berbicara: “Sesungguhnya aku hamba Allah. Dia memberiku Kitab dan menjadikan aku seorang nabi… dan menjadikan aku berbakti kepada ibuku.”'],
+  m:'Nabi Isa adalah hamba dan utusan Allah. Sayangi dan berbaktilah kepada ibu.',s:'QS. Maryam: 16–34'},
+ {id:'dzulqarnain',cat:'Kisah dalam Al-Qur\'an',ic:'🧱',bg:'#f5f5f4',t:'Dzulqarnain dan Tembok Besi',p:[
+  'Dzulqarnain adalah raja saleh yang diberi kekuasaan oleh Allah. Ia melakukan perjalanan jauh ke barat dan ke timur.',
+  'Suatu hari ia sampai di antara dua gunung. Di sana ada kaum yang meminta tolong, karena sering diganggu Ya’juj dan Ma’juj yang suka berbuat kerusakan.',
+  'Mereka menawarkan upah, tetapi Dzulqarnain menjawab, “Apa yang Allah berikan kepadaku lebih baik. Bantulah aku dengan tenaga.”',
+  'Mereka bekerja sama mengumpulkan potongan besi, lalu besi itu dipanaskan dan dituangi tembaga cair. Jadilah tembok yang sangat kuat.',
+  'Dzulqarnain tidak sombong. Ia berkata, “Ini adalah rahmat dari Tuhanku.”'],
+  m:'Gotong royong membuat pekerjaan berat menjadi ringan. Kalau berhasil, ingatlah bahwa itu karunia Allah.',s:'QS. Al-Kahfi: 83–98'},
+ {id:'gua3',cat:'Kisah dari Hadits',ic:'🪨',bg:'#e7e5e4',t:'Tiga Orang yang Terkurung di Gua',p:[
+  'Rasulullah ﷺ bercerita tentang tiga orang yang sedang dalam perjalanan. Hujan turun, lalu mereka berteduh di sebuah gua.',
+  'Tiba-tiba sebuah batu besar jatuh dan menutup pintu gua! Mereka tidak bisa keluar.',
+  'Mereka sepakat berdoa kepada Allah dengan menyebut amal saleh yang pernah mereka lakukan dengan ikhlas.',
+  'Orang pertama bercerita, ia selalu mendahulukan memberi susu kepada ayah dan ibunya yang sudah tua. Suatu malam ia menunggu orang tuanya bangun sampai pagi sambil memegang susu. Batu bergeser sedikit.',
+  'Orang kedua bercerita, ia pernah hampir berbuat dosa besar, tetapi ia meninggalkannya karena takut kepada Allah. Batu bergeser lagi.',
+  'Orang ketiga bercerita, ia menyimpan dan mengembangkan upah pekerjanya yang tertinggal sampai menjadi banyak ternak, lalu memberikan semuanya ketika pekerja itu datang. Batu pun bergeser, dan mereka bisa keluar.'],
+  m:'Berbakti kepada orang tua, menjauhi dosa, dan bersikap amanah adalah amal yang dicintai Allah.',s:'HR. Bukhari no. 2272 & Muslim no. 2743'},
+ {id:'umair',cat:'Kisah dari Hadits',ic:'🪺',bg:'#fef3c7',t:'Abu Umair dan Burung Kecilnya',p:[
+  'Anas bin Malik punya adik kecil bernama Abu Umair. Abu Umair punya seekor burung kecil yang disebut nughair.',
+  'Rasulullah ﷺ sering berkunjung ke rumah mereka. Setiap bertemu Abu Umair, beliau menyapanya dengan ramah dan bercanda dengannya.',
+  'Rasulullah ﷺ bertanya kepadanya, “Yā Abā ‘Umair, mā fa‘alan-nughair?” — Wahai Abu Umair, sedang apa burung kecilmu?',
+  'Walaupun beliau seorang nabi, Rasulullah ﷺ peduli kepada anak kecil, bermain dan bercanda dengan mereka.'],
+  m:'Rasulullah ﷺ sayang kepada anak-anak. Kita juga harus ramah dan menyayangi teman yang lebih kecil.',s:'HR. Bukhari no. 6129 & Muslim no. 2150'},
+ {id:'dinar',cat:'Kisah dari Hadits',ic:'🪵',bg:'#ffedd5',t:'Kayu Berisi Seribu Dinar',p:[
+  'Rasulullah ﷺ bercerita tentang seorang laki-laki dari Bani Israil yang meminjam seribu dinar kepada temannya.',
+  'Temannya bertanya, “Siapa saksinya?” Ia menjawab, “Cukuplah Allah sebagai saksi.” “Siapa penjaminnya?” “Cukuplah Allah sebagai penjamin.” Temannya pun percaya.',
+  'Peminjam itu pergi berlayar. Ketika waktu membayar tiba, ia tidak menemukan kapal untuk menyeberang.',
+  'Ia lalu mengambil sebatang kayu, melubanginya, memasukkan seribu dinar dan sepucuk surat ke dalamnya, lalu melemparkannya ke laut sambil berdoa kepada Allah.',
+  'Temannya pergi ke pantai menunggu kapal, lalu menemukan kayu itu untuk dijadikan kayu bakar. Ketika dibelah, ternyata ada uang dan surat di dalamnya! Kemudian si peminjam datang membawa seribu dinar lagi karena tidak tahu kirimannya sampai. Temannya berkata, “Allah telah menyampaikan kirimanmu.”'],
+  m:'Tepati janji dan jadilah orang yang amanah. Allah menyaksikan semua perbuatan kita.',s:'HR. Bukhari no. 2291'},
+ {id:'anas',cat:'Kisah dari Hadits',ic:'🌷',bg:'#ffe4e6',t:'Anas dan Akhlak Rasulullah ﷺ',p:[
+  'Anas bin Malik membantu Rasulullah ﷺ sejak masih kecil, selama sepuluh tahun.',
+  'Selama itu, Rasulullah ﷺ tidak pernah berkata “ah” kepadanya.',
+  'Kalau Anas melakukan sesuatu, beliau tidak bertanya, “Mengapa kamu melakukannya?” Kalau Anas tidak melakukan sesuatu, beliau tidak bertanya, “Mengapa kamu tidak melakukannya?”',
+  'Anas berkata bahwa Rasulullah ﷺ adalah manusia yang paling baik akhlaknya.'],
+  m:'Bicaralah dengan lembut kepada siapa pun, dan jangan mudah marah.',s:'HR. Bukhari no. 6038 & Muslim no. 2309'}
+];
+
+const AVATARS=['🌙','⭐','🌸','🌻','🌷','🍎','🍓','🍊','🍉','🎈','🚀','🌈','🍀','🌵','⚽','🎨','📚','🪁','🧁','💎','🚗','⛵','🌼','🍇'];
+const ST={H:'Hadir',I:'Izin',S:'Sakit',A:'Alpa'};
+const KID_LINES=['Assalamu\'alaikum! 👋','Bismillah, ayo belajar! 📚','Jangan lupa berdoa ya 🤲','Alhamdulillah, hari yang cerah! ☀️','Ayo rapikan mainan! 🧸','Sayang teman, sayang guru 💚','Rabbi zidnī ‘ilmā 🌟','Cuci tangan dulu sebelum makan 🧼','MasyaAllah, kalian hebat! ⭐'];
+const DEFAULT_SCHED=[['07:30','Penyambutan, salam & salim'],['07:45','Baris, doa bersama & ikrar'],['08:00','Murojaah surat pendek'],['08:30','Kegiatan inti'],['09:30','Cuci tangan & makan bekal'],['10:00','Bermain bebas'],['10:30','Cerita Islami'],['10:50','Doa pulang & salam']];
+const TODO_SUGG=['Siapkan lembar kerja','Cek hafalan surat murid','Hubungi orang tua murid','Isi buku penghubung','Siapkan alat peraga','Buat laporan mingguan','Dekorasi kelas'];
+
+/* ================= HELPERS ================= */
+const $=s=>document.querySelector(s);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const todayStr=()=>ymd(new Date());
+const parseD=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const fmtDate=(d,opt)=>{try{return d.toLocaleDateString('id-ID',opt)}catch(e){return ymd(d)}};
+function hijri(d){try{return new Intl.DateTimeFormat('id-ID-u-ca-islamic-umalqura',{day:'numeric',month:'long',year:'numeric'}).format(d)}catch(e){return ''}}
+
+/* ================= STATE & STORAGE ================= */
+let S=null; const ATT={}; const remoteLoaded={};
+let AG={events:[],notes:{}};
+function normAg(o){o=o||{};return {events:Array.isArray(o.events)?o.events:[],notes:(o.notes&&typeof o.notes==='object'&&!Array.isArray(o.notes))?o.notes:{}}}
+function saveAg(){Store.save('agenda',AG);syncReminders()}
+const EV_CAT={kegiatan:['🎨','Kegiatan Kelas','#14b8a6'],islam:['🕌','Hari Islam / Ibadah','#22c55e'],ortu:['🤝','Orang Tua / Rapat','#8b5cf6'],libur:['🏖️','Libur','#f97316'],acara:['🎉','Acara Sekolah','#ec4899'],lain:['📝','Lainnya','#64748b']};
+const HOLI={'1-1':'Tahun Baru Hijriah','1-10':'Hari Asyura (puasa 10 Muharram)','9-1':'Awal Ramadhan','10-1':'Idul Fitri','12-9':'Hari Arafah','12-10':'Idul Adha'};
+let HF=null;try{HF=new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{day:'numeric',month:'numeric',year:'numeric'})}catch(e){}
+function hparts(d){if(!HF)return null;try{const p=HF.formatToParts(d);const g=t=>parseInt((p.find(x=>x.type===t)||{}).value);const r={d:g('day'),m:g('month'),y:g('year')};return isNaN(r.d)?null:r}catch(e){return null}}
+function blank(){return {students:[],todos:[],schedule:DEFAULT_SCHED.map(([time,text])=>({id:uid(),time,text})),settings:{teacher:'Bu Guru',className:'TK A',sound:true,school:'TK An Najah',head:'',remind:true,remindEve:'19:00',remindMorning:'06:30'}}}
+function normalize(o){const b=blank();o=o||{};return {students:Array.isArray(o.students)?o.students:[],todos:Array.isArray(o.todos)?o.todos:[],schedule:Array.isArray(o.schedule)?o.schedule:b.schedule,settings:Object.assign(b.settings,o.settings||{})}}
+
+const Store={db:null,uid:null,timers:{},writing:{},pending:{},
+  lsGet(k){try{return JSON.parse(localStorage.getItem('kelasceria_'+k))}catch(e){return null}},
+  lsSet(k,v){if(CLOUD)return;try{localStorage.setItem('kelasceria_'+k,JSON.stringify(v))}catch(e){}},
+  ref(k){return this.db.doc('data/users/'+this.uid+'/'+k)},
+  async remoteGet(k){if(!this.db)return undefined;try{const s=await this.ref(k).get();return s.exists?s.data():null}catch(e){return undefined}},
+  save(k,v){if(CLOUD){cloudSave(k,v);return}this.lsSet(k,v);if(!this.db)return;this.pending[k]=JSON.parse(JSON.stringify(v));clearTimeout(this.timers[k]);setSync('saving');this.timers[k]=setTimeout(()=>this.flush(k),700)},
+  async flush(k){if(this.writing[k])return;const v=this.pending[k];if(v===undefined)return;delete this.pending[k];this.writing[k]=true;
+    try{await this.ref(k).set(v);setSync('ok')}
+    catch(e){if(e&&e.code==='unavailable'){await sleep(700+Math.random()*900);try{await this.ref(k).set(v);setSync('ok')}catch(e2){setSync('err',e2)}}else setSync('err',e)}
+    this.writing[k]=false;if(this.pending[k]!==undefined)this.flush(k)}
+};
+function setSync(st,e){const el=$('#sync');el.className='sync';
+  if(st==='ok'){el.textContent='☁️ Tersimpan'}
+  else if(st==='saving'){el.textContent='⏳ Menyimpan…'}
+  else if(st==='slow'){el.textContent='⏳ Menghubungkan…'}
+  else if(st==='offline'){el.classList.add('local');el.textContent='📴 Offline'}
+  else if(st==='err'){el.classList.add('err');el.textContent=(e&&e.code==='quota_exceeded')?'⚠️ Penyimpanan penuh':'⚠️ Gagal sinkron'}
+  else {el.classList.add('local');el.textContent='💾 Lokal'}}
+function saveMain(){Store.save('kelas',S);syncReminders()}
+function monthKey(dateStr){return dateStr.slice(0,7)}
+function getMonth(m){
+  if(CLOUD){if(!ATT[m])ATT[m]={days:Object.assign({},((C.cls&&C.base[P.abs(m)])||{}).days||{})};listenMonth(m);return ATT[m]}
+  if(!ATT[m]){const l=Store.lsGet('absen-'+m);ATT[m]=(l&&l.days)?l:{days:{}}}
+  if(Store.db&&!remoteLoaded[m]){remoteLoaded[m]=true;loadRemoteMonth(m)}
+  return ATT[m];
+}
+async function loadRemoteMonth(m){const r=await Store.remoteGet('absen-'+m);
+  if(r===undefined){remoteLoaded[m]=false;return}
+  if(r&&r.days){ATT[m]={days:r.days};Store.lsSet('absen-'+m,ATT[m]);renderAll()}
+  else if(Object.keys(ATT[m].days).length){Store.save('absen-'+m,ATT[m])}
+}
+function getDay(dateStr){const M=getMonth(monthKey(dateStr));return M.days[dateStr]||{}}
+function setStatus(dateStr,sid,st){const m=monthKey(dateStr);const M=getMonth(m);const day=Object.assign({},M.days[dateStr]||{});
+  if(st)day[sid]=st;else delete day[sid];M.days[dateStr]=day;Store.save('absen-'+m,M)}
+
+async function initCloud(){
+  if(!window.claude||typeof claude.use!=='function'){setSync('local');return}
+  try{
+    const [db,user]=await Promise.all([claude.use('db'),claude.use('user')]);
+    if(!db||!user){setSync('local');return}
+    const id=await user.id();if(!id){setSync('local');return}
+    Store.db=db;Store.uid=id;
+    const t=setTimeout(()=>setSync('slow'),10000);
+    const remote=await Store.remoteGet('kelas');clearTimeout(t);
+    if(remote===undefined){Store.db=null;setSync('local');return}
+    if(remote){S=normalize(remote);Store.lsSet('kelas',S)}
+    else if(S.students.length||S.todos.length){saveMain()}
+    const ra=await Store.remoteGet('agenda');
+    if(ra){AG=normAg(ra);Store.lsSet('agenda',AG)}else if(ra===null&&(AG.events.length||Object.keys(AG.notes).length)){saveAg()}
+    const rp=await Store.remoteGet('progres');
+    if(rp){PR=normPr(rp);Store.lsSet('progres',PR)}else if(rp===null&&(PR.notes.length||Object.keys(PR.hafalan).length||PR.custom.length)){savePr()}
+    setSync('ok');
+    for(const m of Object.keys(ATT)){remoteLoaded[m]=false}
+    renderAll();
+  }catch(e){Store.db=null;setSync('local')}
+}
+
+/* ================= SOUND ================= */
+let AC=null;
+function tone(notes){if(!S.settings.sound)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();let t=AC.currentTime;
+  notes.forEach(([f,d])=>{const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.25,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+d+.02);t+=d*.8})}catch(e){}}
+const SFX={pop:()=>tone([[660,.12]]),ding:()=>tone([[784,.12],[1046,.2]]),yay:()=>tone([[523,.12],[659,.12],[784,.12],[1046,.3]]),soft:()=>tone([[440,.1]]),star:()=>tone([[988,.08],[1318,.18]])};
+
+/* ================= UI HELPERS ================= */
+function toast(msg){document.querySelectorAll(".toast").forEach(x=>x.remove());const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
+function floatPlus(el,txt){const r=el.getBoundingClientRect();const p=document.createElement('div');p.className='plus';p.textContent=txt;p.style.left=(r.left+r.width/2-12)+'px';p.style.top=(r.top-10)+'px';document.body.appendChild(p);setTimeout(()=>p.remove(),1000)}
+function openModal(html){$('#modal').innerHTML='<button class="x" data-act="closeModal" aria-label="Tutup">✕</button>'+html;$('#modalBg').classList.add('show')}
+function closeModal(){$('#modalBg').classList.remove('show');stopSpeak();clearInterval(timerInt);clearInterval(pickInt)}
+function askConfirm(msg,onYes,yesLabel='Ya, hapus'){openModal(`<h2>Yakin?</h2><p style="font-size:17px">${esc(msg)}</p><div class="row"><button class="btn danger" id="cfYes">${esc(yesLabel)}</button><button class="btn sec" data-act="closeModal">Batal</button></div>`);$('#cfYes').onclick=()=>{closeModal();onYes()}}
+
+/* confetti */
+function confetti(){const c=$('#confetti'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
+  const cols=['#14b8a6','#facc15','#f472b6','#38bdf8','#a78bfa','#22c55e','#fb923c'];
+  const P=Array.from({length:140},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.5,r:4+Math.random()*6,c:cols[Math.random()*cols.length|0],vy:2+Math.random()*3,vx:-1.5+Math.random()*3,a:Math.random()*6,s:Math.random()<.3}));
+  let f=0;(function loop(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.y+=p.vy;p.x+=p.vx+Math.sin((f+p.a)/12);p.a+=.1;x.fillStyle=p.c;x.save();x.translate(p.x,p.y);x.rotate(p.a);
+    if(p.s){x.font=p.r*3+'px serif';x.fillText('⭐',0,0)}else x.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6);x.restore()});
+    if(++f<200)requestAnimationFrame(loop);else x.clearRect(0,0,c.width,c.height)})()}
+
+/* speech */
+function canSpeak(){return !!window.AndroidVoice||'speechSynthesis' in window}
+function speak(text,lang='id-ID'){if(window.AndroidVoice){try{AndroidVoice.speak(text)}catch(e){}return}
+  if(!canSpeak()){toast('Perangkat ini belum mendukung fitur bacakan');return}
+  stopSpeak();const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=.92;u.pitch=1.1;
+  const v=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.toLowerCase().startsWith(lang.slice(0,2)));if(v)u.voice=v;
+  u.onend=()=>{const b=document.querySelector('[data-act="speakStory"]');if(b)b.textContent='🔊 Bacakan'};
+  speechSynthesis.speak(u)}
+function stopSpeak(){try{if(window.AndroidVoice)AndroidVoice.stop();else if('speechSynthesis' in window)speechSynthesis.cancel()}catch(e){}}
+
+/* ================= RENDER ================= */
+let view='home',absDate=todayStr(),absMode='harian',todoFilter='open',doaCat='Semua',storyCat='Semua',rekapMonth=todayStr().slice(0,7),selAva='🐱';
+
+function counts(dateStr){const d=getDay(dateStr);const c={H:0,I:0,S:0,A:0,B:0};S.students.forEach(s=>{const st=d[s.id];if(st&&c[st]!==undefined)c[st]++;else c.B++});return c}
+function statsHTML(c){return `<div class="stat s-h"><b>${c.H}</b><span>Hadir</span></div><div class="stat s-i"><b>${c.I}</b><span>Izin</span></div><div class="stat s-s"><b>${c.S}</b><span>Sakit</span></div><div class="stat s-a"><b>${c.A}</b><span>Alpa</span></div><div class="stat s-b"><b>${c.B}</b><span>Belum</span></div>`}
+
+function renderHeader(){const now=new Date();const g=S.settings.teacher||'Bu Guru';
+  $('#greet').textContent=`Assalamu'alaikum, ${g}!`;
+  $('#classLabel').textContent=`Kelas ${S.settings.className||'TK'} · ${S.students.length} murid`;
+  const h=hijri(now);$('#dateLabel').textContent=fmtDate(now,{weekday:'long',day:'numeric',month:'long',year:'numeric'})+(h?' · '+h:'');}
+
+function renderHome(){
+  $('#homeStats').innerHTML=statsHTML(counts(todayStr()));
+  const now=new Date(),mins=now.getHours()*60+now.getMinutes();
+  const sch=[...S.schedule].sort((a,b)=>a.time.localeCompare(b.time));
+  let cur=-1;sch.forEach((s,i)=>{const [h,m]=s.time.split(':').map(Number);if(h*60+m<=mins)cur=i});
+  if(cur===sch.length-1){const [h,m]=sch[cur].time.split(':').map(Number);if(mins-(h*60+m)>45)cur=sch.length}
+  $('#homeSched').innerHTML=sch.length?sch.map((s,i)=>`<li class="${i===cur?'now':(i<cur?'past':'')}"><span class="tm">${esc(s.time)}</span><span>${esc(s.text)}</span></li>`).join(''):'<li class="muted">Belum ada jadwal. Tekan Ubah.</li>';
+  const t=todayStr();const open=S.todos.filter(x=>!x.done).sort(todoSort);
+  const doneToday=S.todos.filter(x=>x.done&&x.doneAt===t).length;
+  $('#homeTodo').innerHTML=open.length?open.slice(0,4).map(todoHTML).join('')+(open.length>4?`<p class="muted" style="margin:4px 0 0">+${open.length-4} tugas lainnya</p>`:''):`<div class="empty" style="padding:10px"><div class="big" style="font-size:40px">🎉</div><div>Alhamdulillah, semua tugas beres!${doneToday?` (${doneToday} selesai hari ini)`:''}</div></div>`;
+  const idx=Math.floor(parseD(t).getTime()/864e5)%DOA.length;const d=DOA[(idx+DOA.length)%DOA.length];
+  $('#homeDoa').innerHTML=`<div style="font-weight:800;font-size:17px">${d.ic} ${esc(d.t)}</div><div class="arab" style="font-size:26px;text-align:center;margin:6px 0">${d.ar}</div><div class="doa-latin" style="font-size:15px">${esc(d.lt)}</div><div style="text-align:center;margin-top:4px">“${esc(d.id_)}”</div><div class="row" style="justify-content:space-between;margin-top:8px"><span class="src">📌 ${esc(d.src)}</span><button class="btn sm sec" data-act="openDoa" data-id="${d.id}">Buka</button></div>`;
+  const top=[...S.students].sort((a,b)=>(b.stars||0)-(a.stars||0))[0];
+  renderHomeAgenda();renderReminders();
+  $('#topStar').textContent=top&&top.stars?`${top.av} ${top.name} (${top.stars}⭐)`:'—';
+}
+
+function renderAbsen(){
+  $('#absHarian').style.display=absMode==='harian'?'':'none';$('#absRekap').style.display=absMode==='rekap'?'':'none';
+  document.querySelectorAll('[data-act="absMode"]').forEach(b=>b.classList.toggle('on',b.dataset.m===absMode));
+  if(absMode==='harian'){
+    $('#absDate').value=absDate;$('#absStats').innerHTML=statsHTML(counts(absDate));
+    const d=getDay(absDate);
+    if(!S.students.length){$('#absList').innerHTML=emptyStudents();return}
+    $('#absList').innerHTML=S.students.map(s=>{const st=d[s.id]||'';return `<div class="stu ${st}">
+      <div class="stu-top"><div class="ava ${s.g}">${esc(s.av)}</div><div><div class="nm">${esc(s.name)}</div><div class="sub">${st?ST[st]:'Belum diabsen'}${s.note?' · ⚠️ '+esc(s.note):''}</div></div>
+      <button class="starbtn" data-act="star" data-id="${s.id}" title="Beri bintang">⭐ ${s.stars||0}</button>${st&&st!=='H'?`<button class="starbtn" style="margin-left:4px;background:#dcfce7;color:#166534" data-act="waStudent" data-id="${s.id}" data-tpl="absen" title="Kabari orang tua">💬</button>`:''}</div>
+      <div class="status-btns">${['H','I','S','A'].map(k=>`<button class="${k} ${st===k?'on':''}" data-act="mark" data-id="${s.id}" data-st="${k}" title="${ST[k]}">${k==='H'?'✔ H':k}</button>`).join('')}</div></div>`}).join('');
+  } else renderRekap();
+}
+function emptyStudents(){return `<div class="empty" style="grid-column:1/-1"><div class="big">🎒</div><p style="font-size:17px">Belum ada murid. Tambahkan dulu ya!</p><div class="row" style="justify-content:center"><button class="btn" data-act="addStudent">+ Tambah Murid</button><button class="btn sec" data-act="sampleStudents">Isi contoh 10 murid</button></div></div>`}
+
+function rekapData(){const M=getMonth(rekapMonth);const days=Object.keys(M.days).filter(k=>Object.keys(M.days[k]||{}).length).sort();
+  const rows=S.students.map(s=>{const c={H:0,I:0,S:0,A:0};days.forEach(dd=>{const st=M.days[dd][s.id];if(c[st]!==undefined)c[st]++});const tot=c.H+c.I+c.S+c.A;return {s,c,pct:tot?Math.round(c.H/tot*100):0}});
+  return {days,rows}}
+function renderRekap(){$('#rekapMonth').value=rekapMonth;const {days,rows}=rekapData();
+  if(!S.students.length){$('#rekapTable').innerHTML=emptyStudents();return}
+  const [y,m]=rekapMonth.split('-').map(Number);const label=fmtDate(new Date(y,m-1,1),{month:'long',year:'numeric'});
+  $('#rekapTable').innerHTML=`<p style="margin:0 0 6px"><b>${esc(label)}</b> · ${days.length} hari tercatat</p>
+  <table class="rekap"><thead><tr><th>Nama</th><th>H</th><th>I</th><th>S</th><th>A</th><th>% Hadir</th></tr></thead><tbody>${rows.map(r=>`<tr style="background:#f8fafc"><td style="background:#f8fafc">${esc(r.s.av)} ${esc(r.s.name)}</td><td style="background:#f8fafc;color:#16a34a">${r.c.H}</td><td style="background:#f8fafc;color:#0284c7">${r.c.I}</td><td style="background:#f8fafc;color:#ea580c">${r.c.S}</td><td style="background:#f8fafc;color:#dc2626">${r.c.A}</td><td style="background:#f8fafc"><div class="row" style="flex-wrap:nowrap"><div class="bar" style="flex:1"><i style="width:${r.pct}%"></i></div>${r.pct}%</div></td></tr>`).join('')}</tbody></table>`}
+
+function todoSort(a,b){return (a.date||'9').localeCompare(b.date||'9')||(b.pri||2)-(a.pri||2)}
+function todoHTML(x){const t=todayStr();const late=!x.done&&x.date&&x.date<t;const pl={3:'Penting',2:'Sedang',1:'Santai'}[x.pri||2];
+  const dl=x.date?(x.date===t?'Hari ini':fmtDate(parseD(x.date),{day:'numeric',month:'short'})):'';
+  return `<div class="todo ${x.done?'done':''}"><button class="check" data-act="toggleTodo" data-id="${x.id}" aria-label="Tandai selesai">${x.done?'✓':''}</button>
+  <div style="min-width:0"><div class="tx">${esc(x.text)}</div><div class="meta"><span class="tag pri-${x.pri||2}">${pl}</span><span>${esc(x.cat||'')}</span>${dl?`<span class="${late?'late':''}">📅 ${dl}${late?' · terlewat':''}</span>`:''}</div></div>
+  <button class="del" data-act="delTodo" data-id="${x.id}" aria-label="Hapus">🗑️</button></div>`}
+function renderTodo(){
+  document.querySelectorAll('#todoFilter button').forEach(b=>b.classList.toggle('on',b.dataset.f===todoFilter));
+  let list=S.todos.filter(x=>todoFilter==='all'||(todoFilter==='done'?x.done:!x.done)).sort(todoSort);
+  const open=S.todos.filter(x=>!x.done).length,done=S.todos.length-open;
+  $('#todoCount').textContent=`${done}/${S.todos.length} selesai`;
+  $('#todoList').innerHTML=list.length?list.map(todoHTML).join(''):`<div class="empty"><div class="big">${todoFilter==='done'?'📭':'🌈'}</div><p>${todoFilter==='done'?'Belum ada tugas selesai.':'Tidak ada tugas. Saatnya istirahat sejenak!'}</p></div>`;
+  $('#todoChips').innerHTML='<span class="muted" style="font-size:13px">Ide cepat:</span>'+TODO_SUGG.map(s=>`<button class="chip" data-act="suggTodo" data-t="${esc(s)}">+ ${esc(s)}</button>`).join('');
+  if(!$('#todoDate').value)$('#todoDate').value=todayStr();
+}
+
+function renderDoa(){const cats=['Semua',...new Set(DOA.map(d=>d.cat))];
+  $('#doaFilter').innerHTML=cats.map(c=>`<button class="${c===doaCat?'on':''}" data-act="doaCat" data-c="${esc(c)}">${esc(c)}</button>`).join('');
+  $('#doaGrid').innerHTML=DOA.filter(d=>doaCat==='Semua'||d.cat===doaCat).map(d=>`<button class="doa-card" data-act="openDoa" data-id="${d.id}">
+   <div class="row"><div class="ic" style="background:${d.bg}">${d.ic}</div><span class="grade ${d.g==='q'?'g-q':'g-s'}">${d.g==='q'?'Al-Qur\'an':'Hadits Shahih'}</span></div>
+   <div class="tt">${esc(d.t)}</div><div class="arab">${d.ar.length>60?d.ar.slice(0,58)+'…':d.ar}</div><div class="src">📌 ${esc(d.src)}</div></button>`).join('')}
+function openDoa(id){const d=DOA.find(x=>x.id===id);if(!d)return;SFX.soft();
+  openModal(`<div class="row"><div class="ic" style="font-size:40px">${d.ic}</div><span class="grade ${d.g==='q'?'g-q':'g-s'}">${d.g==='q'?'Al-Qur\'an':'Hadits Shahih'}</span></div>
+  <h2>${esc(d.t)}</h2><div class="doa-arab arab">${d.ar}</div><div class="doa-latin">${esc(d.lt)}</div><div class="doa-arti">“${esc(d.id_)}”</div>
+  ${d.ket?`<div class="note">💡 ${esc(d.ket)}</div>`:''}<p class="src" style="font-size:14px">📌 Sumber: <b>${esc(d.src)}</b></p>
+  <div class="row"><button class="btn" data-act="speakText" data-t="${esc(d.t+'. Artinya: '+d.id_)}">🔊 Bacakan arti</button></div>`)}
+
+function renderCerita(){const cats=['Semua',...new Set(STORIES.map(s=>s.cat))];
+  $('#storyFilter').innerHTML=cats.map(c=>`<button class="${c===storyCat?'on':''}" data-act="storyCat" data-c="${esc(c)}">${esc(c)}</button>`).join('');
+  $('#storyGrid').innerHTML=STORIES.filter(s=>storyCat==='Semua'||s.cat===storyCat).map(s=>`<button class="story-card" data-act="openStory" data-id="${s.id}">
+   <div class="ic" style="background:${s.bg}">${s.ic}</div><div class="tt">${esc(s.t)}</div><span class="grade g-q">${esc(s.cat)}</span><div class="src">📌 ${esc(s.s)}</div></button>`).join('')}
+function openStory(id){const s=STORIES.find(x=>x.id===id);if(!s)return;SFX.ding();
+  openModal(`<div class="story-hero">${s.ic}</div><h2 style="text-align:center">${esc(s.t)}</h2>
+  <div class="row" style="justify-content:center;margin:8px 0 14px"><button class="btn" data-act="speakStory" data-id="${s.id}">🔊 Bacakan</button><button class="btn sec" data-act="stopSpeak">⏹ Berhenti</button></div>
+  <div class="story-body">${s.p.map(p=>`<p>${esc(p)}</p>`).join('')}</div>
+  <div class="moral">🌟 Pesan untuk anak: ${esc(s.m)}</div><p class="src" style="font-size:14px">📌 Rujukan: <b>${esc(s.s)}</b></p>`)}
+
+function renderMurid(){
+  if(!S.students.length){$('#muridList').innerHTML=emptyStudents();renderMuridTabs();return}
+  $('#muridList').innerHTML=S.students.map(s=>`<div class="stu"><div class="stu-top"><div class="ava ${s.g}">${esc(s.av)}</div><div><div class="nm">${esc(s.name)}</div><div class="sub">${s.full?esc(s.full)+' · ':''}${s.g==='P'?'Perempuan':'Laki-laki'}</div>${s.parent||s.wa?`<div class="sub">🏠 ${esc(s.parent||'')}${s.wa?' · 📱 '+esc(s.wa):''}</div>`:''}</div>
+   <button class="starbtn" data-act="star" data-id="${s.id}">⭐ ${s.stars||0}</button></div>
+   <div class="row"><button class="btn sm sec" data-act="editStudent" data-id="${s.id}">✏️ Ubah</button><button class="btn sm sec" data-act="waStudent" data-id="${s.id}">💬 WA</button><button class="btn sm sec" data-act="raport" data-id="${s.id}">📄 Raport</button><button class="btn sm sec" data-act="delStudent" data-id="${s.id}" aria-label="Hapus">🗑️</button></div></div>`).join('');renderMuridTabs()}
+
+let calMonth=todayStr().slice(0,7),calSel=todayStr();
+function evsOn(ds){return AG.events.filter(e=>e.date===ds).sort((a,b)=>(a.time||'99').localeCompare(b.time||'99'))}
+function renderKalender(){
+  const [y,m]=calMonth.split('-').map(Number);const first=new Date(y,m-1,1),dim=new Date(y,m,0).getDate(),t=todayStr();
+  const h1=hparts(first),h2=hparts(new Date(y,m-1,dim));
+  let hl='';try{const f=new Intl.DateTimeFormat('id-ID-u-ca-islamic-umalqura',{month:'long',year:'numeric'});const a=f.format(first),b=f.format(new Date(y,m-1,dim));hl=a===b?a:a.replace(/\s*\d+\s*H?$/,'')+' – '+b}catch(e){}
+  $('#calTitle').innerHTML=`${esc(fmtDate(first,{month:'long',year:'numeric'}))}<small>${esc(hl)}</small>`;
+  const M=getMonth(calMonth);
+  let html=['Ahad','Sen','Sel','Rab','Kam','Jum','Sab'].map((d,i)=>`<div class="cal-dow ${i===0?'ahad':''}">${d}</div>`).join('');
+  for(let i=0;i<first.getDay();i++)html+='<div class="cal-cell empty-cell"></div>';
+  for(let day=1;day<=dim;day++){const dt=new Date(y,m-1,day),ds=ymd(dt);const h=hparts(dt);const hol=h&&HOLI[h.m+'-'+h.d];
+    const evs=evsOn(ds),att=M.days[ds]&&Object.keys(M.days[ds]).length,note=(AG.notes[ds]||'').trim(),due=S.todos.some(x=>!x.done&&x.date===ds);
+    const cls=['cal-cell',dt.getDay()===0?'ahad':'',ds<t?'past':'',ds===t?'today':'',ds===calSel?'sel':'',hol?'holi':''].join(' ');
+    html+=`<button class="${cls}" data-act="calPick" data-d="${ds}" title="${hol?esc(hol):''}"><span class="dn">${day}</span><span class="hd">${h?h.d:''}</span>
+      <div class="evs">${hol?`<span style="background:#16a34a">${esc(hol)}</span>`:''}${evs.slice(0,hol?1:2).map(e=>`<span style="background:${(EV_CAT[e.cat]||EV_CAT.lain)[2]}">${esc(e.title)}</span>`).join('')}${evs.length>(hol?1:2)?`<span style="background:#94a3b8">+${evs.length-(hol?1:2)} lagi</span>`:''}</div>
+      <div class="dots">${att?'<i style="background:#22c55e"></i>':''}${evs.slice(0,3).map(e=>`<i style="background:${(EV_CAT[e.cat]||EV_CAT.lain)[2]}"></i>`).join('')}${note?'<i style="background:#facc15"></i>':''}${due?'<i style="background:#ef4444"></i>':''}</div></button>`}
+  $('#calGrid').innerHTML=html;renderCalDay()}
+function renderCalDay(){const ds=calSel,d=parseD(ds),t=todayStr();const h=hparts(d),hol=h&&HOLI[h.m+'-'+h.d];
+  const when=ds===t?['Hari ini','#facc15','#713f12']:ds<t?['Sudah lewat','#e2e8f0','#475569']:['Akan datang','#ccfbf1','#115e59'];
+  const att=getDay(ds),rec=Object.keys(att).length,c=counts(ds),evs=evsOn(ds),due=S.todos.filter(x=>x.date===ds).sort(todoSort),note=AG.notes[ds]||'';
+  const future=ds>t;
+  $('#calDay').innerHTML=`<div class="day-head"><div class="day-num">${d.getDate()}<small>${esc(fmtDate(d,{month:'short'}))}</small></div>
+    <div><div style="font-weight:800;font-size:19px">${esc(fmtDate(d,{weekday:'long',day:'numeric',month:'long',year:'numeric'}))}</div>
+    <div class="muted" style="font-size:14px">${esc(hijri(d))}</div>
+    <div class="row" style="margin-top:4px"><span class="pill" style="background:${when[1]};color:${when[2]}">${when[0]}</span>${hol?`<span class="pill" style="background:#dcfce7;color:#166534">🌙 ${esc(hol)} (perkiraan)</span>`:''}</div></div></div>
+  ${future?'':`<div class="daysec"><h4><span>📋 Absensi</span>${S.students.length?`<button class="btn sm sec" data-act="openAbsenDate" data-d="${ds}">${rec?'Lihat / ubah':'Isi absensi'}</button>`:''}</h4>
+    ${!S.students.length?'<p class="muted" style="margin:0">Belum ada data murid.</p>':rec?`<div class="mini-stats"><span style="background:#16a34a">Hadir ${c.H}</span><span style="background:#0284c7">Izin ${c.I}</span><span style="background:#ea580c">Sakit ${c.S}</span><span style="background:#dc2626">Alpa ${c.A}</span>${c.B?`<span style="background:#94a3b8">Belum ${c.B}</span>`:''}</div>${(c.I+c.S+c.A)?`<p style="margin:8px 0 0;font-size:14px">${S.students.filter(s=>att[s.id]&&att[s.id]!=='H').map(s=>`${esc(s.av)} ${esc(s.name)} <b>(${ST[att[s.id]]})</b>`).join(' · ')}</p>`:''}`:'<p class="muted" style="margin:0">Belum ada absensi di tanggal ini.</p>'}</div>`}
+  <div class="daysec"><h4><span>🗓️ ${future?'Rencana Agenda':'Agenda / Kegiatan'}</span><button class="btn sm" data-act="addEvent" data-d="${ds}">+ Tambah</button></h4>
+    ${evs.length?evs.map(e=>{const k=EV_CAT[e.cat]||EV_CAT.lain;return `<div class="ev" style="border-left-color:${k[2]}"><div style="font-size:22px">${k[0]}</div><div style="min-width:0"><div class="et">${esc(e.title)}</div><div class="em">${e.time?'⏰ '+esc(e.time)+' · ':''}${k[1]}</div>${e.note?`<div style="font-size:14px;margin-top:2px">${esc(e.note)}</div>`:''}</div><div class="eb"><button data-act="shareEvent" data-id="${e.id}" aria-label="Bagikan ke WhatsApp">📢</button><button data-act="editEvent" data-id="${e.id}" aria-label="Ubah">✏️</button><button data-act="delEvent" data-id="${e.id}" aria-label="Hapus">🗑️</button></div></div>`}).join(''):`<p class="muted" style="margin:0">${future?'Belum ada rencana. Tekan + Tambah untuk merencanakan.':'Tidak ada agenda tercatat.'}</p>`}</div>
+  ${due.length?`<div class="daysec"><h4><span>✅ Tugas dengan tenggat hari ini</span></h4>${due.map(todoHTML).join('')}</div>`:''}
+  <div class="daysec"><h4><span>📝 ${future?'Catatan persiapan':'Catatan aktivitas'}</span></h4>
+    <textarea class="inp" id="dayNote" maxlength="2000" placeholder="${future?'Contoh: siapkan kertas lipat, minta orang tua membawa bekal buah…':'Contoh: hafalan An-Nas lancar, Umar sudah berani maju bercerita, kegiatan mewarnai kaligrafi…'}">${esc(note)}</textarea>
+    <div class="row" style="margin-top:6px"><button class="btn sm" data-act="saveNote" data-d="${ds}">💾 Simpan catatan</button>${note?`<button class="btn sm sec" data-act="clearNote" data-d="${ds}">Hapus catatan</button>`:''}</div></div>`}
+function eventForm(e,dateStr){openModal(`<h2>${e?'Ubah':'Tambah'} Agenda</h2>
+  <div class="field"><label>Judul kegiatan</label><input id="eT" maxlength="80" value="${e?esc(e.title):''}" placeholder="misal: Manasik haji cilik"></div>
+  <div class="row" style="flex-wrap:nowrap"><div class="field" style="flex:1"><label>Tanggal</label><input type="date" id="eD" value="${esc(e?e.date:(dateStr||calSel))}"></div>
+  <div class="field" style="flex:1"><label>Jam (opsional)</label><input type="time" id="eH" value="${e?esc(e.time||''):''}"></div></div>
+  <div class="field"><label>Jenis</label><select id="eC">${Object.entries(EV_CAT).map(([k,v])=>`<option value="${k}" ${e&&e.cat===k?'selected':''}>${v[0]} ${v[1]}</option>`).join('')}</select></div>
+  <div class="field"><label>Keterangan (opsional)</label><input id="eN" maxlength="200" value="${e?esc(e.note||''):''}" placeholder="misal: murid memakai baju putih"></div>
+  <div class="row"><button class="btn" id="eSave">💾 Simpan</button></div>`);
+  setTimeout(()=>{if(document.activeElement.tagName!=='INPUT')$('#eT').focus()},50);
+  $('#eSave').onclick=()=>{const title=$('#eT').value.trim(),date=$('#eD').value;if(!title||!date){toast('Judul dan tanggal wajib diisi');return}
+    const v={title,date,time:$('#eH').value||'',cat:$('#eC').value,note:$('#eN').value.trim()};
+    if(e)Object.assign(e,v);else AG.events.push(Object.assign({id:uid()},v));
+    saveAg();calSel=date;calMonth=date.slice(0,7);closeModal();renderKalender();renderHome();SFX.ding();toast(e?'Agenda diperbarui':'Agenda ditambahkan 📅')}}
+function renderHomeAgenda(){const t=todayStr();const up=AG.events.filter(e=>e.date>=t).sort((a,b)=>(a.date+(a.time||'99')).localeCompare(b.date+(b.time||'99'))).slice(0,4);
+  const y=new Date();y.setDate(y.getDate()-1);const yn=(AG.notes[ymd(y)]||'').trim();
+  $('#homeAgenda').innerHTML=(up.length?up.map(e=>{const d=parseD(e.date),k=EV_CAT[e.cat]||EV_CAT.lain;return `<div class="up-ev"><div class="up-date">${d.getDate()}<small>${esc(fmtDate(d,{month:'short'}))}</small></div><div style="min-width:0"><div style="font-weight:800">${k[0]} ${esc(e.title)}</div><div class="muted" style="font-size:12px">${e.date===t?'Hari ini':esc(fmtDate(d,{weekday:'long'}))}${e.time?' · '+esc(e.time):''}</div></div></div>`}).join(''):'<p class="muted" style="margin:0">Belum ada agenda mendatang. Rencanakan lewat Kalender.</p>')
+   +(yn?`<div class="note" style="margin:10px 0 0">📝 <b>Catatan kemarin:</b> ${esc(yn.length>140?yn.slice(0,140)+'…':yn)}</div>`:'')}
+function renderAll(){renderHeader();renderHome();renderAbsen();renderKalender();renderTodo();renderDoa();renderCerita();renderMurid()}
+
+/* ================= FITUR LANJUTAN ================= */
+const SURAT=[['fatihah','Al-Fātiḥah'],['nas','An-Nās'],['falaq','Al-Falaq'],['ikhlas','Al-Ikhlāṣ'],['lahab','Al-Lahab'],['nasr','An-Naṣr'],['kafirun','Al-Kāfirūn'],['kautsar','Al-Kauṡar'],['maun','Al-Mā‘ūn'],['quraisy','Quraisy'],['fil','Al-Fīl'],['humazah','Al-Humazah'],['ashr','Al-‘Aṣr'],['takatsur','At-Takāṡur'],['qariah','Al-Qāri‘ah'],['adiyat','Al-‘Ādiyāt'],['zalzalah','Az-Zalzalah']];
+const ASPEK=[['nam','Nilai Agama & Moral','#16a34a','🕌'],['fm','Fisik Motorik','#ea580c','⚽'],['kog','Kognitif','#0284c7','🧩'],['bhs','Bahasa','#9333ea','💬'],['sos','Sosial Emosional','#db2777','🤝'],['seni','Seni','#ca8a04','🎨']];
+const LEVEL={BB:['Belum Berkembang','#ef4444'],MB:['Mulai Berkembang','#f59e0b'],BSH:['Berkembang Sesuai Harapan','#22c55e'],BSB:['Berkembang Sangat Baik','#0ea5e9']};
+const HSTAT=[['Belum','#e2e8f0','#475569'],['Sedang','#fef3c7','#92400e'],['Hafal','#22c55e','#ffffff']];
+let PR={hafalan:{},notes:[],custom:[]};
+function normPr(o){o=o||{};return {hafalan:(o.hafalan&&typeof o.hafalan==='object'&&!Array.isArray(o.hafalan))?o.hafalan:{},notes:Array.isArray(o.notes)?o.notes:[],custom:Array.isArray(o.custom)?o.custom:[]}}
+function savePr(){Store.save('progres',PR)}
+function stuById(id){return S.students.find(s=>s.id===id)}
+function hafItems(){return [...SURAT.map(([id,t])=>({id:'s-'+id,t:'QS. '+t,g:'Surat Pendek'})),...DOA.map(d=>({id:'d-'+d.id,t:d.t,g:'Doa Harian'})),...PR.custom.map(c=>({id:'c-'+c.id,t:c.t,g:'Materi Tambahan'}))]}
+function getH(sid,iid){const r=PR.hafalan[sid]&&PR.hafalan[sid][iid];return r?r.s:0}
+function setH(sid,iid,st,btn){PR.hafalan[sid]=PR.hafalan[sid]||{};const prev=getH(sid,iid);
+  if(st===0)delete PR.hafalan[sid][iid];else PR.hafalan[sid][iid]={s:st,d:todayStr()};savePr();
+  if(st===2&&prev!==2){const s=stuById(sid);if(s){s.stars=(s.stars||0)+1;saveMain()}SFX.yay();if(btn)floatPlus(btn,'⭐');toast(`MasyaAllah, ${s?s.name:''} hafal! +1 bintang ⭐`)}else SFX.pop()}
+function waNum(n){let d=String(n||'').replace(/\D/g,'');if(d.startsWith('0'))d='62'+d.slice(1);else if(d.startsWith('8'))d='62'+d;return d}
+function waHref(num,text){const n=waNum(num);return `https://wa.me/${n}?text=${encodeURIComponent(text)}`}
+function school(){return S.settings.school||'TK An Najah'}
+function sapaOrtu(s){return `Assalamu'alaikum warahmatullahi wabarakatuh, ${s&&s.parent?'Ayah/Bunda '+s.parent:'Ayah/Bunda'+(s?' dari ananda '+s.name:'')}.`}
+function tutup(){return `Jazakumullahu khairan.\n— ${S.settings.teacher||'Guru'}, ${school()}`}
+function semesterRange(){const d=new Date(),y=d.getFullYear();return d.getMonth()>=6?[`${y}-07-01`,`${y}-12-31`]:[`${y}-01-01`,`${y}-06-30`]}
+function monthsBetween(a,b){const out=[];let [y,m]=a.slice(0,7).split('-').map(Number);const [y2,m2]=b.slice(0,7).split('-').map(Number);while(y<y2||(y===y2&&m<=m2)){out.push(`${y}-${pad(m)}`);m++;if(m>12){m=1;y++}}return out}
+function attRange(sid,a,b){const c={H:0,I:0,S:0,A:0};monthsBetween(a,b).forEach(m=>{const M=getMonth(m);Object.keys(M.days).forEach(ds=>{if(ds>=a&&ds<=b){const st=M.days[ds][sid];if(c[st]!==undefined)c[st]++}})});return c}
+function fmtLong(ds){return fmtDate(parseD(ds),{day:'numeric',month:'long',year:'numeric'})}
+
+/* ---- tab Murid ---- */
+let muridTab='data',hafMode='materi',hafSel='s-fatihah',hafStu='',kSel='';
+function renderMuridTabs(){document.querySelectorAll('#muridSeg button').forEach(b=>b.classList.toggle('on',b.dataset.t===muridTab));
+  ['data','hafalan','kembang'].forEach(t=>$('#mt-'+t).style.display=muridTab===t?'':'none');
+  if(muridTab==='hafalan')renderHafalan();if(muridTab==='kembang')renderKembang()}
+function stuOptions(sel,withAll){return (withAll?`<option value="">— Pilih murid —</option>`:'')+S.students.map(s=>`<option value="${s.id}" ${s.id===sel?'selected':''}>${esc(s.av)} ${esc(s.name)}</option>`).join('')}
+function renderHafalan(){const el=$('#mt-hafalan');if(!S.students.length){el.innerHTML=`<div class="students">${emptyStudents()}</div>`;return}
+  const items=hafItems();if(!items.find(i=>i.id===hafSel))hafSel=items[0].id;if(!hafStu||!stuById(hafStu))hafStu=S.students[0].id;
+  const groups=[...new Set(items.map(i=>i.g))];
+  let html=`<div class="toolbar"><div class="seg"><button class="${hafMode==='materi'?'on':''}" data-act="hafMode" data-m="materi">Per Materi</button><button class="${hafMode==='murid'?'on':''}" data-act="hafMode" data-m="murid">Per Murid</button></div><span class="spacer"></span><button class="btn sm sec" data-act="addCustomHaf">+ Materi lain</button></div>`;
+  if(hafMode==='materi'){const it=items.find(i=>i.id===hafSel);const cnt=[0,0,0];S.students.forEach(s=>cnt[getH(s.id,hafSel)]++);const pct=Math.round(cnt[2]/S.students.length*100);
+    html+=`<div class="card" style="margin-bottom:12px"><div class="field" style="margin:0"><label>Pilih surat / doa</label><select data-chg="hafSel" class="inp">${groups.map(g=>`<optgroup label="${esc(g)}">${items.filter(i=>i.g===g).map(i=>`<option value="${i.id}" ${i.id===hafSel?'selected':''}>${esc(i.t)}</option>`).join('')}</optgroup>`).join('')}</select></div>
+      <div class="row" style="margin-top:10px;flex-wrap:nowrap"><div class="bar" style="flex:1;height:14px"><i style="width:${pct}%"></i></div><b>${pct}%</b></div>
+      <div class="mini-stats" style="margin-top:8px"><span style="background:#16a34a">Hafal ${cnt[2]}</span><span style="background:#d97706">Sedang ${cnt[1]}</span><span style="background:#94a3b8">Belum ${cnt[0]}</span></div></div>
+      <div class="students">${S.students.map(s=>{const st=getH(s.id,hafSel);return `<div class="stu" style="${st===2?'border-color:#86efac':''}"><div class="stu-top"><div class="ava ${s.g}">${esc(s.av)}</div><div><div class="nm">${esc(s.name)}</div><div class="sub">${esc(it.t)}</div></div></div>
+        <div class="status-btns" style="grid-template-columns:repeat(3,1fr)">${HSTAT.map((h,k)=>`<button style="${st===k?`background:${h[1]};color:${h[2]}`:''}" data-act="setHaf" data-s="${s.id}" data-i="${hafSel}" data-v="${k}">${k===2?'✔ ':''}${h[0]}</button>`).join('')}</div></div>`}).join('')}</div>`;
+  }else{const s=stuById(hafStu);const done=items.filter(i=>getH(s.id,i.id)===2).length;
+    html+=`<div class="card" style="margin-bottom:12px"><div class="field" style="margin:0"><label>Pilih murid</label><select data-chg="hafStu" class="inp">${stuOptions(hafStu)}</select></div>
+      <p style="margin:10px 0 4px"><b>${done}</b> dari ${items.length} materi sudah hafal</p><div class="bar" style="height:14px"><i style="width:${Math.round(done/items.length*100)}%"></i></div>
+      <p class="muted" style="font-size:13px;margin:8px 0 0">Ketuk materi untuk mengubah status: Belum → Sedang → Hafal.</p></div>`;
+    groups.forEach(g=>{html+=`<div class="card" style="margin-bottom:12px"><h3><span class="t">${g==='Surat Pendek'?'📖':g==='Doa Harian'?'🤲':'⭐'} ${esc(g)}</span></h3><div class="chips">${items.filter(i=>i.g===g).map(i=>{const st=getH(s.id,i.id),h=HSTAT[st];return `<button class="chip" style="background:${h[1]};color:${h[2]};border-style:solid;border-color:${st?h[1]:'#cbd5e1'};font-size:14px;padding:5px 12px" data-act="cycleHaf" data-s="${s.id}" data-i="${i.id}">${st===2?'✔ ':st===1?'⏳ ':''}${esc(i.t)}</button>`}).join('')}</div></div>`})}
+  el.innerHTML=html}
+
+function renderKembang(){const el=$('#mt-kembang');if(!S.students.length){el.innerHTML=`<div class="students">${emptyStudents()}</div>`;return}
+  if(kSel&&!stuById(kSel))kSel='';
+  const s=kSel?stuById(kSel):null;const notes=PR.notes.filter(n=>!kSel||n.sid===kSel).sort((a,b)=>b.date.localeCompare(a.date));
+  let html=`<div class="card" style="margin-bottom:12px"><div class="row" style="align-items:flex-end"><div class="field" style="margin:0;flex:1;min-width:180px"><label>Murid</label><select class="inp" data-chg="kSel"><option value="">Semua murid</option>${stuOptions(kSel)}</select></div>
+    <button class="btn" data-act="addNote">+ Catatan</button>${s?`<button class="btn yellow" data-act="raport" data-id="${s.id}">📄 Raport</button><button class="btn sec" data-act="waStudent" data-id="${s.id}" data-tpl="kembang">💬 Kabari ortu</button>`:''}</div>
+    <p class="muted" style="font-size:13px;margin:8px 0 0">Capaian: <b>BB</b> Belum Berkembang · <b>MB</b> Mulai Berkembang · <b>BSH</b> Berkembang Sesuai Harapan · <b>BSB</b> Berkembang Sangat Baik</p></div>`;
+  if(s){html+=`<div class="card" style="margin-bottom:12px"><h3><span class="t">${esc(s.av)} Ringkasan ${esc(s.name)}</span></h3><div class="students" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))">${ASPEK.map(([k,n,c,ic])=>{const last=PR.notes.filter(x=>x.sid===s.id&&x.aspek===k).sort((a,b)=>b.date.localeCompare(a.date))[0];return `<div style="border-radius:16px;padding:10px;background:${c}14;border:2px solid ${c}33"><div style="font-weight:800;font-size:14px">${ic} ${n}</div><div style="margin-top:4px">${last&&last.level?`<span class="tag" style="background:${LEVEL[last.level][1]};color:#fff">${last.level}</span>`:'<span class="muted" style="font-size:13px">Belum ada catatan</span>'}</div></div>`}).join('')}</div></div>`}
+  html+=notes.length?notes.map(n=>{const st=stuById(n.sid);const a=ASPEK.find(x=>x[0]===n.aspek)||ASPEK[0];return `<div class="ev" style="border-left-color:${a[2]};background:#fff;box-shadow:var(--shadow)"><div style="font-size:22px">${a[3]}</div><div style="min-width:0"><div class="et">${st?esc(st.av)+' '+esc(st.name)+' · ':''}${a[1]} ${n.level?`<span class="tag" style="background:${LEVEL[n.level][1]};color:#fff">${n.level}</span>`:''}</div><div class="em">${esc(fmtLong(n.date))}</div><div style="font-size:15px;margin-top:3px">${esc(n.text)}</div></div><div class="eb"><button data-act="editNote" data-id="${n.id}" aria-label="Ubah">✏️</button><button data-act="delNote" data-id="${n.id}" aria-label="Hapus">🗑️</button></div></div>`}).join(''):`<div class="empty"><div class="big">🌱</div><p>Belum ada catatan perkembangan${s?' untuk '+esc(s.name):''}.<br>Catat hal kecil setiap hari, nanti otomatis masuk ke raport.</p></div>`;
+  el.innerHTML=html}
+function noteForm(n){const sid=n?n.sid:(kSel||'');openModal(`<h2>${n?'Ubah':'Tambah'} Catatan Perkembangan</h2>
+  <div class="field"><label>Murid</label><select id="nS">${stuOptions(sid,!sid)}</select></div>
+  <div class="row" style="flex-wrap:nowrap"><div class="field" style="flex:1"><label>Tanggal</label><input type="date" id="nD" value="${n?n.date:todayStr()}"></div>
+  <div class="field" style="flex:1"><label>Capaian</label><select id="nL"><option value="">(tanpa nilai)</option>${Object.entries(LEVEL).map(([k,v])=>`<option value="${k}" ${n&&n.level===k?'selected':''}>${k} – ${v[0]}</option>`).join('')}</select></div></div>
+  <div class="field"><label>Aspek</label><select id="nA">${ASPEK.map(a=>`<option value="${a[0]}" ${n&&n.aspek===a[0]?'selected':''}>${a[3]} ${a[1]}</option>`).join('')}</select></div>
+  <div class="field"><label>Catatan</label><textarea class="inp" id="nT" maxlength="500" placeholder="Contoh: Sudah mau berbagi mainan dengan teman tanpa diminta.">${n?esc(n.text):''}</textarea></div>
+  <div class="row"><button class="btn" id="nSave">💾 Simpan</button>${n?'':'<button class="btn sec" id="nMore">Simpan & tambah lagi</button>'}</div>`);
+  const go2=more=>{const v={sid:$('#nS').value,date:$('#nD').value||todayStr(),level:$('#nL').value,aspek:$('#nA').value,text:$('#nT').value.trim()};
+    if(!v.sid){toast('Pilih murid dulu');return}if(!v.text&&!v.level){toast('Isi catatan atau capaian');return}
+    if(n)Object.assign(n,v);else PR.notes.push(Object.assign({id:uid()},v));savePr();kSel=v.sid;renderKembang();SFX.ding();
+    if(more){noteForm();$('#nS').value=v.sid}else{closeModal();toast('Catatan disimpan 🌱')}};
+  $('#nSave').onclick=()=>go2(false);if(!n)$('#nMore').onclick=()=>go2(true)}
+
+/* ---- dokumen cetak ---- */
+const RPT_CSS=`.rp{font-family:Arial,Helvetica,sans-serif;color:#111;font-size:12.5px;line-height:1.45;max-width:780px;margin:0 auto;background:#fff}
+.rp .kop{display:flex;align-items:center;gap:14px;border-bottom:3px double #0f766e;padding-bottom:10px;margin-bottom:12px}
+.rp .lg{width:52px;height:52px;border-radius:14px;background:#14b8a6;color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.rp h1{margin:0;font-size:19px;color:#0f766e}.rp .kop p{margin:2px 0 0;color:#475569}
+.rp h2{font-size:14px;margin:14px 0 6px;color:#0f766e;border-left:4px solid #14b8a6;padding-left:8px}
+.rp table{width:100%;border-collapse:collapse;margin:4px 0}.rp th,.rp td{border:1px solid #cbd5e1;padding:4px 6px;text-align:left;vertical-align:top}.rp th{background:#f0fdfa}
+.rp .c{text-align:center}.rp .sm td,.rp .sm th{padding:2px 3px;font-size:10.5px;text-align:center}.rp .sm td:nth-child(2){text-align:left;white-space:nowrap}
+.rp .sign{display:flex;justify-content:space-between;margin-top:26px;text-align:center;gap:10px}.rp .sign div{flex:1}.rp .ln{margin-top:56px;border-top:1px solid #111;padding-top:3px;font-weight:bold}
+.rp .xH{background:#dcfce7}.rp .xI{background:#e0f2fe}.rp .xS{background:#ffedd5}.rp .xA{background:#fee2e2}
+.rp .lv{display:inline-block;padding:0 6px;border-radius:6px;color:#fff;font-weight:bold;font-size:11px}`;
+function kopHTML(title,sub){return `<div class="kop"><div class="lg">☪</div><div><h1>${esc(school())}</h1><p><b>${esc(title)}</b>${sub?' · '+esc(sub):''}</p></div></div>`}
+function signHTML(left){return `<div class="sign"><div>${left||'Orang Tua / Wali'}<div class="ln">&nbsp;</div></div><div>Kepala Sekolah<div class="ln">${esc(S.settings.head||'.....................')}</div></div><div>${esc(fmtLong(todayStr()))}<br>Wali Kelas<div class="ln" style="margin-top:38px">${esc(S.settings.teacher||'')}</div></div></div>`}
+function docWrap(title,body,landscape){return `<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><style>body{margin:0;padding:18px;background:#fff}${RPT_CSS}@page{size:A4${landscape?' landscape':''};margin:12mm}@media print{body{padding:0}}</style></head><body><div class="rp">${body}</div></body></html>`}
+let lastDoc=null;
+function previewDoc(title,filename,body,landscape){lastDoc={title,filename,html:docWrap(title,body,landscape)};
+  const isApk=!!window.AndroidPrint;
+  openModal(`<h2>${esc(title)}</h2><div class="row" style="margin:6px 0 12px"><button class="btn" data-act="docOut">${isApk?'🖨️ Cetak / Simpan PDF':'⬇️ Unduh untuk dicetak'}</button>${isApk?'':'<span class="muted" style="font-size:13px">Buka file hasil unduhan, lalu pilih Cetak → Simpan sebagai PDF.</span>'}</div>
+  <style>${RPT_CSS}</style><div style="border:2px solid #e2e8f0;border-radius:16px;padding:14px;overflow-x:auto;background:#fff"><div class="rp">${body}</div></div>`)}
+async function docOut(){if(!lastDoc)return;const {title,filename,html}=lastDoc;
+  if(window.AndroidPrint){try{AndroidPrint.print(html,title)}catch(e){toast('Gagal membuka menu cetak')}return}
+  try{if(window.claude&&typeof claude.use==='function'){const dl=await claude.use('downloads');if(dl){try{await dl.save({filename,data:html});toast('File tersimpan. Buka lalu Cetak → Simpan PDF')}catch(e){if(e&&e.code!=='declined')toast('File tidak bisa disimpan di sini')}return}}}catch(e){}
+  try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=filename;document.body.appendChild(a);a.click();a.remove()}catch(e){toast('Unduhan tidak didukung di sini')}}
+function raportForm(sid){const s=stuById(sid);if(!s)return;const [a,b]=semesterRange();
+  openModal(`<h2>📄 Raport ${esc(s.name)}</h2><p class="muted">Raport disusun otomatis dari absensi, hafalan, catatan perkembangan, dan bintang.</p>
+  <div class="row" style="flex-wrap:nowrap"><div class="field" style="flex:1"><label>Dari</label><input type="date" id="rA" value="${a}"></div><div class="field" style="flex:1"><label>Sampai</label><input type="date" id="rB" value="${b}"></div></div>
+  <div class="field"><label>Judul periode</label><input id="rP" value="${esc(S.settings.period||'Semester '+(new Date().getMonth()>=6?'1 (Ganjil)':'2 (Genap)')+' '+(new Date().getMonth()>=6?new Date().getFullYear()+'/'+(new Date().getFullYear()+1):(new Date().getFullYear()-1)+'/'+new Date().getFullYear()))}"></div>
+  <div class="field"><label>Catatan wali kelas</label><textarea class="inp" id="rN" maxlength="800" placeholder="Pesan dan harapan untuk ananda...">${esc((s.raportNote)||'')}</textarea></div>
+  <div class="row"><button class="btn" id="rGo">👀 Lihat raport</button></div>`);
+  $('#rGo').onclick=()=>{const A=$('#rA').value,B=$('#rB').value;if(!A||!B||A>B){toast('Periode tidak valid');return}s.raportNote=$('#rN').value.trim();S.settings.period=$('#rP').value.trim();saveMain();
+    const body=raportHTML(s,A,B,$('#rP').value.trim());previewDoc('Raport '+s.name,`Raport-${s.name.replace(/[^\w-]+/g,'_')}.html`,body)}}
+function raportHTML(s,A,B,period){const c=attRange(s.id,A,B);const items=hafItems();
+  const hafal=g=>items.filter(i=>i.g===g&&getH(s.id,i.id)===2).map(i=>i.t),sedang=g=>items.filter(i=>i.g===g&&getH(s.id,i.id)===1).map(i=>i.t);
+  const notes=PR.notes.filter(n=>n.sid===s.id&&n.date>=A&&n.date<=B).sort((x,y)=>x.date.localeCompare(y.date));
+  let h=kopHTML('Laporan Perkembangan Anak Didik',period);
+  h+=`<table><tr><th style="width:30%">Nama lengkap</th><td>${esc(s.full||s.name)}</td></tr><tr><th>Nama panggilan</th><td>${esc(s.name)}</td></tr><tr><th>Jenis kelamin</th><td>${s.g==='P'?'Perempuan':'Laki-laki'}</td></tr>${s.born?`<tr><th>Tanggal lahir</th><td>${esc(fmtLong(s.born))}</td></tr>`:''}<tr><th>Kelas</th><td>${esc(S.settings.className||'')}</td></tr>${s.parent?`<tr><th>Orang tua / wali</th><td>${esc(s.parent)}</td></tr>`:''}<tr><th>Periode</th><td>${esc(fmtLong(A))} – ${esc(fmtLong(B))}</td></tr></table>`;
+  h+=`<h2>A. Perkembangan Anak</h2><table><tr><th style="width:26%">Aspek</th><th style="width:16%" class="c">Capaian</th><th>Catatan guru</th></tr>${ASPEK.map(([k,n,col])=>{const ns=notes.filter(x=>x.aspek===k);const last=[...ns].reverse().find(x=>x.level);return `<tr><td><b>${n}</b></td><td class="c">${last?`<span class="lv" style="background:${LEVEL[last.level][1]}">${last.level}</span><br><small>${LEVEL[last.level][0]}</small>`:'-'}</td><td>${ns.filter(x=>x.text).map(x=>`• ${esc(x.text)}`).join('<br>')||'<span style="color:#94a3b8">—</span>'}</td></tr>`}).join('')}</table>
+  <p style="font-size:11px;color:#475569;margin:2px 0">BB: Belum Berkembang · MB: Mulai Berkembang · BSH: Berkembang Sesuai Harapan · BSB: Berkembang Sangat Baik</p>`;
+  h+=`<h2>B. Hafalan</h2><table><tr><th style="width:26%"></th><th>Sudah hafal</th><th>Sedang dihafal</th></tr>${['Surat Pendek','Doa Harian','Materi Tambahan'].filter(g=>items.some(i=>i.g===g)).map(g=>`<tr><td><b>${g}</b></td><td>${esc(hafal(g).join(', '))||'—'}</td><td>${esc(sedang(g).join(', '))||'—'}</td></tr>`).join('')}</table>`;
+  h+=`<h2>C. Kehadiran</h2><table><tr><th class="c">Hadir</th><th class="c">Izin</th><th class="c">Sakit</th><th class="c">Tanpa keterangan</th><th class="c">Bintang ⭐</th></tr><tr><td class="c">${c.H} hari</td><td class="c">${c.I} hari</td><td class="c">${c.S} hari</td><td class="c">${c.A} hari</td><td class="c">${s.stars||0}</td></tr></table>`;
+  h+=`<h2>D. Catatan Wali Kelas</h2><div style="border:1px solid #cbd5e1;border-radius:6px;padding:8px;min-height:50px">${esc(s.raportNote||'').replace(/\n/g,'<br>')||'&nbsp;'}</div>`;
+  return h+signHTML()}
+function absensiReport(month){const M=getMonth(month);const [y,m]=month.split('-').map(Number);const label=fmtDate(new Date(y,m-1,1),{month:'long',year:'numeric'});
+  const days=Object.keys(M.days).filter(k=>Object.keys(M.days[k]||{}).length).sort();
+  let h=kopHTML('Laporan Absensi Bulanan',`Kelas ${S.settings.className||''} · ${label}`);
+  if(!days.length)h+='<p>Belum ada data absensi pada bulan ini.</p>';
+  else{h+=`<table class="sm"><tr><th>No</th><th>Nama</th>${days.map(d=>`<th>${Number(d.slice(8))}</th>`).join('')}<th>H</th><th>I</th><th>S</th><th>A</th><th>%</th></tr>`;
+    S.students.forEach((s,i)=>{const c={H:0,I:0,S:0,A:0};const cells=days.map(d=>{const st=M.days[d][s.id];if(c[st]!==undefined)c[st]++;return `<td class="${st?'x'+st:''}">${st||''}</td>`}).join('');const tot=c.H+c.I+c.S+c.A;
+      h+=`<tr><td>${i+1}</td><td>${esc(s.full||s.name)}</td>${cells}<td><b>${c.H}</b></td><td>${c.I}</td><td>${c.S}</td><td>${c.A}</td><td>${tot?Math.round(c.H/tot*100):0}</td></tr>`});
+    h+=`</table><p style="font-size:11px;color:#475569">H: Hadir · I: Izin · S: Sakit · A: Tanpa keterangan · ${days.length} hari efektif tercatat</p>`}
+  return h+signHTML('Mengetahui')}
+
+/* ---- WhatsApp ---- */
+function waTemplate(s,tpl){const d=getDay(todayStr())[s.id];let mid='';
+  if(tpl==='absen'){mid={H:`Alhamdulillah, ananda ${s.name} hari ini hadir dan mengikuti kegiatan dengan baik.`,I:`Kami mencatat ananda ${s.name} hari ini izin. Semoga urusannya dimudahkan Allah.`,S:`Kami mendapat kabar ananda ${s.name} hari ini sakit. Semoga Allah segera memberi kesembuhan. Lā ba'sa ṭahūrun in syā' Allāh.`,A:`Ananda ${s.name} hari ini tidak hadir tanpa keterangan. Boleh kami tahu kabarnya? Semoga ananda dalam keadaan baik.`}[d]||`Kami ingin mengabarkan kegiatan ananda ${s.name} hari ini.`}
+  else if(tpl==='kembang'){const ns=PR.notes.filter(n=>n.sid===s.id).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,3);mid=ns.length?`Kami ingin berbagi kabar perkembangan ananda ${s.name}:\n${ns.map(n=>`• ${(ASPEK.find(a=>a[0]===n.aspek)||ASPEK[0])[1]}: ${n.text||LEVEL[n.level][0]}`).join('\n')}\nMohon dukungannya juga di rumah ya, Ayah/Bunda.`:`Kami ingin berbagi kabar perkembangan ananda ${s.name}.`}
+  else if(tpl==='hafalan'){const h=hafItems().filter(i=>getH(s.id,i.id)===2).map(i=>({t:i.t,d:PR.hafalan[s.id][i.id].d})).sort((a,b)=>b.d.localeCompare(a.d)).slice(0,5);mid=h.length?`Alhamdulillah, ananda ${s.name} sudah hafal: ${h.map(x=>x.t).join(', ')}. MasyaAllah! Mohon dibantu murojaah di rumah ya.`:`Ananda ${s.name} sedang semangat menghafal. Mohon dibantu murojaah di rumah ya.`}
+  else if(tpl==='agenda'){const t=todayStr();const e=AG.events.filter(x=>x.date>=t).sort((a,b)=>a.date.localeCompare(b.date))[0];mid=e?`Mengingatkan agenda: *${e.title}* pada ${fmtDate(parseD(e.date),{weekday:'long',day:'numeric',month:'long'})}${e.time?' pukul '+e.time:''}.${e.note?'\n'+e.note:''}`:'Belum ada agenda terdekat.'}
+  return `${sapaOrtu(s)}\n\n${mid}\n\n${tutup()}`}
+function waModal(sid,tpl){const s=stuById(sid);if(!s)return;tpl=tpl||'absen';
+  openModal(`<h2>💬 Kabari Orang Tua ${esc(s.name)}</h2>${s.wa?`<p class="muted" style="margin:0 0 8px">Ke: ${esc(s.parent||'Orang tua')} · +${esc(waNum(s.wa))}</p>`:`<div class="note">Nomor WhatsApp orang tua belum diisi. Pesan tetap bisa dikirim dengan memilih kontak di WhatsApp, atau isi nomornya lewat ✏️ Ubah data murid.</div>`}
+  <div class="filter-chips">${[['absen','📋 Absensi hari ini'],['kembang','🌱 Perkembangan'],['hafalan','📖 Hafalan'],['agenda','📅 Agenda'],['bebas','✍️ Bebas']].map(([k,l])=>`<button class="${k===tpl?'on':''}" data-act="waTpl" data-id="${s.id}" data-tpl="${k}">${l}</button>`).join('')}</div>
+  <textarea class="inp" id="waT" style="min-height:170px">${esc(tpl==='bebas'?`${sapaOrtu(s)}\n\n\n\n${tutup()}`:waTemplate(s,tpl))}</textarea>
+  <div class="row" style="margin-top:8px"><a class="btn" id="waGo" target="_blank" rel="noopener" style="text-decoration:none;background:#22c55e;box-shadow:0 4px 0 #15803d">📤 Kirim lewat WhatsApp</a></div>`);
+  const upd=()=>{$('#waGo').href=waHref(s.wa,$('#waT').value)};upd();$('#waT').addEventListener('input',upd)}
+function shareEvent(e){const k=EV_CAT[e.cat]||EV_CAT.lain;const txt=`Assalamu'alaikum warahmatullahi wabarakatuh, Ayah/Bunda ${S.settings.className||''} ${school()}.\n\nMengingatkan agenda:\n${k[0]} *${e.title}*\n📅 ${fmtDate(parseD(e.date),{weekday:'long',day:'numeric',month:'long',year:'numeric'})}${e.time?'\n⏰ Pukul '+e.time:''}${e.note?'\n📝 '+e.note:''}\n\n${tutup()}`;
+  openModal(`<h2>📢 Bagikan Agenda</h2><textarea class="inp" id="waT" style="min-height:170px">${esc(txt)}</textarea><div class="row" style="margin-top:8px"><a class="btn" id="waGo" target="_blank" rel="noopener" style="text-decoration:none;background:#22c55e;box-shadow:0 4px 0 #15803d">📤 Kirim ke grup WhatsApp</a></div><p class="muted" style="font-size:13px">WhatsApp akan terbuka, lalu pilih grup kelas.</p>`);
+  const upd=()=>{$('#waGo').href=waHref('',$('#waT').value)};upd();$('#waT').addEventListener('input',upd)}
+
+/* ---- Pengingat ---- */
+function reminderList(){const st=S.settings;if(st.remind===false)return [];const out=[],now=Date.now();
+  const at=(ds,hm)=>{const [h,m]=(hm||'06:30').split(':').map(Number);const d=parseD(ds);d.setHours(h||0,m||0,0,0);return d.getTime()};
+  AG.events.forEach(e=>{const k=EV_CAT[e.cat]||EV_CAT.lain;const info=`${k[1]}${e.time?' · pukul '+e.time:''}${e.note?' — '+e.note:''}`;const pv=parseD(e.date);pv.setDate(pv.getDate()-1);
+    out.push({t:at(ymd(pv),st.remindEve||'19:00'),title:`Besok: ${e.title}`,text:info});
+    out.push({t:at(e.date,st.remindMorning||'06:30'),title:`Hari ini: ${e.title}`,text:info});
+    if(e.time)out.push({t:at(e.date,e.time)-30*60000,title:`30 menit lagi: ${e.title}`,text:info})});
+  S.todos.filter(x=>!x.done&&x.date).forEach(x=>out.push({t:at(x.date,st.remindMorning||'06:30'),title:`Tugas hari ini: ${x.text}`,text:`${x.cat||''} · Semangat, ${st.teacher||'Bu Guru'}!`}));
+  return out.filter(o=>o.t>now).sort((a,b)=>a.t-b.t).slice(0,60)}
+let remT=null;function syncReminders(){clearTimeout(remT);remT=setTimeout(()=>{if(window.AndroidNotify){try{AndroidNotify.sync(JSON.stringify(reminderList()))}catch(e){}}},600)}
+function renderReminders(){const el=$('#homeRemind');if(!el)return;const t=todayStr();const tm=new Date();tm.setDate(tm.getDate()+1);const tms=ymd(tm);
+  const evT=evsOn(t),evB=evsOn(tms),due=S.todos.filter(x=>!x.done&&x.date&&x.date<=t);
+  const lines=[...evT.map(e=>`📅 <b>Hari ini</b>${e.time?' '+esc(e.time):''}: ${esc(e.title)}`),...evB.map(e=>`🔔 <b>Besok</b>${e.time?' '+esc(e.time):''}: ${esc(e.title)}`),...due.map(x=>`✅ <b>${x.date<t?'<span class="late">Terlewat</span>':'Tugas hari ini'}</b>: ${esc(x.text)}`)];
+  el.style.display=lines.length?'':'none';el.innerHTML=`<h3><span class="t">🔔 Pengingat</span>${window.AndroidNotify?'':'<span class="muted" style="font-size:12px;font-weight:600">Notifikasi HP aktif di versi APK</span>'}</h3>${lines.map(l=>`<div style="padding:4px 0;font-size:15px">${l}</div>`).join('')}`}
+
+/* ---- Kuis ---- */
+const QUIZ_NABI=[['Nabi yang membuat kapal besar atas perintah Allah?','Nabi Nuh',['Nabi Ibrahim','Nabi Musa']],['Siapa nabi yang ditelan ikan besar?','Nabi Yunus',['Nabi Yusuf','Nabi Nuh']],['Api menjadi dingin dan tidak membakar nabi…','Nabi Ibrahim',['Nabi Ayyub','Nabi Daud']],['Laut terbelah ketika dipukul tongkat oleh…','Nabi Musa',['Nabi Isa','Nabi Shalih']],['Nabi yang mendengar semut berbicara?','Nabi Sulaiman',['Nabi Zakaria','Nabi Yunus']],['Burung yang tidak hadir saat diperiksa Nabi Sulaiman?','Burung Hud-hud',['Burung Gagak','Burung Merpati']],['Air yang memancar di dekat bayi Ismail bernama…','Air Zamzam',['Air Hujan','Air Laut']],['Siapa manusia pertama yang diciptakan Allah?','Nabi Adam',['Nabi Nuh','Nabi Idris']],['Nabi yang dimasukkan saudara-saudaranya ke dalam sumur?','Nabi Yusuf',['Nabi Yunus','Nabi Musa']],['Siapa yang menemani Rasulullah ﷺ di Gua Tsur?','Abu Bakar',['Umar bin Khattab','Anas bin Malik']],['Berapa lama pemuda Ashabul Kahfi tertidur di gua?','309 tahun',['3 hari','100 tahun']],['Siapa yang menasihati anaknya agar tidak sombong?','Luqman',['Firaun','Dzulqarnain']],['Unta betina adalah mukjizat untuk kaum…','Nabi Shalih',['Nabi Nuh','Nabi Musa']],['Siapa yang mengalahkan Jalut?','Daud',['Thalut','Sulaiman']],['Bayi yang berbicara membela ibunya, Maryam?','Nabi Isa',['Nabi Yahya','Nabi Ismail']],['Nabi yang berdoa saat sudah tua, lalu dikaruniai Yahya?','Nabi Zakaria',['Nabi Ibrahim','Nabi Ayyub']],['Nabi yang sangat sabar ketika sakit lama?','Nabi Ayyub',['Nabi Yunus','Nabi Daud']],['Pasukan yang ingin menghancurkan Ka‘bah dihancurkan oleh…','Burung-burung yang berbondong-bondong',['Banjir besar','Angin topan']],['Siapa yang membangun Ka‘bah bersama Nabi Ibrahim?','Nabi Ismail',['Nabi Ishaq','Nabi Ya‘qub']],['Raja saleh yang membangun tembok besi?','Dzulqarnain',['Firaun','Thalut']]];
+let QZ=null;
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+function quizStart(type){let qs;
+  if(type==='nabi')qs=shuffle(QUIZ_NABI).slice(0,10).map(([q,a,w])=>({q,a,opts:shuffle([a,...w])}));
+  else{const pool=DOA.filter(d=>d.lt.length<70);qs=shuffle(pool).slice(0,10).map(d=>{const others=shuffle(pool.filter(x=>x.t!==d.t&&x.cat!==d.cat)).slice(0,2).map(x=>x.t);return {q:`“${d.lt}”<br><span style="font-size:16px">Ini doa apa?</span>`,a:d.t,opts:shuffle([d.t,...others])}})}
+  QZ={type,qs,i:0,score:0,lock:false};quizRender()}
+function quizMenu(){openModal(`<h2 style="text-align:center">🎯 Kuis Kelas</h2><div style="transform:scale(.9)">${$('.kids').outerHTML.replace('class="kids"','class="kids" style="position:static"')}</div><p class="muted" style="text-align:center">Tampilkan di depan kelas. Guru membacakan soal, murid menjawab bersama!</p>
+  <div class="row" style="justify-content:center"><button class="btn yellow" data-act="quizGo" data-t="doa">🤲 Tebak Doa</button><button class="btn pink" data-act="quizGo" data-t="nabi">📖 Kisah Nabi</button></div>`)}
+function quizRender(){const q=QZ.qs[QZ.i];
+  openModal(`<div class="row" style="justify-content:space-between"><span class="pill" style="background:#ccfbf1;color:#115e59">Soal ${QZ.i+1}/${QZ.qs.length}</span><span class="pill" style="background:#fef9c3;color:#a16207">⭐ ${QZ.score}</span></div>
+  <div id="qzKids" style="transform:scale(.85);margin:-6px 0">${$('.kids').outerHTML.replace('class="kids"','class="kids" style="position:static"')}</div>
+  <div style="font-size:24px;font-weight:800;text-align:center;line-height:1.3;margin:4px 0 14px;color:var(--teal-d)">${q.ic?q.ic+' ':''}${q.q}</div>
+  <div style="display:grid;gap:10px">${q.opts.map((o,k)=>`<button class="btn sec" style="font-size:20px;padding:14px;text-align:left" data-act="quizAns" data-k="${k}">${['🅰️','🅱️','🅲'][k]||''} ${esc(o)}</button>`).join('')}</div>`)}
+function quizAns(b){if(QZ.lock)return;QZ.lock=true;const q=QZ.qs[QZ.i];const pick=q.opts[Number(b.dataset.k)];const ok=pick===q.a;
+  document.querySelectorAll('[data-act="quizAns"]').forEach(x=>{const v=q.opts[Number(x.dataset.k)];if(v===q.a){x.style.background='#22c55e';x.style.color='#fff'}else if(x===b){x.style.background='#f87171';x.style.color='#fff'}});
+  if(ok){QZ.score++;SFX.yay();document.querySelectorAll('#qzKids .kid').forEach(k=>k.classList.add('jump'));floatPlus(b,'⭐')}else SFX.soft();
+  setTimeout(()=>{QZ.lock=false;if(!$('#modalBg').classList.contains('show'))return;QZ.i++;if(QZ.i<QZ.qs.length)quizRender();else{const n=QZ.qs.length;if(QZ.score>=n*.7)confetti();
+    openModal(`<div style="text-align:center"><div style="font-size:70px">${QZ.score>=n*.7?'🏆':'🌟'}</div><h2>${QZ.score>=n*.7?'MasyaAllah, hebat!':'Alhamdulillah, terus semangat!'}</h2><p style="font-size:22px;font-weight:800">${QZ.score} dari ${n} benar</p>
+    <div class="row" style="justify-content:center"><button class="btn yellow" data-act="quizGo" data-t="${QZ.type}">🔁 Main lagi</button><button class="btn sec" data-act="quiz">Ganti kuis</button></div></div>`)}},ok?1300:1900)}
+
+/* ================= MODE MULTI-GURU (Firebase) ================= */
+const CLOUD=!!(window.FB&&window.FB_CONFIG);
+const C={user:null,prof:null,school:null,cls:null,base:{},unsubs:{},monthUnsubs:{},classes:[],booted:false,registering:false};
+const PERSONAL=['sound','remind','remindEve','remindMorning'];
+function isObj(v){return v&&typeof v==='object'&&!Array.isArray(v)}
+function clean(v){return JSON.parse(JSON.stringify(v))}
+function diffInto(b,w,out,top){let n=0;const keys=top?Object.keys(w):[...new Set([...Object.keys(b||{}),...Object.keys(w||{})])];
+  for(const k of keys){const bv=b?b[k]:undefined,wv=w?w[k]:undefined;
+    if(wv===undefined){if(bv!==undefined){out[k]=FB.DEL;n++}continue}
+    if(isObj(wv)&&isObj(bv)){const sub={};const c=diffInto(bv,wv,sub,false);if(c){out[k]=sub;n+=c}continue}
+    if(JSON.stringify(bv)!==JSON.stringify(wv)){out[k]=wv;n++}}
+  return n}
+function mapify(arr,withOrder){const o={};(arr||[]).forEach((x,i)=>{const v=Object.assign({},x);if(withOrder)v.o=i;o[x.id]=v});return o}
+function listOf(map){return Object.entries(map||{}).map(([id,v])=>Object.assign({},v,{id}))}
+function isAdmin(){return !!(C.user&&C.school&&Array.isArray(C.school.admins)&&C.school.admins.includes(C.user.uid))}
+const P={cls:()=>'classes/'+C.cls,prog:()=>'classes/'+C.cls+'/data/progres',jur:()=>'classes/'+C.cls+'/data/jurnal',abs:m=>'classes/'+C.cls+'/absen/'+m,priv:()=>'users/'+C.user.uid+'/priv/main',agenda:()=>'school/agenda',school:()=>'school/main',me:()=>'users/'+C.user.uid};
+async function cWrite(path,want){want=clean(want);const out={};const n=diffInto(C.base[path]||{},want,out,true);if(!n)return;
+  C.base[path]=Object.assign({},C.base[path]||{},want);setSync('saving');
+  try{await FB.db.set(path,out,true);setSync(navigator.onLine===false?'offline':'ok')}catch(e){console.error(e);setSync('err');toast(e&&e.code==='permission-denied'?'Tidak punya izin mengubah data ini':'Gagal menyimpan, coba lagi')}}
+function cloudSave(k,v){if(!C.user||!C.prof)return;
+  if(k==='kelas'){if(C.cls)cWrite(P.cls(),{name:S.settings.className||'',students:mapify(S.students,true),schedule:S.schedule});
+    const pv={};PERSONAL.forEach(x=>{if(S.settings[x]!==undefined)pv[x]=S.settings[x]});cWrite(P.priv(),{todos:mapify(S.todos),settings:pv});
+    if(isAdmin())cWrite(P.school(),{name:S.settings.school||'TK An Najah',head:S.settings.head||''});
+    if(S.settings.teacher&&S.settings.teacher!==C.prof.name)cWrite(P.me(),{name:S.settings.teacher})}
+  else if(k==='agenda'){cWrite(P.agenda(),{events:mapify(AG.events)});if(C.cls)cWrite(P.jur(),{notes:AG.notes})}
+  else if(k==='progres'){if(C.cls)cWrite(P.prog(),{hafalan:PR.hafalan,notes:mapify(PR.notes),custom:mapify(PR.custom)})}
+  else if(k.startsWith('absen-')){if(C.cls)cWrite(P.abs(k.slice(6)),{days:v.days})}}
+function compose(){const Cd=C.base[C.cls?P.cls():'']||{},Pv=C.user?C.base[P.priv()]||{}:{},Sc=C.school||{};
+  S.students=listOf(Cd.students).sort((a,b)=>(a.o??0)-(b.o??0));
+  S.schedule=Array.isArray(Cd.schedule)?Cd.schedule:(C.defSched=C.defSched||DEFAULT_SCHED.map(([time,text],i)=>({id:'d'+i,time,text})));
+  S.todos=listOf(Pv.todos);
+  S.settings=Object.assign({teacher:'',className:'',sound:true,school:'TK An Najah',head:'',remind:true,remindEve:'19:00',remindMorning:'06:30'},Pv.settings||{},{teacher:(C.prof&&C.prof.name)||'',className:Cd.name||'',school:Sc.name||'TK An Najah',head:Sc.head||''});
+  AG.events=listOf((C.base[P.agenda()]||{}).events);AG.notes=Object.assign({},((C.cls&&C.base[P.jur()])||{}).notes||{});
+  const pg=(C.cls&&C.base[P.prog()])||{};PR.hafalan=pg.hafalan||{};PR.notes=listOf(pg.notes);PR.custom=listOf(pg.custom);
+  Object.keys(C.monthUnsubs).forEach(m=>{ATT[m]={days:Object.assign({},((C.base[P.abs(m)])||{}).days||{})}})}
+let rT=null;function scheduleRender(){clearTimeout(rT);rT=setTimeout(()=>{const a=document.activeElement;
+  if(a&&(a.tagName==='TEXTAREA'||(a.tagName==='INPUT'&&a.type!=='checkbox'))&&!a.closest('#modal')&&a.closest('.view')){a.addEventListener('blur',scheduleRender,{once:true});return}
+  compose();renderAll();syncReminders();renderCloudBar()},60)}
+function listenDoc(key,path,after){if(C.unsubs[key])C.unsubs[key]();
+  C.unsubs[key]=FB.db.listen(path,(d,meta)=>{C.base[path]=d||{};if(after)after(d);scheduleRender();if(meta&&meta.fromCache&&navigator.onLine===false)setSync('offline');else setSync('ok')},e=>{console.error(path,e);if(e&&e.code==='permission-denied')toast('Akses ditolak. Hubungi kepala sekolah.')})}
+function listenMonth(m){if(!C.cls||C.monthUnsubs[m])return;const path=P.abs(m);
+  C.monthUnsubs[m]=FB.db.listen(path,d=>{C.base[path]=d||{};ATT[m]={days:Object.assign({},(d&&d.days)||{})};scheduleRender()})}
+function unsubAll(keep){Object.keys(C.unsubs).forEach(k=>{if(!keep||!keep.includes(k)){C.unsubs[k]();delete C.unsubs[k]}});Object.values(C.monthUnsubs).forEach(f=>f());C.monthUnsubs={};Object.keys(ATT).forEach(k=>delete ATT[k])}
+function setClass(cid){if(C.cls===cid&&C.unsubs.cls)return;C.cls=cid||null;unsubAll(['me','school','priv','agenda']);
+  try{if(isAdmin()&&cid)localStorage.setItem('annajah_cls',cid)}catch(e){}
+  if(!cid){compose();renderAll();renderCloudBar();return}
+  listenDoc('cls',P.cls());listenDoc('prog',P.prog());listenDoc('jur',P.jur());
+  getMonth(todayStr().slice(0,7));getMonth(absDate.slice(0,7));getMonth(calMonth);getMonth(rekapMonth);
+  scheduleRender()}
+
+/* ---- layar login & status ---- */
+function gate(html){const g=$('#gate');if(!html){g.style.display='none';g.innerHTML='';return}g.style.display='flex';g.innerHTML=`<div class="gate-card">${html}</div>`}
+const AUTH_ERR={'auth/invalid-credential':'Email atau kata sandi salah.','auth/wrong-password':'Email atau kata sandi salah.','auth/user-not-found':'Akun tidak ditemukan.','auth/email-already-in-use':'Email ini sudah terdaftar. Silakan masuk.','auth/weak-password':'Kata sandi minimal 6 karakter.','auth/invalid-email':'Format email tidak valid.','auth/network-request-failed':'Tidak ada koneksi internet.','auth/too-many-requests':'Terlalu banyak percobaan. Coba lagi nanti.'};
+function authErr(e){return AUTH_ERR[e&&e.code]||('Terjadi kesalahan'+(e&&e.code?' ('+e.code+')':''))}
+let authTab='masuk';
+function showLogin(msg){const kids=$('.kids')?$('.kids').outerHTML.replace('class="kids"','class="kids" style="position:static;transform:scale(.8);margin:-14px 0 -10px"'):'';
+  gate(`<div style="text-align:center"><div class="logo" style="margin:0 auto 6px;width:58px;height:58px">☪</div><h2 style="margin:0;color:var(--teal-d)">TK An Najah</h2><p class="muted" style="margin:0">Aplikasi Guru</p></div>${kids}
+  <div class="seg" style="display:flex;margin:6px 0 12px"><button style="flex:1" class="${authTab==='masuk'?'on':''}" data-act="authTab" data-t="masuk">Masuk</button><button style="flex:1" class="${authTab==='daftar'?'on':''}" data-act="authTab" data-t="daftar">Daftar</button></div>
+  ${msg?`<div class="note" style="${/salah|gagal|ditolak|tidak|sudah|minimal|kesalahan/i.test(msg)?'background:#fef2f2;border-color:#fca5a5;color:#991b1b':''}">${esc(msg)}</div>`:''}
+  <form id="authForm">${authTab==='daftar'?`<div class="field"><label>Nama / sapaan</label><input id="aName" maxlength="40" required placeholder="misal: Bu Aminah"></div>`:''}
+  <div class="field"><label>Email</label><input id="aEmail" type="email" required autocomplete="email" placeholder="nama@gmail.com"></div>
+  <div class="field"><label>Kata sandi</label><input id="aPw" type="password" required minlength="6" autocomplete="${authTab==='daftar'?'new-password':'current-password'}" placeholder="minimal 6 karakter"></div>
+  ${authTab==='daftar'?`<label class="row" style="font-weight:700;margin-bottom:10px;flex-wrap:nowrap;align-items:flex-start"><input type="checkbox" id="aHead" style="width:22px;height:22px;flex-shrink:0"> <span>Saya <b>kepala sekolah</b> (pendaftar pertama, menjadi Admin)</span></label>`:''}
+  <button class="btn" style="width:100%" type="submit" id="aGo">${authTab==='daftar'?'Daftar':'Masuk'}</button></form>
+  ${authTab==='masuk'?'<p style="text-align:center;margin:12px 0 0"><button class="btn sm sec" data-act="authReset">Lupa kata sandi?</button></p>':'<p class="muted" style="font-size:13px;margin:10px 0 0">Setelah mendaftar, guru menunggu persetujuan kepala sekolah sebelum bisa membuka data kelas.</p>'}`);
+  $('#authForm').onsubmit=async e=>{e.preventDefault();const email=$('#aEmail').value.trim(),pw=$('#aPw').value;const btn=$('#aGo');btn.disabled=true;btn.textContent='Memproses…';
+    try{if(authTab==='masuk'){await FB.auth.signIn(email,pw)}
+      else{const name=$('#aName').value.trim()||email.split('@')[0];const head=$('#aHead').checked;C.registering=true;const u=await FB.auth.signUp(email,pw);
+        let admin=false;if(head){const sch=await FB.db.get('school/main');if(!sch){await FB.db.set('school/main',{admins:[u.uid],name:'TK An Najah',head:name});admin=true}}
+        await FB.db.set('users/'+u.uid,{name,email,approved:admin,classId:'',created:Date.now()});C.registering=false;
+        if(head&&!admin)toast('Admin sudah ada. Akun Anda menunggu persetujuan.');onProfile()}}
+    catch(err){C.registering=false;showLogin(authErr(err))}}}
+function showPending(kind){const p=C.prof||{};gate(`<div style="text-align:center"><div style="font-size:64px">${kind==='noclass'?'🏫':'⏳'}</div><h2 style="color:var(--teal-d)">Assalamu'alaikum, ${esc(p.name||'')}</h2>
+  <p style="font-size:17px">${kind==='noclass'?'Akun Anda sudah disetujui, tetapi belum ditempatkan di kelas. Mohon hubungi kepala sekolah.':'Akun Anda sedang <b>menunggu persetujuan kepala sekolah</b>. Halaman ini akan terbuka otomatis setelah disetujui.'}</p>
+  <p class="muted">${esc((C.user&&C.user.email)||'')}</p><button class="btn sec" data-act="logout">Keluar</button></div>`)}
+function needAgenda(){if(!C.unsubs.agenda)listenDoc('agenda',P.agenda())}
+function onProfile(){if(!C.user||C.registering)return;const p=C.prof;
+  if(!p){if(C._askedProfile)return;C._askedProfile=true;setTimeout(async()=>{if(!C.prof&&C.user&&!C.registering){try{await FB.db.set(P.me(),{name:(C.user.email||'').split('@')[0],email:C.user.email||'',approved:false,classId:'',created:Date.now()})}catch(e){}}},2500);showPending();return}
+  if(isAdmin()){gate(null);needAgenda();if(!C.cls||!C.classes.find(c=>c.id===C.cls))loadClasses().then(()=>{let pick=null;try{pick=localStorage.getItem('annajah_cls')}catch(e){}if(!C.classes.find(c=>c.id===pick))pick=C.classes[0]&&C.classes[0].id;setClass(pick||null);if(!C.classes.length)adminPanel()});renderCloudBar();return}
+  if(!p.approved){setClass(null);showPending();return}
+  if(!p.classId){setClass(null);showPending('noclass');return}
+  gate(null);needAgenda();setClass(p.classId);renderCloudBar()}
+async function loadClasses(){if(!isAdmin()){C.classes=[];return}try{const l=await FB.db.list('classes');C.classes=l.map(x=>({id:x.id,name:x.data.name||'(tanpa nama)'})).sort((a,b)=>a.name.localeCompare(b.name))}catch(e){C.classes=[]}renderCloudBar()}
+function renderCloudBar(){if(!CLOUD)return;const ab=$('#adminBtn'),cs=$('#clsSwitch');ab.style.display=isAdmin()?'':'none';
+  if(isAdmin()&&C.classes.length){cs.style.display='';cs.innerHTML=C.classes.map(c=>`<option value="${c.id}" ${c.id===C.cls?'selected':''}>${esc(c.name)}</option>`).join('')}else cs.style.display='none'}
+function cloudBoot(){FB.init(FB_CONFIG);$('#sync').textContent='☁️ …';gate('<div style="text-align:center;padding:30px"><div class="logo" style="margin:0 auto 10px;width:58px;height:58px">☪</div><b>Memuat…</b></div>');
+  window.addEventListener('online',()=>setSync('ok'));window.addEventListener('offline',()=>setSync('offline'));
+  FB.auth.onChange(u=>{unsubAll();['me','school','priv','agenda'].forEach(k=>{if(C.unsubs[k]){C.unsubs[k]();delete C.unsubs[k]}});
+    C.user=u;C.prof=null;C.school=null;C.cls=null;C.base={};C.classes=[];C._askedProfile=false;
+    if(!u){S=normalize(null);AG=normAg(null);PR=normPr(null);renderAll();showLogin();return}
+    gate('<div style="text-align:center;padding:30px"><b>Memuat data…</b></div>');
+    let gotMe=false,gotSchool=false;
+    listenDoc('school',P.school(),d=>{C.school=d;gotSchool=true;if(gotMe)onProfile()});
+    listenDoc('me',P.me(),d=>{C.prof=d;gotMe=true;if(gotSchool)onProfile()});
+    listenDoc('priv',P.priv())})}
+
+/* ---- panel kepala sekolah ---- */
+async function adminPanel(){if(!isAdmin())return;openModal('<h2>🏫 Panel Kepala Sekolah</h2><p class="muted">Memuat data…</p>');
+  await loadClasses();let users=[];try{users=(await FB.db.list('users')).map(x=>Object.assign({uid:x.id},x.data))}catch(e){}
+  const m=todayStr().slice(0,7),t=todayStr();const rows=[];
+  for(const c of C.classes){let cd={},ab={},pg={};try{[cd,ab,pg]=await Promise.all([FB.db.get('classes/'+c.id),FB.db.get('classes/'+c.id+'/absen/'+m),FB.db.get('classes/'+c.id+'/data/progres')])}catch(e){}
+    cd=cd||{};ab=(ab&&ab.days)||{};pg=pg||{};const sts=Object.keys(cd.students||{});const td=ab[t]||{};const cnt={H:0,I:0,S:0,A:0};sts.forEach(s=>{if(cnt[td[s]]!==undefined)cnt[td[s]]++});
+    let tot=0,hd=0;Object.values(ab).forEach(d=>sts.forEach(s=>{if(d[s]){tot++;if(d[s]==='H')hd++}}));
+    let haf=0;sts.forEach(s=>{haf+=Object.values((pg.hafalan||{})[s]||{}).filter(x=>x.s===2).length});
+    const notesM=Object.values(pg.notes||{}).filter(n=>n.date&&n.date.startsWith(m)).length;
+    rows.push({c,n:sts.length,cnt,pct:tot?Math.round(hd/tot*100):null,haf:sts.length?(haf/sts.length).toFixed(1):'0',notesM,teachers:users.filter(u=>u.classId===c.id&&u.approved).map(u=>u.name)})}
+  const pend=users.filter(u=>!u.approved&&!(C.school.admins||[]).includes(u.uid));
+  openModal(`<h2>🏫 Panel Kepala Sekolah</h2>
+  <div class="daysec" style="border:none;margin:0;padding:0"><h4><span>📊 Ringkasan Kelas</span><button class="btn sm" data-act="addClass">+ Kelas</button></h4>
+  ${rows.length?rows.map(r=>`<div class="card" style="margin-bottom:10px;padding:12px"><div class="row" style="justify-content:space-between"><b style="font-size:18px">${esc(r.c.name)}</b><span class="row"><button class="btn sm sec" data-act="renameClass" data-id="${r.c.id}">✏️</button><button class="btn sm" data-act="openClass" data-id="${r.c.id}">Buka kelas →</button></span></div>
+    <div class="muted" style="font-size:13px">🎓 ${esc(r.teachers.join(', ')||'Belum ada guru')} · ${r.n} murid</div>
+    <div class="mini-stats" style="margin-top:6px"><span style="background:#16a34a">Hadir ${r.cnt.H}</span><span style="background:#0284c7">Izin ${r.cnt.I}</span><span style="background:#ea580c">Sakit ${r.cnt.S}</span><span style="background:#dc2626">Alpa ${r.cnt.A}</span><span style="background:#94a3b8">Belum ${Math.max(0,r.n-r.cnt.H-r.cnt.I-r.cnt.S-r.cnt.A)}</span></div>
+    <div style="font-size:14px;margin-top:6px">📈 Kehadiran bulan ini: <b>${r.pct===null?'—':r.pct+'%'}</b> · 📖 Rata-rata hafalan: <b>${r.haf}</b> materi/murid · 🌱 Catatan perkembangan bulan ini: <b>${r.notesM}</b></div></div>`).join(''):'<div class="note">Belum ada kelas. Tekan <b>+ Kelas</b> untuk membuat kelas pertama.</div>'}</div>
+  <div class="daysec"><h4><span>🎓 Guru ${pend.length?`<span class="pill" style="background:#fee2e2;color:#b91c1c">${pend.length} menunggu</span>`:''}</span></h4>
+  ${users.length?users.sort((a,b)=>(a.approved===b.approved?0:a.approved?1:-1)).map(u=>{const adm=(C.school.admins||[]).includes(u.uid),me=u.uid===C.user.uid;return `<div class="ev" style="border-left-color:${u.approved||adm?'#22c55e':'#f59e0b'};flex-wrap:wrap"><div style="min-width:0;flex:1"><div class="et">${esc(u.name||'-')} ${adm?'<span class="tag pri-1">Admin</span>':''} ${!u.approved&&!adm?'<span class="tag pri-2">Menunggu</span>':''}</div><div class="em">${esc(u.email||'')}</div></div>
+    <div class="row" style="gap:6px">${adm&&me?'':`<select class="inp" style="padding:6px" data-chg="userClass" data-uid="${u.uid}"><option value="">— Kelas —</option>${C.classes.map(c=>`<option value="${c.id}" ${u.classId===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select>
+    ${u.approved?`<button class="btn sm sec" data-act="userApprove" data-uid="${u.uid}" data-v="0">Nonaktifkan</button>`:`<button class="btn sm" data-act="userApprove" data-uid="${u.uid}" data-v="1">✔ Setujui</button>`}
+    ${me?'':`<button class="btn sm sec" data-act="userAdmin" data-uid="${u.uid}" data-v="${adm?0:1}">${adm?'Cabut admin':'Jadikan admin'}</button>`}`}</div></div>`}).join(''):'<p class="muted">Belum ada guru terdaftar.</p>'}
+  <p class="muted" style="font-size:13px">Guru mendaftar sendiri lewat aplikasi, lalu Anda setujui dan pilih kelasnya di sini.</p></div>
+  <div class="daysec"><h4><span>🏫 Data Sekolah</span></h4><div class="field"><label>Nama sekolah</label><input id="adSch" value="${esc((C.school&&C.school.name)||'TK An Najah')}"></div><div class="field"><label>Nama kepala sekolah</label><input id="adHead" value="${esc((C.school&&C.school.head)||'')}"></div><button class="btn sm" data-act="saveSchool">💾 Simpan</button></div>`)}
+const CLOUD_ACT={
+  reloadApp:()=>location.reload(),
+  skipUpd:b=>{try{localStorage.setItem('annajah_skip',b.dataset.b)}catch(e){}$('#updBar').style.display='none'},
+  adminPanel:()=>adminPanel(),
+  logout:()=>askConfirm('Keluar dari akun ini?',()=>{FB.auth.signOut();closeModal()},'Ya, keluar'),
+  authTab:b=>{authTab=b.dataset.t;showLogin()},
+  authReset:async()=>{const email=($('#aEmail')&&$('#aEmail').value.trim())||'';if(!email){showLogin('Isi email Anda dulu, lalu tekan "Lupa kata sandi?"');return}try{await FB.auth.reset(email);showLogin('Tautan untuk mengganti kata sandi sudah dikirim ke '+email+'. Cek juga folder spam.')}catch(e){showLogin(authErr(e))}},
+  openClass:b=>{setClass(b.dataset.id);closeModal();renderCloudBar();go('home');toast('Membuka '+((C.classes.find(c=>c.id===b.dataset.id)||{}).name||'kelas'))},
+  addClass:()=>{openModal(`<h2>+ Kelas Baru</h2><div class="field"><label>Nama kelas</label><input id="ncName" maxlength="40" placeholder="misal: TK A - Kelas Mawar"></div><button class="btn" id="ncGo">Buat kelas</button>`);
+    $('#ncGo').onclick=async()=>{const name=$('#ncName').value.trim();if(!name)return;const id='k'+uid();try{await FB.db.set('classes/'+id,{name,students:{},schedule:DEFAULT_SCHED.map(([time,text])=>({id:uid(),time,text}))});await loadClasses();if(!C.cls)setClass(id);toast('Kelas dibuat 🎉');adminPanel()}catch(e){toast('Gagal membuat kelas')}}},
+  renameClass:b=>{const c=C.classes.find(x=>x.id===b.dataset.id);openModal(`<h2>Ubah Nama Kelas</h2><div class="field"><input id="rcName" maxlength="40" value="${esc(c?c.name:'')}"></div><button class="btn" id="rcGo">Simpan</button>`);
+    $('#rcGo').onclick=async()=>{const name=$('#rcName').value.trim();if(!name)return;await FB.db.set('classes/'+b.dataset.id,{name},true);await loadClasses();adminPanel()}},
+  userApprove:async b=>{try{await FB.db.set('users/'+b.dataset.uid,{approved:b.dataset.v==='1'},true);toast(b.dataset.v==='1'?'Guru disetujui ✅':'Akun dinonaktifkan');adminPanel()}catch(e){toast('Gagal')}},
+  userAdmin:b=>askConfirm(b.dataset.v==='1'?'Jadikan guru ini Admin? Admin bisa melihat & mengubah semua kelas dan menyetujui guru.':'Cabut hak admin guru ini?',async()=>{try{await FB.db.set('school/main',{admins:b.dataset.v==='1'?FB.arrayUnion(b.dataset.uid):FB.arrayRemove(b.dataset.uid)},true);if(b.dataset.v==='1')await FB.db.set('users/'+b.dataset.uid,{approved:true},true);adminPanel()}catch(e){toast('Gagal')}},'Ya'),
+  saveSchool:async()=>{try{await FB.db.set('school/main',{name:$('#adSch').value.trim()||'TK An Najah',head:$('#adHead').value.trim()},true);toast('Data sekolah disimpan')}catch(e){toast('Gagal')}},
+};
+
+/* ---- pemberitahuan versi baru ---- */
+function checkUpdate(){const b=parseInt(window.APP_BUILD,10);if(!b||!window.UPDATE_URL)return;
+  const isApk=!!window.AndroidPrint;const url=(isApk?window.UPDATE_URL:'version.json')+'?t='+Date.now();
+  fetch(url,{cache:'no-store'}).then(r=>r.ok?r.json():null).then(v=>{if(!v||!(v.build>b))return;
+    let skip=null;try{skip=localStorage.getItem('annajah_skip')}catch(e){}if(String(v.build)===skip)return;
+    const el=$('#updBar');el.style.display='flex';
+    el.innerHTML=`<span>🎁 <b>Versi baru tersedia</b> (${esc(v.name||'')})${v.note?' · '+esc(v.note):''}</span><span class="row" style="gap:6px;flex-wrap:nowrap">${isApk?`<a class="btn sm" style="text-decoration:none" href="${esc(window.APK_URL)}" target="_blank" rel="noopener">⬇️ Perbarui</a>`:`<button class="btn sm" data-act="reloadApp">🔄 Muat ulang</button>`}<button class="btn sm sec" data-act="skipUpd" data-b="${v.build}">Nanti</button></span>`}).catch(()=>{})}
+
+/* ================= ACTIONS ================= */
+function go(v){view=v;if(v==='kalender')renderKalender();if(v==='home')renderHome();document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id==='v-'+v));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));window.scrollTo({top:0,behavior:'smooth'});SFX.pop()}
+
+function studentForm(s){selAva=s?s.av:AVATARS[Math.random()*AVATARS.length|0];
+  openModal(`<h2>${s?'Ubah':'Tambah'} Murid</h2>
+  <div class="field"><label>Nama panggilan</label><input id="fName" maxlength="40" value="${s?esc(s.name):''}" placeholder="misal: Aisyah"></div>
+  <div class="field"><label>Jenis kelamin</label><select id="fG"><option value="L" ${s&&s.g==='L'?'selected':''}>Laki-laki</option><option value="P" ${s&&s.g==='P'?'selected':''}>Perempuan</option></select></div>
+  <div class="field"><label>Nama lengkap (untuk raport)</label><input id="fFull" maxlength="80" value="${s?esc(s.full||''):''}" placeholder="misal: Aisyah Humaira"></div>
+  <div class="row" style="flex-wrap:nowrap"><div class="field" style="flex:1"><label>Tanggal lahir</label><input type="date" id="fBorn" value="${s?esc(s.born||''):''}"></div></div>
+  <div class="field"><label>Nama orang tua / wali</label><input id="fPar" maxlength="60" value="${s?esc(s.parent||''):''}" placeholder="misal: Bapak Ahmad / Ibu Fatimah"></div>
+  <div class="field"><label>No. WhatsApp orang tua</label><input id="fWa" inputmode="tel" maxlength="20" value="${s?esc(s.wa||''):''}" placeholder="0812xxxxxxx"></div>
+  <div class="field"><label>Catatan khusus (alergi, dijemput siapa, dll.)</label><input id="fNote" maxlength="150" value="${s?esc(s.note||''):''}"></div>
+  <div class="field"><label>Pilih karakter</label><div class="ava-pick" id="avaPick">${AVATARS.map(a=>`<button type="button" class="${a===selAva?'on':''}" data-act="pickAva" data-a="${a}">${a}</button>`).join('')}</div></div>
+  <div class="row"><button class="btn" id="fSave">💾 Simpan</button>${s?'':'<button class="btn sec" id="fSaveMore">Simpan & tambah lagi</button>'}</div>`);
+  setTimeout(()=>{if(document.activeElement.tagName!=='INPUT')$('#fName').focus()},50);
+  const doSave=(more)=>{const name=$('#fName').value.trim();if(!name){toast('Nama belum diisi');return}
+    const ex={full:$('#fFull').value.trim(),born:$('#fBorn').value,parent:$('#fPar').value.trim(),wa:$('#fWa').value.trim(),note:$('#fNote').value.trim()};
+    if(s){Object.assign(s,{name,g:$('#fG').value,av:selAva},ex)}else S.students.push(Object.assign({id:uid(),name,g:$('#fG').value,av:selAva,stars:0},ex));
+    saveMain();renderAll();SFX.ding();if(more){studentForm()}else{closeModal();toast(s?'Data murid diperbarui':'Murid ditambahkan 🎉')}};
+  $('#fSave').onclick=()=>doSave(false);if(!s)$('#fSaveMore').onclick=()=>doSave(true);
+  $('#fName').onkeydown=e=>{if(e.key==='Enter')doSave(false)}}
+
+function editSchedule(){const rows=[...S.schedule].sort((a,b)=>a.time.localeCompare(b.time));
+  const rowHTML=r=>`<div class="row sch-row" style="margin-bottom:6px;flex-wrap:nowrap"><input type="time" class="inp" value="${esc(r.time)}" style="width:120px"><input class="inp" value="${esc(r.text)}" style="flex:1;min-width:0" maxlength="60"><button class="btn sm sec" type="button" onclick="this.parentElement.remove()">✕</button></div>`;
+  openModal(`<h2>Jadwal Kegiatan Harian</h2><p class="muted">Atur urutan kegiatan kelas. Kegiatan yang sedang berlangsung akan ditandai di Beranda.</p><div id="schRows">${rows.map(rowHTML).join('')}</div>
+  <div class="row" style="margin-top:8px"><button class="btn sm sec" id="schAdd">+ Baris</button><span class="spacer"></span><button class="btn" id="schSave">💾 Simpan</button></div>`);
+  $('#schAdd').onclick=()=>$('#schRows').insertAdjacentHTML('beforeend',rowHTML({time:'',text:''}));
+  $('#schSave').onclick=()=>{S.schedule=[...document.querySelectorAll('.sch-row')].map(r=>{const i=r.querySelectorAll('input');return {id:uid(),time:i[0].value,text:i[1].value.trim()}}).filter(r=>r.time&&r.text);saveMain();renderHome();closeModal();toast('Jadwal disimpan ✅')}}
+
+function settings(){openModal(`<h2>⚙️ Pengaturan</h2>
+  <div class="field"><label>Sapaan guru</label><input id="sT" maxlength="30" value="${esc(S.settings.teacher)}" placeholder="Bu Aminah"></div>
+  <div class="field"><label>Nama kelas</label><input id="sC" maxlength="30" value="${esc(S.settings.className)}" placeholder="TK A - Kelas Mawar"></div>
+  <div class="field" style="${CLOUD&&!isAdmin()?'display:none':''}"><label>Nama sekolah (untuk raport & pesan)</label><input id="sSch" maxlength="60" value="${esc(S.settings.school||'TK An Najah')}"></div>
+  <div class="field" style="${CLOUD&&!isAdmin()?'display:none':''}"><label>Nama kepala sekolah</label><input id="sHead" maxlength="60" value="${esc(S.settings.head||'')}" placeholder="untuk tanda tangan raport"></div>
+  <div class="field"><label>🔔 Pengingat di HP (versi APK)</label><select id="sRem"><option value="1" ${S.settings.remind!==false?'selected':''}>Nyala</option><option value="0" ${S.settings.remind===false?'selected':''}>Mati</option></select></div>
+  <div class="row" style="flex-wrap:nowrap"><div class="field" style="flex:1"><label>Ingatkan H-1 jam</label><input type="time" id="sEve" value="${esc(S.settings.remindEve||'19:00')}"></div><div class="field" style="flex:1"><label>Ingatkan hari-H jam</label><input type="time" id="sMor" value="${esc(S.settings.remindMorning||'06:30')}"></div></div>
+  <div class="field"><label>Suara efek</label><select id="sS"><option value="1" ${S.settings.sound?'selected':''}>Nyala 🔔</option><option value="0" ${!S.settings.sound?'selected':''}>Mati 🔕</option></select></div>
+  ${CLOUD?`<div class="note">👤 ${esc((C.user&&C.user.email)||'')} · ${isAdmin()?'Kepala Sekolah (Admin)':'Guru'}${C.cls?' · Kelas '+esc(S.settings.className):''}<br><button class="btn sm sec" style="margin-top:6px" data-act="logout">Keluar dari akun</button></div>`:''}
+  <p class="muted" style="font-size:14px;${CLOUD?'display:none':''}">${Store.db?'☁️ Data tersimpan di akun Claude Anda, jadi bisa dibuka dari HP atau laptop lain dengan akun yang sama. Data ini hanya bisa dilihat oleh Anda.':'💾 Saat ini data hanya tersimpan di browser ini.'}</p>
+  <div class="row"><button class="btn" id="sSave">💾 Simpan</button></div>
+  <div class="daysec"><h4><span>🗄️ Cadangan Data</span></h4><p class="muted" style="font-size:14px;margin:0 0 8px">Untuk memindahkan data antara versi web dan aplikasi HP, atau menyimpan cadangan.</p>
+  <div class="row"><button class="btn sm sec" data-act="backupCopy">📋 Salin cadangan</button><button class="btn sm sec" data-act="backupRestore">📥 Pulihkan dari cadangan</button></div></div>`);
+  $('#sSave').onclick=()=>{S.settings.teacher=$('#sT').value.trim()||'Bu Guru';S.settings.className=$('#sC').value.trim()||'TK';S.settings.sound=$('#sS').value==='1';S.settings.school=$('#sSch').value.trim()||'TK An Najah';S.settings.head=$('#sHead').value.trim();S.settings.remind=$('#sRem').value==='1';S.settings.remindEve=$('#sEve').value||'19:00';S.settings.remindMorning=$('#sMor').value||'06:30';saveMain();renderAll();closeModal();toast('Pengaturan disimpan')}}
+
+let pickInt=null;
+function randomPick(){const d=getDay(todayStr());let pool=S.students.filter(s=>d[s.id]==='H');let note='dari murid yang hadir hari ini';
+  if(!pool.length){pool=S.students;note='dari semua murid'}
+  if(!pool.length){toast('Tambahkan murid dulu ya');return}
+  openModal(`<h2>🎲 Siapa yang beruntung?</h2><p class="muted">Diundi ${note}</p><div class="picker" id="pickBox">…</div><div class="row" style="justify-content:center"><button class="btn yellow" id="pickAgain">🎲 Undi lagi</button></div>`);
+  const run=()=>{clearInterval(pickInt);let n=0;const total=18+Math.random()*10|0;
+    pickInt=setInterval(()=>{const s=pool[Math.random()*pool.length|0];$('#pickBox').innerHTML=`<span class="em">${esc(s.av)}</span>${esc(s.name)}`;SFX.pop();
+      if(++n>=total){clearInterval(pickInt);SFX.yay();$('#pickBox').innerHTML+=`<div style="font-size:18px;color:#a16207">MasyaAllah! 🌟</div>`}},90)};
+  $('#pickAgain').onclick=run;run()}
+
+let timerInt=null;
+function timerModal(){openModal(`<h2>⏰ Timer Kegiatan</h2><p class="muted">Untuk beres-beres, mewarnai, atau giliran bermain.</p>
+  <div class="timer-big" id="tBig">00:00</div>
+  <div class="row" style="justify-content:center">${[1,3,5,10,15].map(m=>`<button class="btn sm sec" data-act="tStart" data-m="${m}">${m} menit</button>`).join('')}</div>
+  <div class="row" style="justify-content:center;margin-top:10px"><button class="btn danger sm" data-act="tStop">⏹ Stop</button></div>`)}
+function tStart(min){clearInterval(timerInt);let end=Date.now()+min*60000;SFX.ding();
+  const tick=()=>{const left=Math.max(0,end-Date.now());const s=Math.ceil(left/1000);const el=$('#tBig');if(!el){clearInterval(timerInt);return}
+    el.textContent=`${pad(Math.floor(s/60))}:${pad(s%60)}`;if(left<=0){clearInterval(timerInt);el.textContent='Selesai! 🎉';SFX.yay();setTimeout(SFX.yay,600);confetti()}};
+  tick();timerInt=setInterval(tick,250)}
+
+function kidTalk(which){const el=document.querySelector('.kid.'+which);el.classList.remove('jump');void el.getBoundingClientRect();el.classList.add('jump');
+  const b=$('#bubble');b.textContent=(which==='boy'?'Ahmad: ':'Aisyah: ')+KID_LINES[Math.random()*KID_LINES.length|0];b.style.animation='none';void b.offsetWidth;b.style.animation='';SFX.star()}
+
+function allMonthsKeys(){const ks=new Set(Object.keys(ATT));try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('kelasceria_absen-'))ks.add(k.slice(17))}}catch(e){}return [...ks]}
+const ACT={
+  muridTab:b=>{muridTab=b.dataset.t;renderMuridTabs();SFX.pop()},
+  hafMode:b=>{hafMode=b.dataset.m;renderHafalan()},
+  setHaf:b=>{setH(b.dataset.s,b.dataset.i,Number(b.dataset.v),b);renderHafalan()},
+  cycleHaf:b=>{setH(b.dataset.s,b.dataset.i,(getH(b.dataset.s,b.dataset.i)+1)%3,b);renderHafalan()},
+  addCustomHaf:()=>{openModal(`<h2>+ Materi Hafalan Lain</h2><p class="muted">Misal: hadits pendek, asmaul husna, nama-nama nabi, atau surat lain.</p><div class="field"><label>Nama materi</label><input id="chT" maxlength="60" placeholder="misal: QS. Al-Bayyinah"></div>${PR.custom.length?`<div class="chips" style="margin-bottom:10px">${PR.custom.map(c=>`<span class="chip">${esc(c.t)} <button style="background:none" data-act="delCustomHaf" data-id="${c.id}">✕</button></span>`).join('')}</div>`:''}<button class="btn" id="chGo">Tambah</button>`);
+    $('#chGo').onclick=()=>{const t=$('#chT').value.trim();if(!t)return;const id=uid();PR.custom.push({id,t});savePr();hafSel='c-'+id;closeModal();renderHafalan();toast('Materi ditambahkan')}},
+  delCustomHaf:b=>{PR.custom=PR.custom.filter(c=>c.id!==b.dataset.id);savePr();closeModal();renderHafalan()},
+  addNote:()=>noteForm(),
+  editNote:b=>noteForm(PR.notes.find(n=>n.id===b.dataset.id)),
+  delNote:b=>askConfirm('Hapus catatan perkembangan ini?',()=>{PR.notes=PR.notes.filter(n=>n.id!==b.dataset.id);savePr();renderKembang();toast('Catatan dihapus')}),
+  raport:b=>raportForm(b.dataset.id),
+  docOut:()=>docOut(),
+  absReport:()=>{const [y,m]=rekapMonth.split('-').map(Number);previewDoc('Laporan Absensi '+fmtDate(new Date(y,m-1,1),{month:'long',year:'numeric'}),`Absensi-${rekapMonth}.html`,absensiReport(rekapMonth),true)},
+  waStudent:b=>waModal(b.dataset.id,b.dataset.tpl),
+  waTpl:b=>waModal(b.dataset.id,b.dataset.tpl),
+  shareEvent:b=>{const e=AG.events.find(x=>x.id===b.dataset.id);if(e)shareEvent(e)},
+  quiz:()=>quizMenu(),
+  quizGo:b=>quizStart(b.dataset.t),
+  quizAns:b=>quizAns(b),
+  backupCopy:()=>{const absen={};allMonthsKeys().forEach(m=>{absen[m]=getMonth(m)});const txt=JSON.stringify({app:'tk-an-najah',v:2,kelas:S,agenda:AG,progres:PR,absen});
+    const show=()=>openModal(`<h2>Cadangan Data</h2><p class="muted">Salin semua teks ini dan simpan (misal kirim ke WhatsApp sendiri).</p><textarea class="inp" style="width:100%;height:220px" readonly>${esc(txt)}</textarea>`);
+    try{if(window.AndroidVoice&&AndroidVoice.copy){AndroidVoice.copy(txt);toast('Cadangan disalin 📋');return}navigator.clipboard.writeText(txt).then(()=>toast('Cadangan disalin 📋'),show)}catch(e){show()}},
+  backupRestore:()=>{openModal(`<h2>Pulihkan Data</h2><p class="muted">Tempel teks cadangan di bawah. Data yang ada sekarang akan diganti.</p><textarea class="inp" id="rsTxt" style="width:100%;height:180px"></textarea><div class="row" style="margin-top:8px"><button class="btn danger" id="rsGo">📥 Pulihkan</button></div>`);
+    $('#rsGo').onclick=()=>{let o;try{o=JSON.parse($('#rsTxt').value)}catch(e){toast('Teks cadangan tidak valid');return}
+      if(!o||o.app!=='tk-an-najah'){toast('Ini bukan cadangan TK An Najah');return}
+      S=normalize(o.kelas);AG=normAg(o.agenda);PR=normPr(o.progres);saveMain();saveAg();savePr();
+      Object.entries(o.absen||{}).forEach(([m,v])=>{if(/^\d{4}-\d{2}$/.test(m)&&v&&v.days){ATT[m]={days:v.days};Store.save('absen-'+m,ATT[m])}});
+      closeModal();renderAll();confetti();toast('Data berhasil dipulihkan ✅')}},
+  calShift:b=>{const [y,m]=calMonth.split('-').map(Number);const d=new Date(y,m-1+Number(b.dataset.d),1);calMonth=ymd(d).slice(0,7);renderKalender();SFX.pop()},
+  calToday:()=>{calSel=todayStr();calMonth=calSel.slice(0,7);renderKalender()},
+  calPick:b=>{calSel=b.dataset.d;renderKalender();SFX.pop();if(innerWidth<760)setTimeout(()=>$('#calDay').scrollIntoView({behavior:'smooth',block:'start'}),50)},
+  addEvent:b=>eventForm(null,b.dataset.d),
+  editEvent:b=>eventForm(AG.events.find(e=>e.id===b.dataset.id)),
+  delEvent:b=>{const e=AG.events.find(x=>x.id===b.dataset.id);if(!e)return;askConfirm(`Hapus agenda "${e.title}"?`,()=>{AG.events=AG.events.filter(x=>x!==e);saveAg();renderKalender();renderHome();toast('Agenda dihapus')})},
+  saveNote:b=>{const v=$('#dayNote').value.trim();if(v)AG.notes[b.dataset.d]=v;else delete AG.notes[b.dataset.d];saveAg();renderKalender();renderHome();SFX.ding();toast('Catatan disimpan 📝')},
+  clearNote:b=>askConfirm('Hapus catatan di tanggal ini?',()=>{delete AG.notes[b.dataset.d];saveAg();renderKalender();renderHome();toast('Catatan dihapus')}),
+  openAbsenDate:b=>{absDate=b.dataset.d;absMode='harian';go('absen');renderAbsen()},
+  go:b=>go(b.dataset.v),
+  closeModal:()=>closeModal(),
+  settings:()=>settings(),
+  kid:b=>kidTalk(b.dataset.kid),
+  absMode:b=>{absMode=b.dataset.m;renderAbsen()},
+  dayShift:b=>{const d=parseD(absDate);d.setDate(d.getDate()+Number(b.dataset.d));absDate=ymd(d);renderAbsen()},
+  today:()=>{absDate=todayStr();renderAbsen()},
+  mark:b=>{const cur=getDay(absDate)[b.dataset.id];const st=cur===b.dataset.st?null:b.dataset.st;setStatus(absDate,b.dataset.id,st);
+    st==='H'?SFX.ding():SFX.pop();renderAbsen();renderHome();
+    const c=counts(absDate);if(st&&c.B===0&&S.students.length){if(c.H===S.students.length){confetti();SFX.yay();toast('Alhamdulillah, semua murid hadir! 🎉')}else toast('Absensi lengkap ✅')}},
+  allHadir:()=>{if(!S.students.length){toast('Belum ada murid');return}const d=getDay(absDate);const m=monthKey(absDate);const M=getMonth(m);const day=Object.assign({},d);
+    S.students.forEach(s=>{if(!day[s.id])day[s.id]='H'});M.days[absDate]=day;Store.save('absen-'+m,M);renderAbsen();renderHome();
+    const c=counts(absDate);if(c.H===S.students.length){confetti();SFX.yay();toast('Alhamdulillah, semua murid hadir! 🎉')}else{SFX.ding();toast('Yang belum diabsen ditandai Hadir')}},
+  star:b=>{const s=S.students.find(x=>x.id===b.dataset.id);if(!s)return;s.stars=(s.stars||0)+1;saveMain();floatPlus(b,'⭐');SFX.star();
+    if(s.stars%10===0){confetti();toast(`MasyaAllah! ${s.name} dapat ${s.stars} bintang 🌟`)}renderAbsen();renderMurid();renderHome()},
+  resetStars:()=>askConfirm('Semua bintang murid akan kembali ke 0.',()=>{S.students.forEach(s=>s.stars=0);saveMain();renderAll();toast('Bintang di-nol-kan')},'Ya, nol-kan'),
+  addStudent:()=>studentForm(),
+  editStudent:b=>studentForm(S.students.find(x=>x.id===b.dataset.id)),
+  delStudent:b=>{const s=S.students.find(x=>x.id===b.dataset.id);askConfirm(`Hapus ${s.name} dari daftar murid? Riwayat absensinya tidak akan tampil lagi di rekap.`,()=>{S.students=S.students.filter(x=>x!==s);saveMain();renderAll();toast('Murid dihapus')})},
+  sampleStudents:()=>{const names=[['Ahmad','L','🚀'],['Aisyah','P','🌸'],['Fatimah','P','🌷'],['Umar','L','⚽'],['Khadijah','P','🍓'],['Bilal','L','🌙'],['Zahra','P','🌻'],['Hamzah','L','⛵'],['Maryam','P','🌈'],['Yusuf','L','⭐']];
+    names.forEach(([name,g,av])=>S.students.push({id:uid(),name,g,av,stars:0}));saveMain();renderAll();SFX.yay();toast('10 contoh murid ditambahkan. Silakan ubah namanya ✏️')},
+  pickAva:b=>{selAva=b.dataset.a;document.querySelectorAll('#avaPick button').forEach(x=>x.classList.toggle('on',x===b));SFX.pop()},
+  todoFilter:b=>{todoFilter=b.dataset.f;renderTodo()},
+  toggleTodo:b=>{const x=S.todos.find(t=>t.id===b.dataset.id);if(!x)return;x.done=!x.done;x.doneAt=x.done?todayStr():null;saveMain();
+    if(x.done){SFX.ding();floatPlus(b,'✨');if(!S.todos.some(t=>!t.done)){confetti();toast('Alhamdulillah, semua tugas selesai! 🎉')}}else SFX.pop();renderTodo();renderHome();renderKalender()},
+  delTodo:b=>{S.todos=S.todos.filter(t=>t.id!==b.dataset.id);saveMain();renderTodo();renderHome();SFX.soft()},
+  suggTodo:b=>{$('#todoText').value=b.dataset.t;$('#todoText').focus()},
+  editSched:()=>editSchedule(),
+  doaCat:b=>{doaCat=b.dataset.c;renderDoa();SFX.pop()},
+  storyCat:b=>{storyCat=b.dataset.c;renderCerita();SFX.pop()},
+  openDoa:b=>openDoa(b.dataset.id),
+  openStory:b=>openStory(b.dataset.id),
+  speakStory:b=>{const s=STORIES.find(x=>x.id===b.dataset.id);b.textContent='🔊 Membacakan…';speak(s.t+'. '+s.p.join(' ')+' Pesan untuk anak: '+s.m)},
+  speakText:b=>speak(b.dataset.t),
+  stopSpeak:()=>{stopSpeak();const b=document.querySelector('[data-act="speakStory"]');if(b)b.textContent='🔊 Bacakan'},
+  randomPick:()=>randomPick(),
+  timer:()=>timerModal(),
+  tStart:b=>tStart(Number(b.dataset.m)),
+  tStop:()=>{clearInterval(timerInt);const el=$('#tBig');if(el)el.textContent='00:00'},
+  copyRekap:()=>{const {rows}=rekapData();const txt=['Nama\tHadir\tIzin\tSakit\tAlpa\t% Hadir',...rows.map(r=>[r.s.name,r.c.H,r.c.I,r.c.S,r.c.A,r.pct+'%'].join('\t'))].join('\n');
+    const fallback=()=>openModal(`<h2>Salin Rekap</h2><p class="muted">Pilih semua teks di bawah lalu salin, kemudian tempel di Excel.</p><textarea class="inp" style="width:100%;height:220px">${esc(txt)}</textarea>`);
+    try{if(window.AndroidVoice&&AndroidVoice.copy){AndroidVoice.copy(txt);toast('Rekap disalin! Tempel di Excel 📋');SFX.ding();return}navigator.clipboard.writeText(txt).then(()=>{toast('Rekap disalin! Tempel di Excel 📋');SFX.ding()},fallback)}catch(e){fallback()}}
+};
+Object.assign(ACT,CLOUD_ACT);
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const f=ACT[b.dataset.act];if(f){e.preventDefault();f(b,e)}});
+$('#modalBg').addEventListener('click',e=>{if(e.target.id==='modalBg')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+const CHG={userClass:async el=>{try{await FB.db.set('users/'+el.dataset.uid,{classId:el.value},true);toast('Kelas guru diperbarui')}catch(e){toast('Gagal')}},hafSel:el=>{hafSel=el.value;renderHafalan()},hafStu:el=>{hafStu=el.value;renderHafalan()},kSel:el=>{kSel=el.value;renderKembang()}};
+document.addEventListener('change',e=>{const el=e.target.closest('[data-chg]');if(el&&CHG[el.dataset.chg])CHG[el.dataset.chg](el)});
+$('#absDate').addEventListener('change',e=>{if(e.target.value){absDate=e.target.value;renderAbsen()}});
+$('#rekapMonth').addEventListener('change',e=>{if(e.target.value){rekapMonth=e.target.value;renderRekap()}});
+$('#todoForm').addEventListener('submit',e=>{e.preventDefault();const text=$('#todoText').value.trim();if(!text){toast('Tulis tugasnya dulu ya');return}
+  S.todos.push({id:uid(),text,cat:$('#todoCat').value,pri:Number($('#todoPri').value),date:$('#todoDate').value||'',done:false,doneAt:null});
+  saveMain();$('#todoText').value='';renderTodo();renderHome();SFX.ding();toast('Tugas ditambahkan ✅')});
+
+window.onAndroidBack=function(){if($('#gate').style.display==='flex')return false;if($('#modalBg').classList.contains('show')){closeModal();return true}if(view!=='home'){go('home');return true}return false};
+/* bubble cycles */
+setInterval(()=>{if(view!=='home')return;const b=$('#bubble');b.textContent=KID_LINES[Math.random()*KID_LINES.length|0];b.style.animation='none';void b.offsetWidth;b.style.animation=''},6000);
+setInterval(()=>{if(view==='home'){renderHeader();renderHome()}},60000);
+if(canSpeak()){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}}
+
+/* boot */
+$('#clsSwitch').addEventListener('change',e=>{setClass(e.target.value);go('home')});
+if(CLOUD){S=normalize(null);AG=normAg(null);PR=normPr(null);renderAll();cloudBoot();setTimeout(checkUpdate,4000);setInterval(checkUpdate,6*3600e3);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()})}
+else{
+S=normalize(Store.lsGet('kelas'));
+AG=normAg(Store.lsGet('agenda'));
+PR=normPr(Store.lsGet('progres'));
+renderAll();
+syncReminders();
+initCloud();}
+</script>
+</body>
+</html>

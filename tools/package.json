@@ -1,0 +1,11 @@
+{
+  "name": "tk-an-najah-tools",
+  "private": true,
+  "description": "Alat build TK An Najah: bundel Firebase + font offline",
+  "dependencies": {
+    "@fontsource/amiri": "^5.0.0",
+    "@fontsource/baloo-2": "^5.0.0",
+    "esbuild": "^0.24.0",
+    "firebase": "^11.0.0"
+  }
+}

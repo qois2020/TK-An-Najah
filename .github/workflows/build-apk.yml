@@ -3,6 +3,8 @@ name: Build APK
 on:
   push:
     branches: [main]
+    # Hanya build ulang bila aplikasi berubah (bukan saat dokumen/alat diubah)
+    paths-ignore: ['**.md', 'src/**', 'tools/**', 'firestore.rules']
   workflow_dispatch:
 
 permissions:
